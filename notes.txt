@@ -1,0 +1,5 @@
+mobile mode
+https://www.figma.com/design/EBj2fgGjpyHC4ZKkmq6Fk9/Expedemy-Resposive?node-id=21311-146667&m=dev
+
+desktop mode
+https://www.figma.com/design/IbpRR7joICdAQEgxUKz3wL/Expedemy-Resposive-x1440?node-id=21599-84043&m=dev
