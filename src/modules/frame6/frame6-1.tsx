@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from "react"
 import { useApplication } from "@pixi/react"
-import { Assets } from "pixi.js"
+import { Assets, BlurFilter, Graphics as PixiGraphics } from "pixi.js"
 import type { SceneProps } from "../../App"
 import { ASSETS } from "@/assets/manifest"
 
@@ -104,6 +104,7 @@ function Frame6_1Mobile({ timeline }: { timeline: GSAPTimeline }) {
 function Frame6_1Desktop({ timeline }: { timeline: GSAPTimeline }) {
     const { app } = useApplication()
     const proxyRef = useRef({ textAlpha: 0, dividerAlpha: 0, reviewsAlpha: 0, blurAlpha: 0 })
+    const blurFilterRef = useRef<BlurFilter | null>(null)
     const [textAlpha, setTextAlpha] = useState(0)
     const [dividerAlpha, setDividerAlpha] = useState(0)
     const [reviewsAlpha, setReviewsAlpha] = useState(0)
@@ -134,7 +135,7 @@ function Frame6_1Desktop({ timeline }: { timeline: GSAPTimeline }) {
             },
         }, ">-0.3")
         timeline.to(proxyRef.current, {
-            blurAlpha: 0.85,
+            blurAlpha: 1,
             ease: "power2.out",
             onUpdate() {
                 setBlurAlpha(proxyRef.current.blurAlpha)
@@ -148,11 +149,9 @@ function Frame6_1Desktop({ timeline }: { timeline: GSAPTimeline }) {
     const sh = app.screen.height
     const cx = sw / 2
 
-    
     const bottomTextTex = Assets.get(ASSETS.circleBottomText)
     const dividerTex = Assets.get(ASSETS.divider)
     const reviewsTex = Assets.get(ASSETS.reviews)
-    
 
     const btW = sw * 0.5
     const btH = btW * (bottomTextTex.height / bottomTextTex.width)
@@ -166,10 +165,25 @@ function Frame6_1Desktop({ timeline }: { timeline: GSAPTimeline }) {
     const revH = revW * (reviewsTex.height / reviewsTex.width)
     const revY = sh - revH - 20
 
+    // wave shape: peaks high on left+right, dips lower in center, oversize to avoid hard clip edges
+    const drawBlur = (gfx: PixiGraphics) => {
+        if (!blurFilterRef.current) {
+            blurFilterRef.current = new BlurFilter({ strength: 90, quality: 5 })
+        }
+        gfx.clear()
+        gfx.moveTo(-150, sh + 150)
+        gfx.lineTo(-150, sh * 0.28)
+        gfx.bezierCurveTo(sw * 0.01, sh * 1.4, sw * 1.0, sh * 1, sw * 1.2, sh * 0.5)
+        gfx.lineTo(sw + 150, sh + 150)
+        gfx.closePath()
+        gfx.fill(0xA035D0)
+        gfx.filters = [blurFilterRef.current]
+    }
+
     return (
         <>
-            {/* blur PNGs behind all content, covering full canvas */}
-            
+            {/* wave glow behind all content */}
+            <pixiGraphics draw={drawBlur} alpha={blurAlpha} />
             <pixiSprite
                 texture={bottomTextTex}
                 width={btW}
