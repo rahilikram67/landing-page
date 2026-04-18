@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from "react"
 import { Frame5 } from "./modules/frame5"
-import { Frame6_1 } from "./modules/frame6/frame6-1"
+import { Frame6 } from "./modules/frame6"
 import { Application, extend } from "@pixi/react"
 import gsap from "gsap"
 import { ScrollTrigger } from "gsap/ScrollTrigger"
@@ -53,7 +53,7 @@ function App() {
           scrollTrigger: {
             trigger: "#scroll-container",
             start: "top top",
-            end: isDesktop ? "+=300%" : "+=200%",
+            end: isDesktop ? "+=700%" : "+=500%",
             pin: true,
             scrub: 1,
           },
@@ -96,7 +96,7 @@ function App() {
         >
           <pixiContainer>
             <Frame5 timeline={sceneProps.timeline} ctx={sceneProps.ctx} />
-            <Frame6_1 timeline={sceneProps.timeline} ctx={sceneProps.ctx} />
+            <Frame6 timeline={sceneProps.timeline} ctx={sceneProps.ctx} />
           </pixiContainer>
         </Application>}
       </div>
