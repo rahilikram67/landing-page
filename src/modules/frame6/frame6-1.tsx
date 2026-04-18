@@ -156,25 +156,6 @@ function Frame6_1Desktop({ timeline }: { timeline: GSAPTimeline }) {
     const chip2Tex = Assets.get(ASSETS.reviewChip2)
     const chip3Tex = Assets.get(ASSETS.reviewChip3)
 
-    // Chip positions from Figma frame (1376×900 reference)
-    // chip1: x=327/1376, y=739/900 — bottom-left, under first review card
-    // chip2: x=666/1376, y=492/900 — center, above review cards (visual analysis)
-    // chip3: x=808/1376, y=757/900 — bottom-right, under third review card
-    const c1W = sw * (277 / 1376)
-    const c1H = c1W * (chip1Tex.height / chip1Tex.width)
-    const c1X = sw * (327 / 1376)
-    const c1Y = sh * (837 / 900)
-
-    const c2W = sw * (272 / 1376)
-    const c2H = c2W * (chip2Tex.height / chip2Tex.width)
-    const c2X = sw * (666 / 1376)
-    const c2Y = sh * (580 / 900)
-
-    const c3W = sw * (241 / 1376)
-    const c3H = c3W * (chip3Tex.height / chip3Tex.width)
-    const c3X = sw * (808 / 1376)
-    const c3Y = sh * (837 / 900)
-
     const btW = sw * 0.5
     const btH = btW * (bottomTextTex.height / bottomTextTex.width)
     const btY = sh * 0.10
@@ -185,7 +166,29 @@ function Frame6_1Desktop({ timeline }: { timeline: GSAPTimeline }) {
 
     const revW = sw * 0.82
     const revH = revW * (reviewsTex.height / reviewsTex.width)
+    const revX = cx - revW / 2
     const revY = sh - revH - 20
+
+    // All chip sizes and positions are expressed as fractions of revW / revH so they
+    // stay locked to the reviews image at any canvas size or aspect ratio.
+    // Figma reference frame: 1376×900, reviews section 1151×319 at revX≈124, revY≈568.
+    // chip1 (bottom-left, below 1st card):  Figma x=327→(327-124)/1151≈0.18, y=739→(739-568)/319≈0.55
+    // chip2 (center, above cards):          Figma x=561→(561-124)/1151≈0.38, y=510→(510-568)/319≈-0.18
+    // chip3 (bottom-right, below 3rd card): Figma x=808→(808-124)/1151≈0.59, y=757→(757-568)/319≈0.59
+    const c1W = revW * 0.245
+    const c1H = c1W * (chip1Tex.height / chip1Tex.width)
+    const c1X = revX + revW * 0.18
+    const c1Y = revY + revH * 0.88
+
+    const c2W = revW * 0.241
+    const c2H = c2W * (chip2Tex.height / chip2Tex.width)
+    const c2X = revX + revW * 0.38
+    const c2Y = revY + revH * 0.12
+
+    const c3W = revW * 0.214
+    const c3H = c3W * (chip3Tex.height / chip3Tex.width)
+    const c3X = revX + revW * 0.59
+    const c3Y = revY + revH * 0.88
 
     // wave shape: peaks high on left+right, dips lower in center, oversize to avoid hard clip edges
     const drawBlur = (gfx: PixiGraphics) => {
@@ -226,7 +229,7 @@ function Frame6_1Desktop({ timeline }: { timeline: GSAPTimeline }) {
                 texture={reviewsTex}
                 width={revW}
                 height={revH}
-                x={cx - revW / 2}
+                x={revX}
                 y={revY}
                 alpha={reviewsAlpha}
             />
