@@ -1,5 +1,7 @@
 import { Assets } from "pixi.js"
 
+
+// desktop
 import bg5 from "./desktop/bg-5.png"
 import greenPlanet from "./desktop/green-planet.png"
 import greenPlanetText from "./desktop/green-planet-text.png"
@@ -12,7 +14,9 @@ import circleBottomText from "./desktop/circle-bottom-text.png"
 import divider from "./desktop/divider.png"
 import reviews from "./desktop/reviews.png"
 
+// mobile
 import mobileBg5 from "./mobile/bg5.png"
+import mobileCircleBottomText from "./mobile/circle-bottom-text.png"
 
 
 export const ASSETS = {
@@ -62,6 +66,7 @@ export function loadAssets() {
       { alias: ASSETS.redPlanetText, src: redPlanetText },
       { alias: ASSETS.beigePlanet, src: beigePlanet },
       { alias: ASSETS.beigePlanetText, src: beigePlanetText },
+      { alias: ASSETS.circleBottomText, src: mobileCircleBottomText },
     ])
 
     const bundle = isMobile() ? "mobile" : "desktop"
