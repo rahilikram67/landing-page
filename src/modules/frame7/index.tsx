@@ -132,13 +132,11 @@ function Frame7Desktop({ timeline }: { timeline: GSAPTimeline }) {
     const textBlockH = (jwY + jwH) - youY
     const textOffset = textYShift * textBlockH * 1.2
 
-    // Faked 3D door rotation (PixiJS is 2D — no real rotateY).
-    // scale.x = cos(rotY): 1 → 0 (edge-on at 90°) → -1 (mirrored at 180°)
-    // skew.y peaks at midpoint to add a perspective tilt as the door swings outward
+    // Equivalent to CSS `rotateY` around a vertical right-hinge.
+    // scale.x = cos(rotY) sweeps 1 → 0 → -1 (full face → edge-on → mirrored back face).
+    // No skew/rotation needed: a planar rotateY projects onto 2D as pure horizontal
+    // foreshortening — the free edge traces a 3D semicircle but its on-screen X is cos(rotY)·W.
     const doorScaleX = Math.cos(doorRotY)
-    const doorSkewY = Math.sin(doorRotY) * 0.25 // 0.18
-
-    console.log(doorRotY)
 
     return (
         <>
@@ -160,10 +158,9 @@ function Frame7Desktop({ timeline }: { timeline: GSAPTimeline }) {
                 y={doorY}
                 alpha={doorAlpha}
             />
-            {/* Door leaf — faked 3D rotateY around the right hinge.
+            {/* Door leaf — CSS rotateY equivalent around the right hinge.
                 anchor right-center = transformOrigin: right center.
-                scale.x = cos(rotY) sweeps 1 → 0 → -1, mirroring the door at 180°.
-                skew.y adds perspective tilt so the door appears to swing OUT toward the viewer. */}
+                scale.x = cos(rotY) sweeps 1 → 0 → -1, mirroring the door at 180°. */}
             <pixiSprite
                 texture={doorLeafTex}
                 width={doorLeafW}
@@ -172,7 +169,6 @@ function Frame7Desktop({ timeline }: { timeline: GSAPTimeline }) {
                 x={doorX + doorLeafW}
                 y={doorLeafY + doorLeafH / 2}
                 scale={{ x: doorScaleX, y: 1 }}
-                skew={{ x: 0, y: doorSkewY }}
                 alpha={doorAlpha}
             />
             {/* "You weren't lost." — floats up with door open (y: '-120%' equivalent) */}
