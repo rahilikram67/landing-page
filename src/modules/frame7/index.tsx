@@ -48,7 +48,9 @@ function Frame7Desktop({ timeline }: { timeline: GSAPTimeline }) {
             textAlpha: 1,
             duration: SCENE7_FADE_IN_DURATION,
             ease: "power2.out",
-            onUpdate() { setTextAlpha(proxyRef.current.textAlpha) },
+            onUpdate() { 
+                setTextAlpha(proxyRef.current.textAlpha) 
+            },
         }, ">-0.3")
 
         // --- Door open: leaf collapses from right edge (rotateY equivalent) ---
@@ -61,7 +63,8 @@ function Frame7Desktop({ timeline }: { timeline: GSAPTimeline }) {
             duration: DOOR_OPEN_DURATION,
             ease: SMOOTH_EASE,
             onUpdate() { 
-                setDoorRotY(proxyRef.current.doorRotY) 
+                if(proxyRef.current.doorRotY<1.5) setDoorRotY(proxyRef.current.doorRotY) 
+                else setDoorRotY(-proxyRef.current.doorRotY) 
             },
         }, "doorOpenStart")
 
