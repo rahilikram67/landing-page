@@ -134,7 +134,7 @@ function Frame7Desktop({ timeline }: { timeline: GSAPTimeline }) {
     // scale.x = cos(rotY): 1 → 0 (edge-on at 90°) → -1 (mirrored at 180°)
     // skew.y peaks at midpoint to add a perspective tilt as the door swings outward
     const doorScaleX = Math.cos(doorRotY)
-    const doorSkewY = Math.sin(doorRotY) * 0.18
+    const doorSkewY = -Math.sin(doorRotY) * 0.18
 
     return (
         <>
