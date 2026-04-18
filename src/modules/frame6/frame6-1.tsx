@@ -152,6 +152,28 @@ function Frame6_1Desktop({ timeline }: { timeline: GSAPTimeline }) {
     const bottomTextTex = Assets.get(ASSETS.circleBottomText)
     const dividerTex = Assets.get(ASSETS.divider)
     const reviewsTex = Assets.get(ASSETS.reviews)
+    const chip1Tex = Assets.get(ASSETS.reviewChip1)
+    const chip2Tex = Assets.get(ASSETS.reviewChip2)
+    const chip3Tex = Assets.get(ASSETS.reviewChip3)
+
+    // Chip positions from Figma frame (1376×900 reference)
+    // chip1: x=327/1376, y=739/900 — bottom-left, under first review card
+    // chip2: x=666/1376, y=492/900 — center, above review cards (visual analysis)
+    // chip3: x=808/1376, y=757/900 — bottom-right, under third review card
+    const c1W = sw * (277 / 1376)
+    const c1H = c1W * (chip1Tex.height / chip1Tex.width)
+    const c1X = sw * (327 / 1376)
+    const c1Y = sh * (837 / 900)
+
+    const c2W = sw * (272 / 1376)
+    const c2H = c2W * (chip2Tex.height / chip2Tex.width)
+    const c2X = sw * (666 / 1376)
+    const c2Y = sh * (580 / 900)
+
+    const c3W = sw * (241 / 1376)
+    const c3H = c3W * (chip3Tex.height / chip3Tex.width)
+    const c3X = sw * (808 / 1376)
+    const c3Y = sh * (837 / 900)
 
     const btW = sw * 0.5
     const btH = btW * (bottomTextTex.height / bottomTextTex.width)
@@ -207,6 +229,30 @@ function Frame6_1Desktop({ timeline }: { timeline: GSAPTimeline }) {
                 x={cx - revW / 2}
                 y={revY}
                 alpha={reviewsAlpha}
+            />
+            <pixiSprite
+                texture={chip1Tex}
+                width={c1W}
+                height={c1H}
+                x={c1X}
+                y={c1Y}
+                alpha={blurAlpha}
+            />
+            <pixiSprite
+                texture={chip2Tex}
+                width={c2W}
+                height={c2H}
+                x={c2X}
+                y={c2Y}
+                alpha={blurAlpha}
+            />
+            <pixiSprite
+                texture={chip3Tex}
+                width={c3W}
+                height={c3H}
+                x={c3X}
+                y={c3Y}
+                alpha={blurAlpha}
             />
         </>
     )
