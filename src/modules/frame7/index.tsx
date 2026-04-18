@@ -262,7 +262,7 @@ function Frame7Mobile({ timeline }: { timeline: GSAPTimeline }) {
     const doorH = sh * 0.42
     const doorPanelW = doorH * (doorPanelTex.width / doorPanelTex.height)
     const doorPanelX = cx - doorPanelW / 2
-    const doorY = sh * 0.40
+    const doorY = sh * 0.3
 
     const doorLeafTex = Assets.get(ASSETS.doorLeaf)
     const leafInset = doorPanelW * 0.115
@@ -276,13 +276,13 @@ function Frame7Mobile({ timeline }: { timeline: GSAPTimeline }) {
     const youW = sw * 0.557
     const youH = youW * (youWerentTex.height / youWerentTex.width)
     const youX = cx - youW / 2
-    const youY = doorY - doorH * 0.25
+    const youY = doorY - doorH * 0.2
 
     const justWaitingTex = Assets.get(ASSETS.justWaiting)
     const jwW = sw * 0.557
     const jwH = jwW * (justWaitingTex.height / justWaitingTex.width)
     const jwX = cx - jwW / 2
-    const jwY = doorY - doorH * 0.13
+    const jwY = doorY - doorH * 0.1
 
     const doorScaleX = Math.cos(doorRotY)
 
