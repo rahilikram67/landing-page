@@ -5,9 +5,9 @@ import { Application, extend } from "@pixi/react"
 import gsap from "gsap"
 import { ScrollTrigger } from "gsap/ScrollTrigger"
 import { loadAssets } from "./assets/manifest"
-import { Container, Sprite } from "pixi.js"
+import { Container, Graphics, Sprite } from "pixi.js"
 
-extend({ Sprite, Container })
+extend({ Sprite, Container,Graphics })
 
 gsap.registerPlugin(ScrollTrigger)
 
@@ -85,7 +85,7 @@ function App() {
       <div
         id="scroll-container"
         ref={containerRef}
-        className="relative w-full h-screen mx-auto max-w-[1440px] overflow-hidden max-h-[851px]"
+        className="relative w-full h-screen overflow-hidden mx-auto max-w-[1440px]"
       >
         {assetsReady && sceneProps && <Application
           resizeTo={containerRef}

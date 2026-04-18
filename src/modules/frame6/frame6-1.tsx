@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from "react"
 import { useApplication } from "@pixi/react"
-import { Assets } from "pixi.js"
+import { Assets, FillGradient, Graphics } from "pixi.js"
 import type { SceneProps } from "../../App"
 import { ASSETS } from "@/assets/manifest"
 
@@ -103,10 +103,11 @@ function Frame6_1Mobile({ timeline }: { timeline: GSAPTimeline }) {
 
 function Frame6_1Desktop({ timeline }: { timeline: GSAPTimeline }) {
     const { app } = useApplication()
-    const proxyRef = useRef({ textAlpha: 0, dividerAlpha: 0, reviewsAlpha: 0 })
+    const proxyRef = useRef({ textAlpha: 0, dividerAlpha: 0, reviewsAlpha: 0, blurAlpha: 0 })
     const [textAlpha, setTextAlpha] = useState(0)
     const [dividerAlpha, setDividerAlpha] = useState(0)
     const [reviewsAlpha, setReviewsAlpha] = useState(0)
+    const [blurAlpha, setBlurAlpha] = useState(0)
 
     useEffect(() => {
         if (!timeline || !app.renderer) return
@@ -117,7 +118,7 @@ function Frame6_1Desktop({ timeline }: { timeline: GSAPTimeline }) {
             onUpdate() {
                 setTextAlpha(proxyRef.current.textAlpha)
             },
-        },">")
+        }, ">")
         timeline.to(proxyRef.current, {
             dividerAlpha: 1,
             ease: "power1.out",
@@ -132,6 +133,13 @@ function Frame6_1Desktop({ timeline }: { timeline: GSAPTimeline }) {
                 setReviewsAlpha(proxyRef.current.reviewsAlpha)
             },
         }, "=-0.3")
+        timeline.to(proxyRef.current, {
+            blurAlpha: 1,
+            ease: "power2.out",
+            onUpdate() {
+                setBlurAlpha(proxyRef.current.blurAlpha)
+            },
+        }, ">-0.4")
     }, [timeline, app.renderer])
 
     if (!app.renderer) return null
@@ -156,8 +164,31 @@ function Frame6_1Desktop({ timeline }: { timeline: GSAPTimeline }) {
     const revH = revW * (reviewsTex.height / reviewsTex.width)
     const revY = sh - revH - 20
 
+    const glowRx = sw * 0.65
+    const glowRy = sh * 0.35
+    const glowCx = cx
+    const glowCy = sh
+
     return (
         <>
+            <pixiGraphics
+                alpha={blurAlpha}
+                draw={(g: Graphics) => {
+                    g.clear()
+                    const gradient = new FillGradient({
+                        type: "radial",
+                        center: { x: 0.5, y: 0.5 },
+                        innerRadius: 0,
+                        outerRadius: 0.5,
+                        textureSpace: "global",
+                    })
+                    gradient.addColorStop(0, { r: 0.67, g: 0.35, b: 0.91, a: 0.55 })
+                    gradient.addColorStop(0.6, { r: 0.67, g: 0.35, b: 0.91, a: 0.2 })
+                    gradient.addColorStop(1, { r: 0.67, g: 0.35, b: 0.91, a: 0 })
+                    g.ellipse(glowCx, glowCy, glowRx, glowRy)
+                    g.fill(gradient)
+                }}
+            />
             <pixiSprite
                 texture={bottomTextTex}
                 width={btW}
