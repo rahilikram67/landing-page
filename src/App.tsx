@@ -85,7 +85,7 @@ function App() {
       <div
         id="scroll-container"
         ref={containerRef}
-        className="relative w-full h-screen mx-auto max-w-[1440px] overflow-hidden max-h-[851px]"
+        className="relative w-full h-screen mt-auto mx-auto max-w-[1440px] overflow-hidden max-h-[851px]"
       >
         {assetsReady && sceneProps && <Application
           resizeTo={containerRef}
