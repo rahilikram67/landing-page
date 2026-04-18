@@ -148,8 +148,7 @@ function Frame6_1Desktop({ timeline }: { timeline: GSAPTimeline }) {
     const sh = app.screen.height
     const cx = sw / 2
 
-    const blurTex = Assets.get(ASSETS.pinkBlurBottom)
-    const blueBlurTex = Assets.get(ASSETS.blueBlurTop)
+    
     const bottomTextTex = Assets.get(ASSETS.circleBottomText)
     const dividerTex = Assets.get(ASSETS.divider)
     const reviewsTex = Assets.get(ASSETS.reviews)
@@ -170,22 +169,7 @@ function Frame6_1Desktop({ timeline }: { timeline: GSAPTimeline }) {
     return (
         <>
             {/* blur PNGs behind all content, covering full canvas */}
-            <pixiSprite
-                texture={blurTex}
-                width={sw}
-                height={sh}
-                x={0}
-                y={0}
-                alpha={blurAlpha}
-            />
-            <pixiSprite
-                texture={blueBlurTex}
-                width={sw}
-                height={sh}
-                x={0}
-                y={0}
-                alpha={blurAlpha}
-            />
+            
             <pixiSprite
                 texture={bottomTextTex}
                 width={btW}
