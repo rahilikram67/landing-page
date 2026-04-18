@@ -38,7 +38,7 @@ function Frame5Mobile({ timeline }: { timeline: GSAPTimeline }) {
             },
         })
 
-        const target = app.screen.height * 0.7
+        const target = app.screen.height * 0.54
         timeline.to(proxyRef.current, {
             yShift: -target,
             ease: "power2.inOut",
@@ -134,19 +134,21 @@ function Frame5Mobile({ timeline }: { timeline: GSAPTimeline }) {
                 const btTex = Assets.get(ASSETS.circleBottomText)
                 const offset = PLANETS.length - slide
                 const x = cx + offset * sw
-                const dist = Math.abs(offset)
-                const slideAlpha = Math.max(0, 1 - dist * 1.5)
-                const alpha = slideAlpha * fadeOut
+                // const dist = Math.abs(offset)
+                // const slideAlpha = Math.max(0, 1 - dist * 1.5)
+                // const alpha = slideAlpha * fadeOut
                 const btW = sw * 0.85
                 const btH = btW * (btTex.height / btTex.width)
+                const btBaseY = planetCy * 1.2 - btH / 2
+                const btY = Math.max(btBaseY, -btH * 0.36)
                 return (
                     <pixiSprite
                         texture={btTex}
                         width={btW}
                         height={btH}
                         x={x - btW / 2}
-                        y={planetCy * 1.2 - btH / 2}
-                        alpha={alpha}
+                        y={btY}
+                        // alpha={alpha}
                     />
                 )
             })()}
