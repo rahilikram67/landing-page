@@ -13,9 +13,11 @@ const REVIEW_CARDS = [ASSETS.reviewGirl, ASSETS.reviewBoy, ASSETS.reviewBoy2] as
 
 function Frame6_1Mobile({ timeline }: { timeline: GSAPTimeline }) {
     const { app } = useApplication()
-    const proxyRef = useRef({ fadeIn: 0, reviewSlide: 0 })
+    const proxyRef = useRef({ fadeIn: 0, reviewSlide: 0, blurAlpha: 0 })
+    const blurFilterRef = useRef<BlurFilter | null>(null)
     const [fadeIn, setFadeIn] = useState(0)
     const [reviewSlide, setReviewSlide] = useState(0)
+    const [blurAlpha, setBlurAlpha] = useState(0)
 
     useEffect(() => {
         if (!timeline || !app.renderer) return
@@ -34,6 +36,13 @@ function Frame6_1Mobile({ timeline }: { timeline: GSAPTimeline }) {
                 setReviewSlide(proxyRef.current.reviewSlide)
             },
         })
+        timeline.to(proxyRef.current, {
+            blurAlpha: 1,
+            ease: "power2.out",
+            onUpdate() {
+                setBlurAlpha(proxyRef.current.blurAlpha)
+            },
+        }, ">")
     }, [timeline, app.renderer])
 
     if (!app.renderer) return null
@@ -47,7 +56,7 @@ function Frame6_1Mobile({ timeline }: { timeline: GSAPTimeline }) {
 
     const divW = sw * 0.9
     const divH = divW * (dividerTex.height / dividerTex.width)
-    const divY = sh / 2 - divH / 2
+    const divY = sh * 0.6
 
     const veW = sw * 0.7
     const veH = veW * (voiceExpTex.height / voiceExpTex.width)
@@ -56,8 +65,24 @@ function Frame6_1Mobile({ timeline }: { timeline: GSAPTimeline }) {
     const cardW = sw * 0.85
     const cardPad = sw * 0.05
 
+    const drawBlur = (gfx: PixiGraphics) => {
+        if (!blurFilterRef.current) {
+            blurFilterRef.current = new BlurFilter({ strength: 60, quality: 5 })
+        }
+        gfx.clear()
+        gfx.moveTo(-80, sh + 80)
+        gfx.lineTo(-80, sh * 0.35)
+        gfx.bezierCurveTo(sw * 0.15, sh * 0.45, sw * 0.38, sh * 0.58, sw * 0.5, sh * 0.58)
+        gfx.bezierCurveTo(sw * 0.62, sh * 0.58, sw * 0.85, sh * 0.45, sw + 80, sh * 0.35)
+        gfx.lineTo(sw + 80, sh + 80)
+        gfx.closePath()
+        gfx.fill(0xA035D0)
+        gfx.filters = [blurFilterRef.current]
+    }
+
     return (
         <>
+            <pixiGraphics draw={drawBlur} alpha={blurAlpha} />
             <pixiSprite
                 texture={dividerTex}
                 width={divW}
@@ -78,7 +103,7 @@ function Frame6_1Mobile({ timeline }: { timeline: GSAPTimeline }) {
                 const cardTex = Assets.get(cardAsset)
                 const cW = cardW
                 const cH = cW * (cardTex.height / cardTex.width)
-                const cY = sh - cH - sh * 0.16
+                const cY = sh - cH - sh * 0.05
 
                 const offset = i - reviewSlide
                 const x = cx + offset * (cardW + cardPad)
