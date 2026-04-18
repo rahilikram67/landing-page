@@ -4,14 +4,16 @@ import { Assets } from "pixi.js"
 import type { SceneProps } from "../../App"
 import { ASSETS } from "@/assets/manifest"
 
+const SMOOTH_EASE = "power2.inOut"
+const DOOR_OPEN_DURATION = 2.5
+const SCENE7_FADE_IN_DURATION = 1.2
+
 export function Frame7({ timeline, ctx }: SceneProps) {
     if (ctx.isMobile) return null
     return <Frame7Desktop timeline={timeline} />
 }
 
-const SMOOTH_EASE = "power2.inOut"
-const DOOR_OPEN_DURATION = 2.5
-const SCENE7_FADE_IN_DURATION = 1.2
+
 
 function Frame7Desktop({ timeline }: { timeline: GSAPTimeline }) {
     const { app } = useApplication()
