@@ -32,6 +32,7 @@ import voiceExp from "./mobile/voice-exp.png"
 import mobileBg71 from "./mobile/bg7-1.png"
 import mobileDoorLeaf from "./mobile/door-leaf.png"
 import mobileDoorPanel from "./mobile/door-panel.png"
+import mobilePerson from "./mobile/person.png"
 
 
 export const ASSETS = {
@@ -60,6 +61,7 @@ export const ASSETS = {
   doorPanel: "doorPanel",
   youWerentLost: "youWerentLost",
   justWaiting: "justWaiting",
+  person: "person",
 } as const
 
 const MOBILE_BREAKPOINT = 768
@@ -114,6 +116,7 @@ export function loadAssets() {
       { alias: ASSETS.doorPanel, src: mobileDoorPanel },
       { alias: ASSETS.youWerentLost, src: youWerentLost },
       { alias: ASSETS.justWaiting, src: justWaiting },
+      { alias: ASSETS.person, src: mobilePerson },
     ])
 
     const bundle = isMobile() ? "mobile" : "desktop"

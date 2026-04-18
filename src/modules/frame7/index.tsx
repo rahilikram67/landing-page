@@ -233,7 +233,9 @@ function Frame7Mobile({ timeline }: { timeline: GSAPTimeline }) {
             doorRotY: Math.PI,
             duration: DOOR_OPEN_DURATION,
             ease: SMOOTH_EASE,
-            onUpdate() { setDoorRotY(-proxyRef.current.doorRotY) },
+            onUpdate() { 
+                setDoorRotY(-proxyRef.current.doorRotY) 
+            },
         }, ">")
 
         timeline.to(proxyRef.current, {
@@ -270,6 +272,12 @@ function Frame7Mobile({ timeline }: { timeline: GSAPTimeline }) {
     const doorLeafH = doorLeafW * (doorLeafTex.height / doorLeafTex.width)
     const doorX = cx - doorLeafW / 2
     const doorLeafY = doorY + (doorH - doorLeafH) / 2
+
+    const personTex = Assets.get(ASSETS.person)
+    const personH = sh * 0.42
+    const personW = personH * (personTex.width / personTex.height)
+    const personX = 30
+    const personY = sh - personH - 40
 
     // Text block from Figma: x=86, y=234 in 375×812 → relative to door
     const youWerentTex = Assets.get(ASSETS.youWerentLost)
@@ -320,7 +328,7 @@ function Frame7Mobile({ timeline }: { timeline: GSAPTimeline }) {
                 anchor={{ x: 1, y: 0.5 }}
                 x={doorX + doorLeafW}
                 y={doorLeafY + doorLeafH / 2}
-                scale={{ x: doorScaleX, y: 1 }}
+                scale={{ x: doorScaleX+0.05, y: 1.03 }}
                 alpha={doorAlpha}
             />
             <pixiSprite
@@ -338,6 +346,14 @@ function Frame7Mobile({ timeline }: { timeline: GSAPTimeline }) {
                 x={jwX}
                 y={jwY}
                 alpha={textAlpha}
+            />
+            <pixiSprite
+                texture={personTex}
+                width={personW}
+                height={personH}
+                x={personX}
+                y={personY}
+                alpha={bgAlpha}
             />
         </pixiContainer>
     )
