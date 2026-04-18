@@ -16,6 +16,11 @@ import reviews from "./desktop/reviews.png"
 import reviewChip1 from "./desktop/review-chip1.png"
 import reviewChip2 from "./desktop/review-chip-2.png"
 import reviewChip3 from "./desktop/review-chip-3.png"
+import bg71 from "./desktop/bg7-1.png"
+import doorLeaf from "./desktop/door-leaf.png"
+import doorPanel from "./desktop/door-panel.png"
+import youWerentLost from "./desktop/you-werent-lost..png"
+import justWaiting from "./desktop/just-wainting.png"
 
 // mobile
 import mobileBg5 from "./mobile/bg5.png"
@@ -47,6 +52,11 @@ export const ASSETS = {
   reviewBoy2: "reviewBoy2",
   reviewGirl: "reviewGirl",
   voiceExp: "voiceExp",
+  bg71: "bg71",
+  doorLeaf: "doorLeaf",
+  doorPanel: "doorPanel",
+  youWerentLost: "youWerentLost",
+  justWaiting: "justWaiting",
 } as const
 
 const MOBILE_BREAKPOINT = 768
@@ -74,6 +84,11 @@ export function loadAssets() {
       { alias: ASSETS.reviewChip1, src: reviewChip1 },
       { alias: ASSETS.reviewChip2, src: reviewChip2 },
       { alias: ASSETS.reviewChip3, src: reviewChip3 },
+      { alias: ASSETS.bg71, src: bg71 },
+      { alias: ASSETS.doorLeaf, src: doorLeaf },
+      { alias: ASSETS.doorPanel, src: doorPanel },
+      { alias: ASSETS.youWerentLost, src: youWerentLost },
+      { alias: ASSETS.justWaiting, src: justWaiting },
     ])
 
     Assets.addBundle("mobile", [
