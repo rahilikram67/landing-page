@@ -70,14 +70,15 @@ function Frame7Desktop({ timeline }: { timeline: GSAPTimeline }) {
     const doorPanelW = doorH * (doorPanelTex.width / doorPanelTex.height)
     const doorPanelX = cx - doorPanelW / 2
 
-    // Door leaf is inset inside the panel — derive its size from panel dims
-    // so it never overflows the border, regardless of texture aspect ratios
+    // Door leaf fits inside the panel with a proportional inset on all sides.
+    // leafInset absorbs the combined *0.92 scale + pixel offset that was needed
+    // (doorPanelW * 0.115 ≈ (1 - 0.84*0.92) / 2 of panel width per side).
     const doorLeafTex = Assets.get(ASSETS.doorLeaf)
-    const inset = doorPanelW * 0.08          // 8% inset on each side
-    const doorLeafW = doorPanelW - inset * 2
+    const leafInset = doorPanelW * 0.115
+    const doorLeafW = doorPanelW - leafInset * 2
     const doorLeafH = doorLeafW * (doorLeafTex.height / doorLeafTex.width)
-    const doorX = cx - doorLeafW / 2
-    const doorLeafY = doorY + (doorH - doorLeafH) / 2  // vertically centered inside panel
+    const doorX = cx - doorLeafW / 2                    // always centered
+    const doorLeafY = doorY + (doorH - doorLeafH) / 2  // always centered
 
 
 
@@ -118,10 +119,10 @@ function Frame7Desktop({ timeline }: { timeline: GSAPTimeline }) {
             {/* Door leaf (inner fill) — packed inside the panel */}
             <pixiSprite
                 texture={doorLeafTex}
-                width={doorLeafW*0.92}
-                height={doorLeafH*0.92}
-                x={doorX+10}
-                y={doorLeafY+20}
+                width={doorLeafW}
+                height={doorLeafH}
+                x={doorX}
+                y={doorLeafY}
                 alpha={doorAlpha}
             />
             {/* "You weren't lost." */}
