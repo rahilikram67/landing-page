@@ -67,13 +67,13 @@ function Frame6_1Mobile({ timeline }: { timeline: GSAPTimeline }) {
 
     const drawBlur = (gfx: PixiGraphics) => {
         if (!blurFilterRef.current) {
-            blurFilterRef.current = new BlurFilter({ strength: 60, quality: 5 })
+            blurFilterRef.current = new BlurFilter({ strength: 40, quality: 5 })
         }
         gfx.clear()
         gfx.moveTo(-80, sh + 80)
-        gfx.lineTo(-80, sh * 0.35)
-        gfx.bezierCurveTo(sw * 0.15, sh * 0.45, sw * 0.38, sh * 0.58, sw * 0.5, sh * 0.58)
-        gfx.bezierCurveTo(sw * 0.62, sh * 0.58, sw * 0.85, sh * 0.45, sw + 80, sh * 0.35)
+        gfx.lineTo(-80, sh - 150)
+        gfx.bezierCurveTo(sw * 0.25, sh + 20, sw * 0.5, sh + 40, sw * 0.5, sh + 40)
+        gfx.bezierCurveTo(sw * 0.5, sh + 40, sw * 0.75, sh + 20, sw + 80, sh - 150)
         gfx.lineTo(sw + 80, sh + 80)
         gfx.closePath()
         gfx.fill(0xA035D0)
