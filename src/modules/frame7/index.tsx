@@ -252,13 +252,12 @@ function Frame7Mobile({ timeline }: { timeline: GSAPTimeline }) {
     const sh = app.screen.height
     const cx = sw / 2
 
-    // Mobile Figma reference: 375 × 812
     const bgTex = Assets.get(ASSETS.bg71)
-    const bgRatio = bgTex.height / bgTex.width
-    const bgW = sw
-    const bgH = bgW * bgRatio
-    const bgX = 0
-    const bgY = sh - bgH
+    const bgScale = Math.max(sw / bgTex.width, sh / bgTex.height)
+    const bgW = bgTex.width * bgScale
+    const bgH = bgTex.height * bgScale
+    const bgX = (sw - bgW) / 2
+    const bgY = (sh - bgH) / 2
 
     const doorPanelTex = Assets.get(ASSETS.doorPanel)
     const doorH = sh * 0.42
