@@ -85,13 +85,12 @@ function Frame7Desktop({ timeline }: { timeline: GSAPTimeline }) {
     const sh = app.screen.height
     const cx = sw / 2
 
-    // Figma frame reference: 1376×900
-    // BG bleeds slightly beyond the frame: x=-25, y=-50, w=1425, h=950
     const bgTex = Assets.get(ASSETS.bg71)
-    const bgW = sw * (1425 / 1376)
-    const bgH = sh * (950 / 900)
-    const bgX = sw * (-25 / 1376)
-    const bgY = sh * (-50 / 900)
+    const bgScale = Math.max(sw / bgTex.width, sh / bgTex.height)
+    const bgW = bgTex.width * bgScale
+    const bgH = bgTex.height * bgScale
+    const bgX = (sw - bgW) / 2
+    const bgY = (sh - bgH) / 2
 
 
     const doorY = sh * 0.28
