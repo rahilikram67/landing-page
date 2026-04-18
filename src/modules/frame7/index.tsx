@@ -48,8 +48,8 @@ function Frame7Desktop({ timeline }: { timeline: GSAPTimeline }) {
             textAlpha: 1,
             duration: SCENE7_FADE_IN_DURATION,
             ease: "power2.out",
-            onUpdate() { 
-                setTextAlpha(proxyRef.current.textAlpha) 
+            onUpdate() {
+                setTextAlpha(proxyRef.current.textAlpha)
             },
         }, ">-0.3")
 
@@ -62,9 +62,8 @@ function Frame7Desktop({ timeline }: { timeline: GSAPTimeline }) {
             doorRotY: Math.PI,
             duration: DOOR_OPEN_DURATION,
             ease: SMOOTH_EASE,
-            onUpdate() { 
-                if(proxyRef.current.doorRotY<1.5) setDoorRotY(proxyRef.current.doorRotY) 
-                else setDoorRotY(-proxyRef.current.doorRotY) 
+            onUpdate() {
+                setDoorRotY(-proxyRef.current.doorRotY)
             },
         }, "doorOpenStart")
 
@@ -137,7 +136,9 @@ function Frame7Desktop({ timeline }: { timeline: GSAPTimeline }) {
     // scale.x = cos(rotY): 1 → 0 (edge-on at 90°) → -1 (mirrored at 180°)
     // skew.y peaks at midpoint to add a perspective tilt as the door swings outward
     const doorScaleX = Math.cos(doorRotY)
-    const doorSkewY = -Math.sin(doorRotY) * 0.18
+    const doorSkewY = Math.sin(doorRotY) * 0.25 // 0.18
+
+    console.log(doorRotY)
 
     return (
         <>
