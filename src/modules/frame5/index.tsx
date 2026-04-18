@@ -31,7 +31,7 @@ function Frame5Mobile({ timeline }: { timeline: GSAPTimeline }) {
         if (!timeline || !app.renderer) return
 
         timeline.to(proxyRef.current, {
-            slide: PLANETS.length - 1,
+            slide: PLANETS.length,
             ease: "none",
             onUpdate() {
                 setSlide(proxyRef.current.slide)
@@ -130,6 +130,26 @@ function Frame5Mobile({ timeline }: { timeline: GSAPTimeline }) {
                     </pixiContainer>
                 )
             })}
+            {(() => {
+                const btTex = Assets.get(ASSETS.circleBottomText)
+                const offset = PLANETS.length - slide
+                const x = cx + offset * sw
+                const dist = Math.abs(offset)
+                const slideAlpha = Math.max(0, 1 - dist * 1.5)
+                const alpha = slideAlpha * fadeOut
+                const btW = sw * 0.85
+                const btH = btW * (btTex.height / btTex.width)
+                return (
+                    <pixiSprite
+                        texture={btTex}
+                        width={btW}
+                        height={btH}
+                        x={x - btW / 2}
+                        y={planetCy * 1.2 - btH / 2}
+                        alpha={alpha}
+                    />
+                )
+            })()}
         </>
     )
 }
