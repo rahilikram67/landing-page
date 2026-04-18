@@ -15,12 +15,13 @@ const SCENE7_FADE_IN_DURATION = 1.2
 
 function Frame7Desktop({ timeline }: { timeline: GSAPTimeline }) {
     const { app } = useApplication()
-    // doorScaleX starts at 1 (visible) — only animates after the door has faded in
-    const proxyRef = useRef({ bgAlpha: 0, doorAlpha: 0, textAlpha: 0, doorScaleX: 1, textYShift: 0 })
+    // doorRotY = simulated rotateY in radians, 0 (closed/facing viewer) → PI (open/180° flipped).
+    // scale.x derived as cos(doorRotY) → sweeps 1 → 0 → -1 (edge-on at midpoint, mirrored at end).
+    const proxyRef = useRef({ bgAlpha: 0, doorAlpha: 0, textAlpha: 0, doorRotY: 0, textYShift: 0 })
     const [bgAlpha, setBgAlpha] = useState(0)
     const [doorAlpha, setDoorAlpha] = useState(0)
     const [textAlpha, setTextAlpha] = useState(0)
-    const [doorScaleX, setDoorScaleX] = useState(1)
+    const [doorRotY, setDoorRotY] = useState(0)
     const [textYShift, setTextYShift] = useState(0)
 
     useEffect(() => {
@@ -56,10 +57,10 @@ function Frame7Desktop({ timeline }: { timeline: GSAPTimeline }) {
         timeline.addLabel("doorOpenStart", ">")
 
         timeline.to(proxyRef.current, {
-            doorScaleX: 0,
+            doorRotY: Math.PI,
             duration: DOOR_OPEN_DURATION,
             ease: SMOOTH_EASE,
-            onUpdate() { setDoorScaleX(proxyRef.current.doorScaleX) },
+            onUpdate() { setDoorRotY(proxyRef.current.doorRotY) },
         }, "doorOpenStart")
 
         timeline.to(proxyRef.current, {
@@ -127,6 +128,12 @@ function Frame7Desktop({ timeline }: { timeline: GSAPTimeline }) {
     const textBlockH = (jwY + jwH) - youY
     const textOffset = textYShift * textBlockH * 1.2
 
+    // Faked 3D door rotation (PixiJS is 2D — no real rotateY).
+    // scale.x = cos(rotY): 1 → 0 (edge-on at 90°) → -1 (mirrored at 180°)
+    // skew.y peaks at midpoint to add a perspective tilt as the door swings outward
+    const doorScaleX = Math.cos(doorRotY)
+    const doorSkewY = Math.sin(doorRotY) * 0.18
+
     return (
         <>
             {/* Background scene */}
@@ -147,8 +154,10 @@ function Frame7Desktop({ timeline }: { timeline: GSAPTimeline }) {
                 y={doorY}
                 alpha={doorAlpha}
             />
-            {/* Door leaf — anchor at right edge simulates hinge (transformOrigin: right center).
-                scaleX collapses left→right as the door swings open (rotateY equivalent). */}
+            {/* Door leaf — faked 3D rotateY around the right hinge.
+                anchor right-center = transformOrigin: right center.
+                scale.x = cos(rotY) sweeps 1 → 0 → -1, mirroring the door at 180°.
+                skew.y adds perspective tilt so the door appears to swing OUT toward the viewer. */}
             <pixiSprite
                 texture={doorLeafTex}
                 width={doorLeafW}
@@ -157,6 +166,7 @@ function Frame7Desktop({ timeline }: { timeline: GSAPTimeline }) {
                 x={doorX + doorLeafW}
                 y={doorLeafY + doorLeafH / 2}
                 scale={{ x: doorScaleX, y: 1 }}
+                skew={{ x: 0, y: doorSkewY }}
                 alpha={doorAlpha}
             />
             {/* "You weren't lost." — floats up with door open (y: '-120%' equivalent) */}

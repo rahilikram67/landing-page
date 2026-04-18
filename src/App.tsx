@@ -32,8 +32,8 @@ const SCENES: ComponentType<SceneProps>[] = [
 ]
 
 // 100% scroll height per scene, plus a base 100% for the initial view
-const DESKTOP_SCROLL = `+=${SCENES.length * 80}%`
-const MOBILE_SCROLL  = `+=${SCENES.length * 50}%`
+const DESKTOP_SCROLL = `+=${SCENES.length * 100}%`
+const MOBILE_SCROLL  = `+=${SCENES.length * 70}%`
 
 function App() {
   const containerRef = useRef<HTMLDivElement>(null)
