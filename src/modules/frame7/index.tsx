@@ -84,17 +84,21 @@ function Frame7Desktop({ timeline }: { timeline: GSAPTimeline }) {
 
 
     // Texts — centered, positioned from Figma (y=150 and y=196 in 1376×900 frame)
+    // Texts float above the door panel.
+    // In Figma (doorY=252, doorH=540): "You weren't lost." is 102px above doorY (19% of doorH)
+    // and "Just waiting" is 56px above doorY (10% of doorH). Expressing as doorH fractions
+    // keeps the gap proportional at any canvas size / aspect ratio.
     const youWerentTex = Assets.get(ASSETS.youWerentLost)
-    const youW = sw * (436 / 1376)
+    const youW = sw * 0.317
     const youH = youW * (youWerentTex.height / youWerentTex.width)
     const youX = cx - youW / 2
-    const youY = sh * (150 / 900)
+    const youY = doorY - doorH * 0.3
 
     const justWaitingTex = Assets.get(ASSETS.justWaiting)
-    const jwW = sw * (503 / 1376)
+    const jwW = sw * 0.366
     const jwH = jwW * (justWaitingTex.height / justWaitingTex.width)
     const jwX = cx - jwW / 2
-    const jwY = sh * (196 / 900)
+    const jwY = doorY - doorH * 0.20
 
     return (
         <>
