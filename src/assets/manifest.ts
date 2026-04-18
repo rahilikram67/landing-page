@@ -13,6 +13,7 @@ import circle from "./desktop/circle.png"
 import circleBottomText from "./desktop/circle-bottom-text.png"
 import divider from "./desktop/divider.png"
 import reviews from "./desktop/reviews.png"
+import pinkBlurBottom from "./desktop/pink-blur-bottom.png"
 // mobile
 import mobileBg5 from "./mobile/bg5.png"
 import mobileCircleBottomText from "./mobile/circle-bottom-text.png"
@@ -34,6 +35,7 @@ export const ASSETS = {
   circleBottomText: "circleBottomText",
   divider: "divider",
   reviews: "reviews",
+  pinkBlurBottom: "pinkBlurBottom",
   reviewBoy: "reviewBoy",
   reviewBoy2: "reviewBoy2",
   reviewGirl: "reviewGirl",
@@ -62,6 +64,7 @@ export function loadAssets() {
       { alias: ASSETS.circleBottomText, src: circleBottomText },
       { alias: ASSETS.divider, src: divider },
       { alias: ASSETS.reviews, src: reviews },
+      { alias: ASSETS.pinkBlurBottom, src: pinkBlurBottom },
     ])
 
     Assets.addBundle("mobile", [

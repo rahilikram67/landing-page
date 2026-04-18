@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from "react"
 import { useApplication } from "@pixi/react"
-import { Assets, FillGradient, Graphics as PixiGraphics, BlurFilter } from "pixi.js"
+import { Assets } from "pixi.js"
 import type { SceneProps } from "../../App"
 import { ASSETS } from "@/assets/manifest"
 
@@ -104,8 +104,6 @@ function Frame6_1Mobile({ timeline }: { timeline: GSAPTimeline }) {
 function Frame6_1Desktop({ timeline }: { timeline: GSAPTimeline }) {
     const { app } = useApplication()
     const proxyRef = useRef({ textAlpha: 0, dividerAlpha: 0, reviewsAlpha: 0, blurAlpha: 0 })
-    const blurGfxRef = useRef<PixiGraphics | null>(null)
-    const blurFilterRef = useRef<BlurFilter | null>(null)
     const [textAlpha, setTextAlpha] = useState(0)
     const [dividerAlpha, setDividerAlpha] = useState(0)
     const [reviewsAlpha, setReviewsAlpha] = useState(0)
@@ -144,42 +142,17 @@ function Frame6_1Desktop({ timeline }: { timeline: GSAPTimeline }) {
         }, ">")
     }, [timeline, app.renderer])
 
-    const drawBlur = (gfx: PixiGraphics) => {
-        blurGfxRef.current = gfx
-        if (!app.renderer) return
-
-        const sw = app.screen.width
-        const sh = app.screen.height
-
-        // ellipse anchored bottom-right, bleeds off edges — matches Figma layout
-        const rx = sw * 0.8
-        const ry = sh * 0.75
-        const ecx = sw - rx * 0.25
-        const ecy = sh - ry * 0.1
-
-        const gradient = new FillGradient(ecx, ecy - ry, ecx, ecy + ry)
-        gradient.addColorStop(0, 0xd9d9d9)
-        gradient.addColorStop(1, 0x7e26be)
-
-        gfx.clear()
-        gfx.ellipse(ecx, ecy, rx, ry)
-        gfx.fill(gradient)
-
-        if (!blurFilterRef.current) {
-            blurFilterRef.current = new BlurFilter({ strength: 80, quality: 4 })
-        }
-        gfx.filters = [blurFilterRef.current]
-    }
-
     if (!app.renderer) return null
 
     const sw = app.screen.width
     const sh = app.screen.height
     const cx = sw / 2
 
+    const blurTex = Assets.get(ASSETS.pinkBlurBottom)
     const bottomTextTex = Assets.get(ASSETS.circleBottomText)
     const dividerTex = Assets.get(ASSETS.divider)
     const reviewsTex = Assets.get(ASSETS.reviews)
+    
 
     const btW = sw * 0.5
     const btH = btW * (bottomTextTex.height / bottomTextTex.width)
@@ -195,8 +168,15 @@ function Frame6_1Desktop({ timeline }: { timeline: GSAPTimeline }) {
 
     return (
         <>
-            {/* blur ellipse behind all content */}
-            <pixiGraphics draw={drawBlur} alpha={blurAlpha} />
+            {/* blur PNG behind all content, covering full canvas height */}
+            <pixiSprite
+                texture={blurTex}
+                width={app.screen.width}
+                height={app.screen.height}
+                x={0}
+                y={0}
+                alpha={blurAlpha}
+            />
             <pixiSprite
                 texture={bottomTextTex}
                 width={btW}
