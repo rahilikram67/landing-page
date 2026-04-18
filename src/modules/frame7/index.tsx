@@ -266,11 +266,12 @@ function Frame7Mobile({ timeline }: { timeline: GSAPTimeline }) {
     const doorY = sh * 0.3
 
     const doorLeafTex = Assets.get(ASSETS.doorLeaf)
-    // const insetXRatio = (doorPanelTex.width - doorLeafTex.width) / 2 / doorPanelTex.width
-    // const insetYRatio = (doorPanelTex.height - doorLeafTex.height) / 2 / doorPanelTex.height
-    const doorLeafW = doorPanelW*1.1
-    const doorLeafH = doorH * 1.1
-    
+    const insetXRatio = (doorPanelTex.width - doorLeafTex.width) / 2 / doorPanelTex.width
+    const insetYRatio = (doorPanelTex.height - doorLeafTex.height) / 2 / doorPanelTex.height
+    const doorLeafW = doorPanelW * (1 - insetXRatio * 2)
+    const doorLeafH = doorH * (1 - insetYRatio * 2)
+    const hingeX = doorPanelW * (1 - insetXRatio)
+    const hingeY = doorH * insetYRatio + doorLeafH / 2
 
     const personTex = Assets.get(ASSETS.person)
     const personH = sh * 0.42
@@ -318,23 +319,15 @@ function Frame7Mobile({ timeline }: { timeline: GSAPTimeline }) {
                     width={doorPanelW}
                     height={doorH}
                 />
-                <pixiSprite
-                    texture={doorLeafTex}
-                    width={doorPanelW*0.76}
-                    height={doorH*0.86}
-                    x={25}
-                    y={25}
-                    scale={{ x: 1.14, y: 1.14 }}
-                />
-                {/* <pixiSprite
-                    texture={doorLeafTex}
-                    width={doorLeafW}
-                    height={doorLeafH}
-                    anchor={{ x: 1, y: 0.5 }}
-                    x={doorPanelX}
-                    y={doorY}
-                    scale={{ x: doorScaleX, y: 1 }}
-                /> */}
+                <pixiContainer x={hingeX} y={hingeY} scale={{ x: doorScaleX, y: 1 }}>
+                    <pixiSprite
+                        texture={doorLeafTex}
+                        width={doorLeafW}
+                        height={doorLeafH}
+                        x={-doorLeafW}
+                        y={-doorLeafH / 2}
+                    />
+                </pixiContainer>
             </pixiContainer>
             <pixiSprite
                 texture={youWerentTex}
