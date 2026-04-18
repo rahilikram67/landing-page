@@ -62,18 +62,22 @@ function Frame7Desktop({ timeline }: { timeline: GSAPTimeline }) {
     const bgY = sh * (-50 / 900)
 
 
-    // Figma visual: door spans from ~y=4% to y=93% of frame, ~21% wide
-    const doorH = sh * 0.6
-    // Door panel (border frame) — same bounds as leaf, layered on top
+    const doorY = sh * 0.28
+
+    // Door panel sets the outer bounding box
     const doorPanelTex = Assets.get(ASSETS.doorPanel)
+    const doorH = sh * 0.6
     const doorPanelW = doorH * (doorPanelTex.width / doorPanelTex.height)
     const doorPanelX = cx - doorPanelW / 2
-    const doorY = sh * 0.28
-    // Door leaf (filled blue panel) — centered, tall
-    const doorLeafTex = Assets.get(ASSETS.doorLeaf)
 
-    const doorLeafW = doorH * (doorLeafTex.width / doorLeafTex.height)
+    // Door leaf is inset inside the panel — derive its size from panel dims
+    // so it never overflows the border, regardless of texture aspect ratios
+    const doorLeafTex = Assets.get(ASSETS.doorLeaf)
+    const inset = doorPanelW * 0.08          // 8% inset on each side
+    const doorLeafW = doorPanelW - inset * 2
+    const doorLeafH = doorLeafW * (doorLeafTex.height / doorLeafTex.width)
     const doorX = cx - doorLeafW / 2
+    const doorLeafY = doorY + (doorH - doorLeafH) / 2  // vertically centered inside panel
 
 
 
@@ -114,10 +118,10 @@ function Frame7Desktop({ timeline }: { timeline: GSAPTimeline }) {
             {/* Door leaf (inner fill) — packed inside the panel */}
             <pixiSprite
                 texture={doorLeafTex}
-                width={doorLeafW}
-                height={doorH}
-                x={doorX}
-                y={doorY}
+                width={doorLeafW*0.92}
+                height={doorLeafH*0.92}
+                x={doorX+10}
+                y={doorLeafY+20}
                 alpha={doorAlpha}
             />
             {/* "You weren't lost." */}
