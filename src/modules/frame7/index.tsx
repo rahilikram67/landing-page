@@ -7,6 +7,8 @@ import { ASSETS } from "@/assets/manifest"
 const SMOOTH_EASE = "power2.inOut"
 const DOOR_OPEN_DURATION = 2.5
 const SCENE7_FADE_IN_DURATION = 1.2
+const LEAF_EDGE_OVERSHOOT_X = 0.05
+const LEAF_OVERSCALE_Y = 1.03
 
 export function Frame7({ timeline, ctx }: SceneProps) {
     if (ctx.isMobile) return <Frame7Mobile timeline={timeline} />
@@ -328,7 +330,7 @@ function Frame7Mobile({ timeline }: { timeline: GSAPTimeline }) {
                 anchor={{ x: 1, y: 0.5 }}
                 x={doorX + doorLeafW}
                 y={doorLeafY + doorLeafH / 2}
-                scale={{ x: doorScaleX+0.05, y: 1.03 }}
+                scale={{ x: doorScaleX + LEAF_EDGE_OVERSHOOT_X, y: LEAF_OVERSCALE_Y }}
                 alpha={doorAlpha}
             />
             <pixiSprite
