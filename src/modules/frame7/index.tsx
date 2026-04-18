@@ -60,7 +60,9 @@ function Frame7Desktop({ timeline }: { timeline: GSAPTimeline }) {
             doorRotY: Math.PI,
             duration: DOOR_OPEN_DURATION,
             ease: SMOOTH_EASE,
-            onUpdate() { setDoorRotY(proxyRef.current.doorRotY) },
+            onUpdate() { 
+                setDoorRotY(proxyRef.current.doorRotY) 
+            },
         }, "doorOpenStart")
 
         timeline.to(proxyRef.current, {
