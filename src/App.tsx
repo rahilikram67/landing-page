@@ -53,7 +53,7 @@ function App() {
           scrollTrigger: {
             trigger: "#scroll-container",
             start: "top top",
-            end: isDesktop ? "+=700%" : "+=500%",
+            end: isDesktop ? "+=500%" : "+=300%",
             pin: true,
             scrub: 1,
           },
