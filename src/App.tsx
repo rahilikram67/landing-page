@@ -5,9 +5,9 @@ import { Application, extend } from "@pixi/react"
 import gsap from "gsap"
 import { ScrollTrigger } from "gsap/ScrollTrigger"
 import { loadAssets } from "./assets/manifest"
-import { Container, Sprite } from "pixi.js"
+import { Container, Sprite, Graphics } from "pixi.js"
 
-extend({ Sprite, Container })
+extend({ Sprite, Container, Graphics })
 
 gsap.registerPlugin(ScrollTrigger)
 

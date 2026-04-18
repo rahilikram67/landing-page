@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from "react"
 import { useApplication } from "@pixi/react"
-import { Assets } from "pixi.js"
+import { Assets, FillGradient, Graphics as PixiGraphics, BlurFilter } from "pixi.js"
 import type { SceneProps } from "../../App"
 import { ASSETS } from "@/assets/manifest"
 
@@ -103,10 +103,13 @@ function Frame6_1Mobile({ timeline }: { timeline: GSAPTimeline }) {
 
 function Frame6_1Desktop({ timeline }: { timeline: GSAPTimeline }) {
     const { app } = useApplication()
-    const proxyRef = useRef({ textAlpha: 0, dividerAlpha: 0, reviewsAlpha: 0 })
+    const proxyRef = useRef({ textAlpha: 0, dividerAlpha: 0, reviewsAlpha: 0, blurAlpha: 0 })
+    const blurGfxRef = useRef<PixiGraphics | null>(null)
+    const blurFilterRef = useRef<BlurFilter | null>(null)
     const [textAlpha, setTextAlpha] = useState(0)
     const [dividerAlpha, setDividerAlpha] = useState(0)
     const [reviewsAlpha, setReviewsAlpha] = useState(0)
+    const [blurAlpha, setBlurAlpha] = useState(0)
 
     useEffect(() => {
         if (!timeline || !app.renderer) return
@@ -117,22 +120,56 @@ function Frame6_1Desktop({ timeline }: { timeline: GSAPTimeline }) {
             onUpdate() {
                 setTextAlpha(proxyRef.current.textAlpha)
             },
-        },">")
+        }, ">")
         timeline.to(proxyRef.current, {
             dividerAlpha: 1,
             ease: "power1.out",
             onUpdate() {
                 setDividerAlpha(proxyRef.current.dividerAlpha)
             },
-        }, "=-0.5")
+        }, ">-0.5")
         timeline.to(proxyRef.current, {
             reviewsAlpha: 1,
             ease: "power1.out",
             onUpdate() {
                 setReviewsAlpha(proxyRef.current.reviewsAlpha)
             },
-        }, "=-0.3")
+        }, ">-0.3")
+        timeline.to(proxyRef.current, {
+            blurAlpha: 0.85,
+            ease: "power2.out",
+            onUpdate() {
+                setBlurAlpha(proxyRef.current.blurAlpha)
+            },
+        }, ">")
     }, [timeline, app.renderer])
+
+    const drawBlur = (gfx: PixiGraphics) => {
+        blurGfxRef.current = gfx
+        if (!app.renderer) return
+
+        const sw = app.screen.width
+        const sh = app.screen.height
+
+        // ellipse anchored bottom-right, bleeds off edges — matches Figma layout
+        const rx = sw * 0.8
+        const ry = sh * 0.75
+        const ecx = sw - rx * 0.25
+        const ecy = sh - ry * 0.1
+
+        const gradient = new FillGradient(ecx, ecy - ry, ecx, ecy + ry)
+        gradient.addColorStop(0, 0xd9d9d9)
+        gradient.addColorStop(1, 0x7e26be)
+
+        gfx.clear()
+        gfx.ellipse(ecx, ecy, rx, ry)
+        gfx.fill(gradient)
+
+        if (!blurFilterRef.current) {
+            blurFilterRef.current = new BlurFilter({ strength: 80, quality: 4 })
+        }
+        gfx.filters = [blurFilterRef.current]
+    }
 
     if (!app.renderer) return null
 
@@ -158,6 +195,8 @@ function Frame6_1Desktop({ timeline }: { timeline: GSAPTimeline }) {
 
     return (
         <>
+            {/* blur ellipse behind all content */}
+            <pixiGraphics draw={drawBlur} alpha={blurAlpha} />
             <pixiSprite
                 texture={bottomTextTex}
                 width={btW}

@@ -13,7 +13,6 @@ import circle from "./desktop/circle.png"
 import circleBottomText from "./desktop/circle-bottom-text.png"
 import divider from "./desktop/divider.png"
 import reviews from "./desktop/reviews.png"
-
 // mobile
 import mobileBg5 from "./mobile/bg5.png"
 import mobileCircleBottomText from "./mobile/circle-bottom-text.png"
