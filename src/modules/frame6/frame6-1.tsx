@@ -58,11 +58,11 @@ function Frame6_1Desktop({ timeline }: { timeline: GSAPTimeline }) {
 
     const divW = sw * 0.8
     const divH = divW * (dividerTex.height / dividerTex.width)
-    const divY = btY + btH + sh * 0.15
+    const divY = sh / 2 - divH / 2
 
     const revW = sw * 0.82
     const revH = revW * (reviewsTex.height / reviewsTex.width)
-    const revY = divY + divH + sh * 0.15
+    const revY = sh - revH - 20
 
     return (
         <>
