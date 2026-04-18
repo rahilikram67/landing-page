@@ -17,6 +17,10 @@ import reviews from "./desktop/reviews.png"
 // mobile
 import mobileBg5 from "./mobile/bg5.png"
 import mobileCircleBottomText from "./mobile/circle-bottom-text.png"
+import reviewBoy from "./mobile/review-boy.png"
+import reviewBoy2 from "./mobile/review-boy2.png"
+import reviewGirl from "./mobile/review-girl.png"
+import voiceExp from "./mobile/voice-exp.png"
 
 
 export const ASSETS = {
@@ -31,6 +35,10 @@ export const ASSETS = {
   circleBottomText: "circleBottomText",
   divider: "divider",
   reviews: "reviews",
+  reviewBoy: "reviewBoy",
+  reviewBoy2: "reviewBoy2",
+  reviewGirl: "reviewGirl",
+  voiceExp: "voiceExp",
 } as const
 
 const MOBILE_BREAKPOINT = 768
@@ -68,6 +76,10 @@ export function loadAssets() {
       { alias: ASSETS.beigePlanetText, src: beigePlanetText },
       { alias: ASSETS.circleBottomText, src: mobileCircleBottomText },
       { alias: ASSETS.divider, src: divider },
+      { alias: ASSETS.reviewBoy, src: reviewBoy },
+      { alias: ASSETS.reviewBoy2, src: reviewBoy2 },
+      { alias: ASSETS.reviewGirl, src: reviewGirl },
+      { alias: ASSETS.voiceExp, src: voiceExp },
     ])
 
     const bundle = isMobile() ? "mobile" : "desktop"
