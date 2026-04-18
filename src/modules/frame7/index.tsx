@@ -7,8 +7,6 @@ import { ASSETS } from "@/assets/manifest"
 const SMOOTH_EASE = "power2.inOut"
 const DOOR_OPEN_DURATION = 2.5
 const SCENE7_FADE_IN_DURATION = 1.2
-const LEAF_EDGE_OVERSHOOT_X = 0.05
-const LEAF_OVERSCALE_Y = 1.03
 
 export function Frame7({ timeline, ctx }: SceneProps) {
     if (ctx.isMobile) return <Frame7Mobile timeline={timeline} />
@@ -269,11 +267,12 @@ function Frame7Mobile({ timeline }: { timeline: GSAPTimeline }) {
     const doorY = sh * 0.3
 
     const doorLeafTex = Assets.get(ASSETS.doorLeaf)
-    const leafInset = doorPanelW * 0.115
-    const doorLeafW = doorPanelW - leafInset * 2
-    const doorLeafH = doorLeafW * (doorLeafTex.height / doorLeafTex.width)
+    const insetXRatio = (doorPanelTex.width - doorLeafTex.width) / 2 / doorPanelTex.width
+    const insetYRatio = (doorPanelTex.height - doorLeafTex.height) / 2 / doorPanelTex.height
+    const doorLeafW = doorPanelW * (1 - insetXRatio * 2)
+    const doorLeafH = doorH * (1 - insetYRatio * 2)
     const doorX = cx - doorLeafW / 2
-    const doorLeafY = doorY + (doorH - doorLeafH) / 2
+    const doorLeafY = doorY + doorH * insetYRatio
 
     const personTex = Assets.get(ASSETS.person)
     const personH = sh * 0.42
@@ -330,7 +329,7 @@ function Frame7Mobile({ timeline }: { timeline: GSAPTimeline }) {
                 anchor={{ x: 1, y: 0.5 }}
                 x={doorX + doorLeafW}
                 y={doorLeafY + doorLeafH / 2}
-                scale={{ x: doorScaleX + LEAF_EDGE_OVERSHOOT_X, y: LEAF_OVERSCALE_Y }}
+                scale={{ x: doorScaleX+0.04, y: 1.03 }}
                 alpha={doorAlpha}
             />
             <pixiSprite
