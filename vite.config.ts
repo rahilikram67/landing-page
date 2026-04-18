@@ -16,6 +16,7 @@ export default defineConfig({
   },
   server: {
     port: 3000,
+    allowedHosts:['dvds-halifax-features-obj.trycloudflare.com'],
   },
 })
 

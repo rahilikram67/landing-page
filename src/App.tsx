@@ -92,7 +92,7 @@ function App() {
           backgroundAlpha={0}
           antialias
           autoStart
-          className="absolute inset-0 size-full"
+          className="absolute inset-0 size-full pointer-events-none"
         >
           <pixiContainer>
             <Frame5 timeline={sceneProps.timeline} ctx={sceneProps.ctx} />
