@@ -67,6 +67,7 @@ export function loadAssets() {
       { alias: ASSETS.beigePlanet, src: beigePlanet },
       { alias: ASSETS.beigePlanetText, src: beigePlanetText },
       { alias: ASSETS.circleBottomText, src: mobileCircleBottomText },
+      { alias: ASSETS.divider, src: divider },
     ])
 
     const bundle = isMobile() ? "mobile" : "desktop"
