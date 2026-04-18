@@ -2,6 +2,7 @@ import { useEffect, useRef, useState } from "react"
 import { Frame5 } from "./modules/frame5"
 import { Frame6 } from "./modules/frame6"
 import { Application, extend } from "@pixi/react"
+import type { ComponentType } from "react"
 import gsap from "gsap"
 import { ScrollTrigger } from "gsap/ScrollTrigger"
 import { loadAssets } from "./assets/manifest"
@@ -22,6 +23,15 @@ export interface SceneProps {
   timeline: GSAPTimeline
   ctx: SceneCtx
 }
+
+const SCENES: ComponentType<SceneProps>[] = [
+  Frame5,
+  Frame6,
+]
+
+// 100% scroll height per scene, plus a base 100% for the initial view
+const DESKTOP_SCROLL = `+=${SCENES.length * 80}%`
+const MOBILE_SCROLL  = `+=${SCENES.length * 50}%`
 
 function App() {
   const containerRef = useRef<HTMLDivElement>(null)
@@ -53,7 +63,7 @@ function App() {
           scrollTrigger: {
             trigger: "#scroll-container",
             start: "top top",
-            end: isDesktop ? "+=500%" : "+=300%",
+            end: isDesktop ? DESKTOP_SCROLL : MOBILE_SCROLL,
             pin: true,
             scrub: 1,
           },
@@ -95,8 +105,9 @@ function App() {
           className="absolute inset-0 size-full pointer-events-none"
         >
           <pixiContainer>
-            <Frame5 timeline={sceneProps.timeline} ctx={sceneProps.ctx} />
-            <Frame6 timeline={sceneProps.timeline} ctx={sceneProps.ctx} />
+            {SCENES.map((Scene, i) => (
+              <Scene key={i} timeline={sceneProps.timeline} ctx={sceneProps.ctx} />
+            ))}
           </pixiContainer>
         </Application>}
       </div>
