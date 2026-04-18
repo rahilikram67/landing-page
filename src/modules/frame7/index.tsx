@@ -266,12 +266,11 @@ function Frame7Mobile({ timeline }: { timeline: GSAPTimeline }) {
     const doorY = sh * 0.3
 
     const doorLeafTex = Assets.get(ASSETS.doorLeaf)
-    const insetXRatio = (doorPanelTex.width - doorLeafTex.width) / 2 / doorPanelTex.width
-    const insetYRatio = (doorPanelTex.height - doorLeafTex.height) / 2 / doorPanelTex.height
-    const doorLeafW = doorPanelW * (1 - insetXRatio * 2)
-    const doorLeafH = doorH * (1 - insetYRatio * 2)
-    const doorX = cx - doorLeafW / 2
-    const doorLeafY = doorY + doorH * insetYRatio
+    // const insetXRatio = (doorPanelTex.width - doorLeafTex.width) / 2 / doorPanelTex.width
+    // const insetYRatio = (doorPanelTex.height - doorLeafTex.height) / 2 / doorPanelTex.height
+    const doorLeafW = doorPanelW*1.1
+    const doorLeafH = doorH * 1.1
+    
 
     const personTex = Assets.get(ASSETS.person)
     const personH = sh * 0.42
@@ -313,24 +312,30 @@ function Frame7Mobile({ timeline }: { timeline: GSAPTimeline }) {
                 y={bgY}
                 alpha={bgAlpha}
             />
-            <pixiSprite
-                texture={doorPanelTex}
-                width={doorPanelW}
-                height={doorH}
-                x={doorPanelX}
-                y={doorY}
-                alpha={doorAlpha}
-            />
-            <pixiSprite
-                texture={doorLeafTex}
-                width={doorLeafW}
-                height={doorLeafH}
-                anchor={{ x: 1, y: 0.5 }}
-                x={doorX + doorLeafW}
-                y={doorLeafY + doorLeafH / 2}
-                scale={{ x: doorScaleX+0.04, y: 1.03 }}
-                alpha={doorAlpha}
-            />
+            <pixiContainer x={doorPanelX} y={doorY} alpha={doorAlpha}>
+                <pixiSprite
+                    texture={doorPanelTex}
+                    width={doorPanelW}
+                    height={doorH}
+                />
+                <pixiSprite
+                    texture={doorLeafTex}
+                    width={doorPanelW*0.76}
+                    height={doorH*0.86}
+                    x={25}
+                    y={25}
+                    scale={{ x: 1.14, y: 1.14 }}
+                />
+                {/* <pixiSprite
+                    texture={doorLeafTex}
+                    width={doorLeafW}
+                    height={doorLeafH}
+                    anchor={{ x: 1, y: 0.5 }}
+                    x={doorPanelX}
+                    y={doorY}
+                    scale={{ x: doorScaleX, y: 1 }}
+                /> */}
+            </pixiContainer>
             <pixiSprite
                 texture={youWerentTex}
                 width={youW}
