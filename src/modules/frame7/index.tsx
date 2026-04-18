@@ -61,18 +61,22 @@ function Frame7Desktop({ timeline }: { timeline: GSAPTimeline }) {
     const bgX = sw * (-25 / 1376)
     const bgY = sh * (-50 / 900)
 
-    // Door leaf (filled blue panel) — centered, tall
-    // Figma visual: door spans from ~y=4% to y=93% of frame, ~21% wide
-    const doorLeafTex = Assets.get(ASSETS.doorLeaf)
-    const doorH = sh * 0.5
-    const doorLeafW = doorH * (doorLeafTex.width / doorLeafTex.height)
-    const doorX = cx - doorLeafW / 2
 
+    // Figma visual: door spans from ~y=4% to y=93% of frame, ~21% wide
+    const doorH = sh * 0.6
     // Door panel (border frame) — same bounds as leaf, layered on top
     const doorPanelTex = Assets.get(ASSETS.doorPanel)
     const doorPanelW = doorH * (doorPanelTex.width / doorPanelTex.height)
     const doorPanelX = cx - doorPanelW / 2
-    const doorY = sh * 0.04
+    const doorY = sh * 0.28
+    // Door leaf (filled blue panel) — centered, tall
+    const doorLeafTex = Assets.get(ASSETS.doorLeaf)
+
+    const doorLeafW = doorH * (doorLeafTex.width / doorLeafTex.height)
+    const doorX = cx - doorLeafW / 2
+
+
+
 
     // Texts — centered, positioned from Figma (y=150 and y=196 in 1376×900 frame)
     const youWerentTex = Assets.get(ASSETS.youWerentLost)
@@ -98,21 +102,21 @@ function Frame7Desktop({ timeline }: { timeline: GSAPTimeline }) {
                 y={bgY}
                 alpha={bgAlpha}
             />
-            {/* Door leaf (filled panel) */}
-            <pixiSprite
-                texture={doorLeafTex}
-                width={doorLeafW}
-                height={doorH}
-                x={doorX}
-                y={doorY}
-                alpha={doorAlpha}
-            />
-            {/* Door panel (border frame) */}
+            {/* Door panel (outer border/glow frame) */}
             <pixiSprite
                 texture={doorPanelTex}
                 width={doorPanelW}
                 height={doorH}
                 x={doorPanelX}
+                y={doorY}
+                alpha={doorAlpha}
+            />
+            {/* Door leaf (inner fill) — packed inside the panel */}
+            <pixiSprite
+                texture={doorLeafTex}
+                width={doorLeafW}
+                height={doorH}
+                x={doorX}
                 y={doorY}
                 alpha={doorAlpha}
             />
