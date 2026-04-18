@@ -9,12 +9,19 @@ export function Frame7({ timeline, ctx }: SceneProps) {
     return <Frame7Desktop timeline={timeline} />
 }
 
+const SMOOTH_EASE = "power2.inOut"
+const DOOR_OPEN_DURATION = 2.5
+const SCENE7_FADE_IN_DURATION = 1.2
+
 function Frame7Desktop({ timeline }: { timeline: GSAPTimeline }) {
     const { app } = useApplication()
-    const proxyRef = useRef({ bgAlpha: 0, doorAlpha: 0, textAlpha: 0 })
+    // doorScaleX starts at 1 (visible) — only animates after the door has faded in
+    const proxyRef = useRef({ bgAlpha: 0, doorAlpha: 0, textAlpha: 0, doorScaleX: 1, textYShift: 0 })
     const [bgAlpha, setBgAlpha] = useState(0)
     const [doorAlpha, setDoorAlpha] = useState(0)
     const [textAlpha, setTextAlpha] = useState(0)
+    const [doorScaleX, setDoorScaleX] = useState(1)
+    const [textYShift, setTextYShift] = useState(0)
 
     useEffect(() => {
         if (!timeline || !app.renderer) return
@@ -22,29 +29,45 @@ function Frame7Desktop({ timeline }: { timeline: GSAPTimeline }) {
         // Background fades in first
         timeline.to(proxyRef.current, {
             bgAlpha: 1,
+            duration: SCENE7_FADE_IN_DURATION,
             ease: "power1.out",
-            onUpdate() {
-                setBgAlpha(proxyRef.current.bgAlpha)
-            },
+            onUpdate() { setBgAlpha(proxyRef.current.bgAlpha) },
         }, ">")
 
         // Door fades in while background is still coming in
         timeline.to(proxyRef.current, {
             doorAlpha: 1,
+            duration: SCENE7_FADE_IN_DURATION,
             ease: "power1.out",
-            onUpdate() {
-                setDoorAlpha(proxyRef.current.doorAlpha)
-            },
+            onUpdate() { setDoorAlpha(proxyRef.current.doorAlpha) },
         }, ">-0.4")
 
         // Texts fade in last
         timeline.to(proxyRef.current, {
             textAlpha: 1,
+            duration: SCENE7_FADE_IN_DURATION,
             ease: "power2.out",
-            onUpdate() {
-                setTextAlpha(proxyRef.current.textAlpha)
-            },
+            onUpdate() { setTextAlpha(proxyRef.current.textAlpha) },
         }, ">-0.3")
+
+        // --- Door open: leaf collapses from right edge (rotateY equivalent) ---
+        // and text floats up (-120% of its block height) simultaneously.
+        // textYShift is a unit value [0 → -1]; actual pixel offset is computed in render.
+        timeline.addLabel("doorOpenStart", ">")
+
+        timeline.to(proxyRef.current, {
+            doorScaleX: 0,
+            duration: DOOR_OPEN_DURATION,
+            ease: SMOOTH_EASE,
+            onUpdate() { setDoorScaleX(proxyRef.current.doorScaleX) },
+        }, "doorOpenStart")
+
+        timeline.to(proxyRef.current, {
+            textYShift: -1,
+            duration: DOOR_OPEN_DURATION,
+            ease: SMOOTH_EASE,
+            onUpdate() { setTextYShift(proxyRef.current.textYShift) },
+        }, "doorOpenStart")
     }, [timeline, app.renderer])
 
     if (!app.renderer) return null
@@ -100,6 +123,10 @@ function Frame7Desktop({ timeline }: { timeline: GSAPTimeline }) {
     const jwX = cx - jwW / 2
     const jwY = doorY - doorH * 0.20
 
+    // Text block height for the -120% shift equivalent
+    const textBlockH = (jwY + jwH) - youY
+    const textOffset = textYShift * textBlockH * 1.2
+
     return (
         <>
             {/* Background scene */}
@@ -120,22 +147,25 @@ function Frame7Desktop({ timeline }: { timeline: GSAPTimeline }) {
                 y={doorY}
                 alpha={doorAlpha}
             />
-            {/* Door leaf (inner fill) — packed inside the panel */}
+            {/* Door leaf — anchor at right edge simulates hinge (transformOrigin: right center).
+                scaleX collapses left→right as the door swings open (rotateY equivalent). */}
             <pixiSprite
                 texture={doorLeafTex}
                 width={doorLeafW}
                 height={doorLeafH}
-                x={doorX}
-                y={doorLeafY}
+                anchor={{ x: 1, y: 0.5 }}
+                x={doorX + doorLeafW}
+                y={doorLeafY + doorLeafH / 2}
+                scale={{ x: doorScaleX, y: 1 }}
                 alpha={doorAlpha}
             />
-            {/* "You weren't lost." */}
+            {/* "You weren't lost." — floats up with door open (y: '-120%' equivalent) */}
             <pixiSprite
                 texture={youWerentTex}
                 width={youW}
                 height={youH}
                 x={youX}
-                y={youY}
+                y={youY + textOffset}
                 alpha={textAlpha}
             />
             {/* "Just waiting" */}
@@ -144,7 +174,7 @@ function Frame7Desktop({ timeline }: { timeline: GSAPTimeline }) {
                 width={jwW}
                 height={jwH}
                 x={jwX}
-                y={jwY}
+                y={jwY + textOffset}
                 alpha={textAlpha}
             />
         </>
