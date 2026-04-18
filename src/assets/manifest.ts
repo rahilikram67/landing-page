@@ -29,6 +29,9 @@ import reviewBoy from "./mobile/review-boy.png"
 import reviewBoy2 from "./mobile/review-boy2.png"
 import reviewGirl from "./mobile/review-girl.png"
 import voiceExp from "./mobile/voice-exp.png"
+import mobileBg71 from "./mobile/bg7-1.png"
+import mobileDoorLeaf from "./mobile/door-leaf.png"
+import mobileDoorPanel from "./mobile/door-panel.png"
 
 
 export const ASSETS = {
@@ -106,6 +109,11 @@ export function loadAssets() {
       { alias: ASSETS.reviewBoy2, src: reviewBoy2 },
       { alias: ASSETS.reviewGirl, src: reviewGirl },
       { alias: ASSETS.voiceExp, src: voiceExp },
+      { alias: ASSETS.bg71, src: mobileBg71 },
+      { alias: ASSETS.doorLeaf, src: mobileDoorLeaf },
+      { alias: ASSETS.doorPanel, src: mobileDoorPanel },
+      { alias: ASSETS.youWerentLost, src: youWerentLost },
+      { alias: ASSETS.justWaiting, src: justWaiting },
     ])
 
     const bundle = isMobile() ? "mobile" : "desktop"
