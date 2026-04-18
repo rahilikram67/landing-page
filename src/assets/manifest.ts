@@ -8,6 +8,9 @@ import redPlanetText from "./desktop/red-planet-text.png"
 import beigePlanet from "./desktop/beige-planet.png"
 import beigePlanetText from "./desktop/beige-planet-text.png"
 import circle from "./desktop/circle.png"
+import circleBottomText from "./desktop/circle-bottom-text.png"
+import divider from "./desktop/divider.png"
+import reviews from "./desktop/reviews.png"
 
 import mobileBg5 from "./mobile/bg5.png"
 
@@ -21,6 +24,9 @@ export const ASSETS = {
   beigePlanet: "beigePlanet",
   beigePlanetText: "beigePlanetText",
   circle: "circle",
+  circleBottomText: "circleBottomText",
+  divider: "divider",
+  reviews: "reviews",
 } as const
 
 const MOBILE_BREAKPOINT = 768
@@ -42,6 +48,9 @@ export function loadAssets() {
       { alias: ASSETS.beigePlanet, src: beigePlanet },
       { alias: ASSETS.beigePlanetText, src: beigePlanetText },
       { alias: ASSETS.circle, src: circle },
+      { alias: ASSETS.circleBottomText, src: circleBottomText },
+      { alias: ASSETS.divider, src: divider },
+      { alias: ASSETS.reviews, src: reviews },
     ])
 
     Assets.addBundle("mobile", [

@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState } from "react"
 import { Frame5 } from "./modules/frame5"
+import { Frame6_1 } from "./modules/frame6/frame6-1"
 import { Application, extend } from "@pixi/react"
 import gsap from "gsap"
 import { ScrollTrigger } from "gsap/ScrollTrigger"
@@ -95,6 +96,7 @@ function App() {
         >
           <pixiContainer>
             <Frame5 timeline={sceneProps.timeline} ctx={sceneProps.ctx} />
+            <Frame6_1 timeline={sceneProps.timeline} ctx={sceneProps.ctx} />
           </pixiContainer>
         </Application>}
       </div>

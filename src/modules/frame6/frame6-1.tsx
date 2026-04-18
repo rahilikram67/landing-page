@@ -1,0 +1,95 @@
+import { useEffect, useRef, useState } from "react"
+import { useApplication } from "@pixi/react"
+import { Assets } from "pixi.js"
+import type { SceneProps } from "../../App"
+import { ASSETS } from "@/assets/manifest"
+
+export function Frame6_1({ timeline, ctx }: SceneProps) {
+    if (ctx.isMobile) return null
+    return <Frame6_1Desktop timeline={timeline} />
+}
+
+function Frame6_1Desktop({ timeline }: { timeline: GSAPTimeline }) {
+    const { app } = useApplication()
+    const proxyRef = useRef({ textAlpha: 0, dividerAlpha: 0, reviewsAlpha: 0 })
+    const [textAlpha, setTextAlpha] = useState(0)
+    const [dividerAlpha, setDividerAlpha] = useState(0)
+    const [reviewsAlpha, setReviewsAlpha] = useState(0)
+
+    useEffect(() => {
+        if (!timeline || !app.renderer) return
+
+        timeline.to(proxyRef.current, {
+            textAlpha: 1,
+            ease: "power1.out",
+            onUpdate() {
+                setTextAlpha(proxyRef.current.textAlpha)
+            },
+        },">")
+        timeline.to(proxyRef.current, {
+            dividerAlpha: 1,
+            ease: "power1.out",
+            onUpdate() {
+                setDividerAlpha(proxyRef.current.dividerAlpha)
+            },
+        }, "=-0.5")
+        timeline.to(proxyRef.current, {
+            reviewsAlpha: 1,
+            ease: "power1.out",
+            onUpdate() {
+                setReviewsAlpha(proxyRef.current.reviewsAlpha)
+            },
+        }, "=-0.3")
+    }, [timeline, app.renderer])
+
+    if (!app.renderer) return null
+
+    const sw = app.screen.width
+    const sh = app.screen.height
+    const cx = sw / 2
+
+    const bottomTextTex = Assets.get(ASSETS.circleBottomText)
+    const dividerTex = Assets.get(ASSETS.divider)
+    const reviewsTex = Assets.get(ASSETS.reviews)
+
+    const btW = sw * 0.5
+    const btH = btW * (bottomTextTex.height / bottomTextTex.width)
+    const btY = sh * 0.10
+
+    const divW = sw * 0.8
+    const divH = divW * (dividerTex.height / dividerTex.width)
+    const divY = btY + btH + sh * 0.15
+
+    const revW = sw * 0.82
+    const revH = revW * (reviewsTex.height / reviewsTex.width)
+    const revY = divY + divH + sh * 0.15
+
+    return (
+        <>
+            <pixiSprite
+                texture={bottomTextTex}
+                width={btW}
+                height={btH}
+                x={cx - btW / 2}
+                y={btY}
+                alpha={textAlpha}
+            />
+            <pixiSprite
+                texture={dividerTex}
+                width={divW}
+                height={divH}
+                x={cx - divW / 2}
+                y={divY}
+                alpha={dividerAlpha}
+            />
+            <pixiSprite
+                texture={reviewsTex}
+                width={revW}
+                height={revH}
+                x={cx - revW / 2}
+                y={revY}
+                alpha={reviewsAlpha}
+            />
+        </>
+    )
+}
