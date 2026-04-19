@@ -51,6 +51,7 @@ import mobileBg71 from "./mobile/bg71.png"
 import mobileDoorLeaf from "./mobile/door-leaf.png"
 import mobileDoorPanel from "./mobile/door-panel.png"
 import mobilePerson from "./mobile/person.png"
+import mobileBg72 from "./mobile/bg72.png"
 
 
 export const ASSETS = {
@@ -98,6 +99,7 @@ export const ASSETS = {
   iconMidjourney: "iconMidjourney",
   textPermission: "textPermission",
   textRightTools: "textRightTools",
+  mobileBg72: "mobileBg72",
 } as const
 
 const MOBILE_BREAKPOINT = 768
@@ -171,6 +173,22 @@ export function loadAssets() {
       { alias: ASSETS.youWerentLost, src: youWerentLost },
       { alias: ASSETS.justWaiting, src: justWaiting },
       { alias: ASSETS.person, src: mobilePerson },
+      { alias: ASSETS.mobileBg72, src: mobileBg72 },
+      { alias: ASSETS.textPermission, src: textPermission },
+      { alias: ASSETS.textRightTools, src: textRightTools },
+      { alias: ASSETS.floor72, src: floor72 },
+      { alias: ASSETS.lock, src: lock },
+      { alias: ASSETS.widgetCodeLeft, src: widgetCodeLeft },
+      { alias: ASSETS.widgetCodeRight, src: widgetCodeRight },
+      { alias: ASSETS.iconN8n, src: iconN8n },
+      { alias: ASSETS.iconChatgpt, src: iconChatgpt },
+      { alias: ASSETS.iconTest, src: iconTest },
+      { alias: ASSETS.iconRunway, src: iconRunway },
+      { alias: ASSETS.iconMake, src: iconMake },
+      { alias: ASSETS.iconManus, src: iconManus },
+      { alias: ASSETS.iconPoe, src: iconPoe },
+      { alias: ASSETS.iconGemini, src: iconGemini },
+      { alias: ASSETS.iconMidjourney, src: iconMidjourney },
     ])
 
     const bundle = isMobile() ? "mobile" : "desktop"
