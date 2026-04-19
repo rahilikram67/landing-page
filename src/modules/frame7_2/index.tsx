@@ -27,10 +27,10 @@ const TOOLS   = { fx: 0.2216, fy: 0.2478, fw: 0.5552 }
 
 export function Frame7_2({ timeline, ctx }: SceneProps) {
   if (ctx.isMobile) return null
-  return <Frame7_2Desktop timeline={timeline} />
+  return <Frame72Desktop timeline={timeline} />
 }
 
-function Frame7_2Desktop({ timeline }: { timeline: GSAPTimeline }) {
+function Frame72Desktop({ timeline }: { timeline: GSAPTimeline }) {
   const { app } = useApplication()
   const [, forceRender] = useReducer(x => x + 1, 0)
 
