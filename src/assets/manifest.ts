@@ -41,6 +41,7 @@ import textPermission from "./desktop/text-permission.png"
 import textRightTools from "./desktop/text-right-tools.png"
 import bg73 from "./desktop/bg73.png"
 import halfSun from "./desktop/half-sun.png"
+import boyStanding from "./desktop/boy-standing.png"
 
 
 // mobile
@@ -104,7 +105,8 @@ export const ASSETS = {
   textRightTools: "textRightTools",
   mobileBg72: "mobileBg72",
   bg73: "bg73",
-  halfSun: "halfSun"  
+  halfSun: "halfSun",
+  boyStanding: "boyStanding",
 } as const
 
 const MOBILE_BREAKPOINT = 768
@@ -157,6 +159,7 @@ export function loadAssets() {
       { alias: ASSETS.textRightTools, src: textRightTools },
       { alias: ASSETS.bg73, src: bg73 },
       { alias: ASSETS.halfSun, src: halfSun },
+      { alias: ASSETS.boyStanding, src: boyStanding },
     ])
 
     Assets.addBundle("mobile", [
