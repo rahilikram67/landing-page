@@ -5,21 +5,25 @@ import type { SceneProps } from "../../App"
 import { ASSETS } from "@/assets/manifest"
 
 const ICONS_DEF = [
-  { key: ASSETS.iconChatgpt,     fx: -11/1376, fy: 582/900, fw: 180/1376 },
-  { key: ASSETS.iconN8n,         fx: 60/1376,  fy: 418/900, fw: 97/1376  },
-  { key: ASSETS.iconTest,        fx: 151/1376, fy: 715/900, fw: 130/1376 },
-  { key: ASSETS.iconRunway,      fx: 196/1376, fy: 545/900, fw: 71/1376  },
-  { key: ASSETS.widgetCodeLeft,  fx: 260/1376, fy: 423/900, fw: 322/1376 },
-  { key: ASSETS.iconMake,        fx: 577/1376, fy: 402/900, fw: 78/1376  },
-  { key: ASSETS.lock,        fx: 557/1376, fy: 506/900, fw: 256/1376 },
-  { key: ASSETS.iconManus,       fx: 767/1376, fy: 463/900, fw: 49/1376  },
-  { key: ASSETS.widgetCodeRight, fx: 844/1376, fy: 463/900, fw: 281/1376 },
-  { key: ASSETS.iconCursor,      fx: 1025/1376, fy: 446/900, fw: 53/1376 },
-  { key: ASSETS.iconColor,       fx: 1105/1376, fy: 473/900, fw: 55/1376 },
-  { key: ASSETS.iconPoe,         fx: 1180/1376, fy: 545/900, fw: 121/1376 },
-  { key: ASSETS.iconGemini,      fx: 1259/1376, fy: 404/900, fw: 94/1376 },
-  { key: ASSETS.iconMidjourney,  fx: 1239/1376, fy: 679/900, fw: 167/1376 },
+  { key: ASSETS.iconChatgpt,     fx: -0.0080, fy: 0.6467, fw: 0.1308 },
+  { key: ASSETS.iconN8n,         fx:  0.0436, fy: 0.4644, fw: 0.0705 },
+  { key: ASSETS.iconTest,        fx:  0.1097, fy: 0.7944, fw: 0.0945 },
+  { key: ASSETS.iconRunway,      fx:  0.1424, fy: 0.6056, fw: 0.0516 },
+  { key: ASSETS.widgetCodeLeft,  fx:  0.1890, fy: 0.4700, fw: 0.2340 },
+  { key: ASSETS.iconMake,        fx:  0.4193, fy: 0.4467, fw: 0.0567 },
+  { key: ASSETS.lock,            fx:  0.4048, fy: 0.5622, fw: 0.1860 },
+  { key: ASSETS.iconManus,       fx:  0.5574, fy: 0.5144, fw: 0.0356 },
+  { key: ASSETS.widgetCodeRight, fx:  0.6134, fy: 0.5144, fw: 0.2042 },
+  { key: ASSETS.iconCursor,      fx:  0.7449, fy: 0.4956, fw: 0.0385 },
+  { key: ASSETS.iconColor,       fx:  0.8031, fy: 0.5256, fw: 0.0400 },
+  { key: ASSETS.iconPoe,         fx:  0.8576, fy: 0.6056, fw: 0.0880 },
+  { key: ASSETS.iconGemini,      fx:  0.9149, fy: 0.4489, fw: 0.0683 },
+  { key: ASSETS.iconMidjourney,  fx:  0.9007, fy: 0.7544, fw: 0.1214 },
 ] as const
+
+const FLOOR   = { fx: 0.2188, fy: 0.5989, fw: 0.5691 }
+const PERM    = { fx: 0.2807, fy: 0.2011, fw: 0.4375 }
+const TOOLS   = { fx: 0.2216, fy: 0.2478, fw: 0.5552 }
 
 export function Frame7_2({ timeline, ctx }: SceneProps) {
   if (ctx.isMobile) return null
@@ -90,49 +94,29 @@ function Frame7_2Desktop({ timeline }: { timeline: GSAPTimeline }) {
   const mw = (f: number) => f * bgW
 
   const floorTex = Assets.get(ASSETS.floor72)
-  const floorW = mw(783 / 1376)
+  const floorW = mw(FLOOR.fw)
   const floorH = floorTex.height / floorTex.width * floorW
-  const floorX = mx(301 / 1376)
-  const floorFinalY = my(539 / 900)
-  const floorY = floorFinalY + p.floorYOff * sh
+  const floorX = mx(FLOOR.fx)
+  const floorY = my(FLOOR.fy) + p.floorYOff * sh
 
   const permTex = Assets.get(ASSETS.textPermission)
-  const permW = mw(602 / 1376)
+  const permW = mw(PERM.fw)
   const permH = permTex.height / permTex.width * permW
-  const permX = mx(386 / 1376)
-  const permY = my(181 / 900)
 
   const toolsTex = Assets.get(ASSETS.textRightTools)
-  const toolsW = mw(764 / 1376)
+  const toolsW = mw(TOOLS.fw)
   const toolsH = toolsTex.height / toolsTex.width * toolsW
-  const toolsX = mx(305 / 1376)
-  const toolsY = my(223 / 900)
 
   return (
     <pixiContainer>
-      <pixiSprite
-        texture={bgTex}
-        width={bgW}
-        height={bgH}
-        x={bgX}
-        y={bgY}
-        alpha={p.bgAlpha}
-      />
-      <pixiSprite
-        texture={floorTex}
-        width={floorW}
-        height={floorH}
-        x={floorX}
-        y={floorY}
-        alpha={p.bgAlpha}
-      />
+      <pixiSprite texture={bgTex} width={bgW} height={bgH} x={bgX} y={bgY} alpha={p.bgAlpha} />
+      <pixiSprite texture={floorTex} width={floorW} height={floorH} x={floorX} y={floorY} alpha={p.bgAlpha} />
       {ICONS_DEF.map((def, i) => {
         const tex = Assets.get(def.key)
         const w = mw(def.fw)
         const h = tex.height / tex.width * w
         const x = mx(def.fx)
-        const finalY = my(def.fy)
-        const y = finalY - p.icons[i].yOff * 60
+        const y = my(def.fy) - p.icons[i].yOff * 60
         return (
           <pixiSprite
             key={def.key}
@@ -145,22 +129,8 @@ function Frame7_2Desktop({ timeline }: { timeline: GSAPTimeline }) {
           />
         )
       })}
-      <pixiSprite
-        texture={permTex}
-        width={permW}
-        height={permH}
-        x={permX}
-        y={permY}
-        alpha={p.textAlpha}
-      />
-      <pixiSprite
-        texture={toolsTex}
-        width={toolsW}
-        height={toolsH}
-        x={toolsX}
-        y={toolsY}
-        alpha={p.textAlpha}
-      />
+      <pixiSprite texture={permTex} width={permW} height={permH} x={mx(PERM.fx)} y={my(PERM.fy)} alpha={p.textAlpha} />
+      <pixiSprite texture={toolsTex} width={toolsW} height={toolsH} x={mx(TOOLS.fx)} y={my(TOOLS.fy)} alpha={p.textAlpha} />
     </pixiContainer>
   )
 }
