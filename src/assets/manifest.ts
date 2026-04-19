@@ -104,7 +104,7 @@ export const ASSETS = {
   textRightTools: "textRightTools",
   mobileBg72: "mobileBg72",
   bg73: "bg73",
-  halfSun: "halfSun",
+  halfSun: "halfSun"  
 } as const
 
 const MOBILE_BREAKPOINT = 768

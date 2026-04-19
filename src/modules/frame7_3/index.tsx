@@ -8,7 +8,7 @@ function Frame73Desktop({ timeline }: { timeline: GSAPTimeline }) {
   const { app } = useApplication()
   const [, forceRender] = useReducer(x => x + 1, 0)
 
-  const proxy = useRef({ bgAlpha: 0, sunAlpha: 0, sunY: 0 })
+  const proxy = useRef({ bgAlpha: 0, terrainAlpha: 0, sunAlpha: 0 })
 
   useEffect(() => {
     if (!timeline || !app.renderer) return
@@ -21,13 +21,19 @@ function Frame73Desktop({ timeline }: { timeline: GSAPTimeline }) {
       onUpdate: forceRender,
     }, ">")
 
-    timeline.fromTo(p, { sunY: 1 }, {
+    timeline.to(p, {
+      terrainAlpha: 1,
+      duration: 1.2,
+      ease: "power1.out",
+      onUpdate: forceRender,
+    }, "<0.35")
+
+    timeline.to(p, {
       sunAlpha: 1,
-      sunY: 0,
-      duration: 1.8,
+      duration: 1.4,
       ease: "power2.out",
       onUpdate: forceRender,
-    }, "<0.4")
+    }, "<0.5")
   }, [timeline, app.renderer])
 
   if (!app.renderer) return null
@@ -36,24 +42,25 @@ function Frame73Desktop({ timeline }: { timeline: GSAPTimeline }) {
   const sh = app.screen.height
   const p = proxy.current
 
-  const bgTex = Assets.get(ASSETS.bg73)
-  const bgScale = Math.max(sw / bgTex.width, sh / bgTex.height)
-  const bgW = bgTex.width * bgScale
-  const bgH = bgTex.height * bgScale
-  const bgX = (sw - bgW) / 2
-  const bgY = (sh - bgH) / 2
+  const fit = (tex: { width: number; height: number }) => {
+    const s = Math.max(sw / tex.width, sh / tex.height)
+    const w = tex.width * s
+    const h = tex.height * s
+    return { w, h, x: (sw - w) / 2, y: (sh - h) / 2 }
+  }
+
+  const bg = fit(Assets.get(ASSETS.bg73))
 
   const sunTex = Assets.get(ASSETS.halfSun)
-  const sunW = sw * 0.55
+  const sunW = sw * 0.48
   const sunH = sunTex.height / sunTex.width * sunW
   const sunX = (sw - sunW) / 2
-  const sunYFinal = sh - sunH
-  const sunYCurrent = sunYFinal + p.sunY * sunH
+  const sunY = sh * 0.38 - sunH * 0.35
 
   return (
     <pixiContainer>
-      <pixiSprite texture={bgTex} width={bgW} height={bgH} x={bgX} y={bgY} alpha={p.bgAlpha} />
-      <pixiSprite texture={sunTex} width={sunW-200} height={sunH} x={sunX} y={sunYCurrent-400} alpha={p.sunAlpha} />
+      <pixiSprite texture={Assets.get(ASSETS.bg73)} width={bg.w} height={bg.h} x={bg.x} y={bg.y} alpha={p.bgAlpha} />
+      <pixiSprite blendMode="screen" texture={sunTex} width={sunW-220} height={sunH-120} x={sunX+120} y={sunY+4.5} alpha={p.bgAlpha} />
     </pixiContainer>
   )
 }
