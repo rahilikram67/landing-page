@@ -42,8 +42,7 @@ import textRightTools from "./desktop/text-right-tools.png"
 import bg73 from "./desktop/bg73.png"
 // import sun from "./desktop/sun.png"
 // import behindEarly from "./desktop/behind-early.png"
-import terrain73 from "./desktop/terrain73.png"
-import bg73BlurOverlay from "./desktop/bg73-blur-overlay.png"
+
 
 // mobile
 import mobileBg5 from "./mobile/bg5.png"
@@ -108,8 +107,6 @@ export const ASSETS = {
   bg73: "bg73",
   // sun: "sun",
   //   behindEarly: "behindEarly",
-  terrain73: "terrain73",
-  bg73BlurOverlay: "bg73BlurOverlay",
 } as const
 
 const MOBILE_BREAKPOINT = 768
@@ -163,8 +160,6 @@ export function loadAssets() {
       { alias: ASSETS.bg73, src: bg73 },
       // { alias: ASSETS.sun, src: sun },
       // { alias: ASSETS.behindEarly, src: behindEarly },
-      { alias: ASSETS.terrain73, src: terrain73 },
-      { alias: ASSETS.bg73BlurOverlay, src: bg73BlurOverlay },
     ])
 
     Assets.addBundle("mobile", [
