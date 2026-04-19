@@ -27,22 +27,22 @@ const TOOLS   = { fx: 0.2216, fy: 0.2478, fw: 0.5552 }
 
 const ICONS_DEF_MOBILE = [
   { key: ASSETS.widgetCodeLeft,  fx: 0.02,  fy: 0.50, fw: 0.48 },
-  { key: ASSETS.widgetCodeRight, fx: 0.54,  fy: 0.35, fw: 0.52 },
-  { key: ASSETS.iconRunway,      fx: 0.42,  fy: 0.36, fw: 0.10 },
-  { key: ASSETS.iconMake,        fx: 0.64,  fy: 0.44, fw: 0.13 },
+  { key: ASSETS.widgetCodeRight, fx: 0.54,  fy: 0.45, fw: 0.52 },
+  { key: ASSETS.iconRunway,      fx: 0.42,  fy: 0.42, fw: 0.10 },
+  { key: ASSETS.iconMake,        fx: 0.64,  fy: 0.64, fw: 0.13 },
+  { key: ASSETS.lock,            fx: 0.40,  fy: 0.70, fw: 0.19 },
   { key: ASSETS.iconTest,        fx: 0.12,  fy: 0.66, fw: 0.11 },
   { key: ASSETS.iconManus,       fx: 0.84,  fy: 0.60, fw: 0.09 },
-  { key: ASSETS.iconN8n,         fx: 0.54,  fy: 0.78, fw: 0.13 },
+  { key: ASSETS.iconN8n,         fx: 0.44,  fy: 0.88, fw: 0.13 },
   { key: ASSETS.iconChatgpt,     fx: 0.03,  fy: 0.83, fw: 0.25 },
   { key: ASSETS.iconPoe,         fx: 0.65,  fy: 0.84, fw: 0.20 },
-  { key: ASSETS.iconGemini,      fx: 0.80,  fy: 0.71, fw: 0.14 },
-  { key: ASSETS.iconMidjourney,  fx: 0.78,  fy: 0.86, fw: 0.18 },
+  { key: ASSETS.iconGemini,      fx: 0.40,  fy: 0.62, fw: 0.14 },
+  { key: ASSETS.iconMidjourney,  fx: 0.78,  fy: 0.9, fw: 0.18 },
 ] as const
 
-const FLOOR_M  = { fx: 0.00, fy: 0.70, fw: 1.00 }
-const LOCK_M   = { fx: 0.36, fy: 0.59, fw: 0.28 }
-const PERM_M   = { fx: 0.06, fy: 0.16, fw: 0.88 }
-const TOOLS_M  = { fx: 0.06, fy: 0.23, fw: 0.88 }
+const FLOOR_M = { fx: 0.00, fy: 0.70, fw: 1.00 }
+const PERM_M  = { fx: 0.06, fy: 0.16, fw: 0.88 }
+const TOOLS_M = { fx: 0.06, fy: 0.20, fw: 0.88 }
 
 export function Frame7_2({ timeline, ctx }: SceneProps) {
   if (ctx.isMobile) return <Frame72Mobile timeline={timeline} />
@@ -223,10 +223,6 @@ function Frame72Mobile({ timeline }: { timeline: GSAPTimeline }) {
   const floorX = mx(FLOOR_M.fx)
   const floorY = my(FLOOR_M.fy) + p.floorYOff * sh
 
-  const lockTex = Assets.get(ASSETS.lock)
-  const lockW = mw(LOCK_M.fw)
-  const lockH = lockTex.height / lockTex.width * lockW
-
   const permTex = Assets.get(ASSETS.textPermission)
   const permW = mw(PERM_M.fw)
   const permH = permTex.height / permTex.width * permW
@@ -239,7 +235,6 @@ function Frame72Mobile({ timeline }: { timeline: GSAPTimeline }) {
     <pixiContainer>
       <pixiSprite texture={bgTex} width={bgW} height={bgH} x={bgX} y={bgY} alpha={p.bgAlpha} />
       <pixiSprite texture={floorTex} width={floorW} height={floorH} x={floorX} y={floorY} alpha={p.bgAlpha} />
-      <pixiSprite texture={lockTex} width={lockW} height={lockH} x={mx(LOCK_M.fx)} y={my(LOCK_M.fy)} alpha={p.bgAlpha} />
       {ICONS_DEF_MOBILE.map((def, i) => {
         const tex = Assets.get(def.key)
         const w = mw(def.fw)
