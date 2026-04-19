@@ -39,9 +39,10 @@ import iconGemini from "./desktop/icon-gemini.png"
 import iconMidjourney from "./desktop/icon-midjourney.png"
 import textPermission from "./desktop/text-permission.png"
 import textRightTools from "./desktop/text-right-tools.png"
-// import bg73 from "./desktop/bg73.png"
+import bg73 from "./desktop/bg73.png"
 // import sun from "./desktop/sun.png"
 // import behindEarly from "./desktop/behind-early.png"
+import terrain from "./desktop/terrain.png"
 
 // mobile
 import mobileBg5 from "./mobile/bg5.png"
@@ -103,9 +104,10 @@ export const ASSETS = {
   textPermission: "textPermission",
   textRightTools: "textRightTools",
   mobileBg72: "mobileBg72",
-  // bg73: "bg73",
+  bg73: "bg73",
   // sun: "sun",
-  // behindEarly: "behindEarly",
+  //   behindEarly: "behindEarly",
+  terrain: "terrain",
 } as const
 
 const MOBILE_BREAKPOINT = 768
@@ -156,9 +158,10 @@ export function loadAssets() {
       { alias: ASSETS.iconMidjourney, src: iconMidjourney },
       { alias: ASSETS.textPermission, src: textPermission },
       { alias: ASSETS.textRightTools, src: textRightTools },
-      // { alias: ASSETS.bg73, src: bg73 },
+      { alias: ASSETS.bg73, src: bg73 },
       // { alias: ASSETS.sun, src: sun },
       // { alias: ASSETS.behindEarly, src: behindEarly },
+      { alias: ASSETS.terrain, src: terrain },
     ])
 
     Assets.addBundle("mobile", [

@@ -10,6 +10,7 @@ import gsap from "gsap"
 import { ScrollTrigger } from "gsap/ScrollTrigger"
 import { loadAssets } from "./assets/manifest"
 import { Container, Sprite, Graphics } from "pixi.js"
+import { Frame7_3 } from "./modules/frame7_3"
 
 extend({ Sprite, Container, Graphics })
 
@@ -32,7 +33,7 @@ const SCENES: ComponentType<SceneProps>[] = [
   Frame6,
   Frame7_1,
   Frame7_2,
-  // Frame7_3,
+  Frame7_3,
 ]
 
 // 100% scroll height per scene, plus a base 100% for the initial view
