@@ -25,25 +25,24 @@ const FLOOR   = { fx: 0.2188, fy: 0.5989, fw: 0.5691 }
 const PERM    = { fx: 0.2807, fy: 0.2011, fw: 0.4375 }
 const TOOLS   = { fx: 0.2216, fy: 0.2478, fw: 0.5552 }
 
-// Mobile positions as fractions of 375×812 frame
 const ICONS_DEF_MOBILE = [
-  { key: ASSETS.iconRunway,      fx: 0.413, fy: 0.421, fw: 0.101 },
-  { key: ASSETS.widgetCodeLeft,  fx: 0.443, fy: 0.602, fw: 0.501 },
-  { key: ASSETS.widgetCodeRight, fx: 0.909, fy: 0.421, fw: 0.579 },
-  { key: ASSETS.iconChatgpt,     fx: 0.392, fy: 0.909, fw: 0.248 },
-  { key: ASSETS.iconTest,        fx: 0.392, fy: 0.713, fw: 0.109 },
-  { key: ASSETS.iconN8n,         fx: 0.605, fy: 0.809, fw: 0.131 },
-  { key: ASSETS.iconPoe,         fx: 0.928, fy: 0.899, fw: 0.203 },
-  { key: ASSETS.iconGemini,      fx: 1.272, fy: 0.788, fw: 0.147 },
-  { key: ASSETS.iconMidjourney,  fx: 1.277, fy: 0.910, fw: 0.200 },
-  { key: ASSETS.iconMake,        fx: 0.683, fy: 0.488, fw: 0.136 },
-  { key: ASSETS.iconManus,       fx: 1.213, fy: 0.660, fw: 0.093 },
+  { key: ASSETS.widgetCodeLeft,  fx: 0.02,  fy: 0.50, fw: 0.48 },
+  { key: ASSETS.widgetCodeRight, fx: 0.54,  fy: 0.35, fw: 0.52 },
+  { key: ASSETS.iconRunway,      fx: 0.42,  fy: 0.36, fw: 0.10 },
+  { key: ASSETS.iconMake,        fx: 0.64,  fy: 0.44, fw: 0.13 },
+  { key: ASSETS.iconTest,        fx: 0.12,  fy: 0.66, fw: 0.11 },
+  { key: ASSETS.iconManus,       fx: 0.84,  fy: 0.60, fw: 0.09 },
+  { key: ASSETS.iconN8n,         fx: 0.54,  fy: 0.78, fw: 0.13 },
+  { key: ASSETS.iconChatgpt,     fx: 0.03,  fy: 0.83, fw: 0.25 },
+  { key: ASSETS.iconPoe,         fx: 0.65,  fy: 0.84, fw: 0.20 },
+  { key: ASSETS.iconGemini,      fx: 0.80,  fy: 0.71, fw: 0.14 },
+  { key: ASSETS.iconMidjourney,  fx: 0.78,  fy: 0.86, fw: 0.18 },
 ] as const
 
-const FLOOR_M  = { fx: 0.480, fy: 0.687, fw: 0.901 }
-const LOCK_M   = { fx: 0.773, fy: 0.670, fw: 0.293 }
-const PERM_M   = { fx: 0.072, fy: 0.243, fw: 0.848 }
-const TOOLS_M  = { fx: 0.072, fy: 0.282, fw: 0.848 }
+const FLOOR_M  = { fx: 0.00, fy: 0.70, fw: 1.00 }
+const LOCK_M   = { fx: 0.36, fy: 0.59, fw: 0.28 }
+const PERM_M   = { fx: 0.06, fy: 0.16, fw: 0.88 }
+const TOOLS_M  = { fx: 0.06, fy: 0.23, fw: 0.88 }
 
 export function Frame7_2({ timeline, ctx }: SceneProps) {
   if (ctx.isMobile) return <Frame72Mobile timeline={timeline} />
