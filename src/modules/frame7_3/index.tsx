@@ -42,7 +42,7 @@ function Frame73Desktop({ timeline }: { timeline: GSAPTimeline }) {
   const bgX = (sw - bgW) / 2
   const bgY = (sh - bgH) / 2
 
-  const terrainTex = Assets.get(ASSETS.terrain)
+  const terrainTex = Assets.get(ASSETS.terrain73)
   const terrainScale = Math.max(sw / terrainTex.width, sh / terrainTex.height)
   const terrainW = terrainTex.width * terrainScale
   const terrainH = terrainTex.height * terrainScale
