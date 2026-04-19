@@ -115,7 +115,7 @@ function App() {
           </pixiContainer>
         </Application>}
 
-        {!(assetsReady || sceneProps) && (
+        {!(assetsReady && sceneProps) && (
           <div className="flex items-center justify-center">
             <div className="text-white text-2xl font-bold">Loading...</div>
           </div>
