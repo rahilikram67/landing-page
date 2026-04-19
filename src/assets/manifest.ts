@@ -21,6 +21,24 @@ import doorLeaf from "./desktop/door-leaf.png"
 import doorPanel from "./desktop/door-panel.png"
 import youWerentLost from "./desktop/you-werent-lost..png"
 import justWaiting from "./desktop/just-wainting.png"
+import bg72 from "./desktop/bg72.png"
+import floor72 from "./desktop/floor72.png"
+import widgetVr from "./desktop/widget-vr.png"
+import widgetCodeLeft from "./desktop/widget-code-left.png"
+import widgetCodeRight from "./desktop/widget-code-right.png"
+import iconN8n from "./desktop/icon-n8n.png"
+import iconChatgpt from "./desktop/icon-chatgpt.png"
+import iconTest from "./desktop/icon-test.png"
+import iconRunway from "./desktop/icon-runway.png"
+import iconMake from "./desktop/icon-make.png"
+import iconManus from "./desktop/icon-manus.png"
+import iconCursor from "./desktop/icon-cursor.png"
+import iconColor from "./desktop/icon-color.png"
+import iconPoe from "./desktop/icon-poe.png"
+import iconGemini from "./desktop/icon-gemini.png"
+import iconMidjourney from "./desktop/icon-midjourney.png"
+import textPermission from "./desktop/text-permission.png"
+import textRightTools from "./desktop/text-right-tools.png"
 
 // mobile
 import mobileBg5 from "./mobile/bg5.png"
@@ -62,6 +80,24 @@ export const ASSETS = {
   youWerentLost: "youWerentLost",
   justWaiting: "justWaiting",
   person: "person",
+  bg72: "bg72",
+  floor72: "floor72",
+  widgetVr: "widgetVr",
+  widgetCodeLeft: "widgetCodeLeft",
+  widgetCodeRight: "widgetCodeRight",
+  iconN8n: "iconN8n",
+  iconChatgpt: "iconChatgpt",
+  iconTest: "iconTest",
+  iconRunway: "iconRunway",
+  iconMake: "iconMake",
+  iconManus: "iconManus",
+  iconCursor: "iconCursor",
+  iconColor: "iconColor",
+  iconPoe: "iconPoe",
+  iconGemini: "iconGemini",
+  iconMidjourney: "iconMidjourney",
+  textPermission: "textPermission",
+  textRightTools: "textRightTools",
 } as const
 
 const MOBILE_BREAKPOINT = 768
@@ -94,6 +130,24 @@ export function loadAssets() {
       { alias: ASSETS.doorPanel, src: doorPanel },
       { alias: ASSETS.youWerentLost, src: youWerentLost },
       { alias: ASSETS.justWaiting, src: justWaiting },
+      { alias: ASSETS.bg72, src: bg72 },
+      { alias: ASSETS.floor72, src: floor72 },
+      { alias: ASSETS.widgetVr, src: widgetVr },
+      { alias: ASSETS.widgetCodeLeft, src: widgetCodeLeft },
+      { alias: ASSETS.widgetCodeRight, src: widgetCodeRight },
+      { alias: ASSETS.iconN8n, src: iconN8n },
+      { alias: ASSETS.iconChatgpt, src: iconChatgpt },
+      { alias: ASSETS.iconTest, src: iconTest },
+      { alias: ASSETS.iconRunway, src: iconRunway },
+      { alias: ASSETS.iconMake, src: iconMake },
+      { alias: ASSETS.iconManus, src: iconManus },
+      { alias: ASSETS.iconCursor, src: iconCursor },
+      { alias: ASSETS.iconColor, src: iconColor },
+      { alias: ASSETS.iconPoe, src: iconPoe },
+      { alias: ASSETS.iconGemini, src: iconGemini },
+      { alias: ASSETS.iconMidjourney, src: iconMidjourney },
+      { alias: ASSETS.textPermission, src: textPermission },
+      { alias: ASSETS.textRightTools, src: textRightTools },
     ])
 
     Assets.addBundle("mobile", [

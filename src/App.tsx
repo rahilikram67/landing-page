@@ -2,6 +2,7 @@ import { useEffect, useRef, useState } from "react"
 import { Frame5 } from "./modules/frame5"
 import { Frame6 } from "./modules/frame6"
 import { Frame7_1 } from "./modules/frame7_1"
+import { Frame7_2 } from "./modules/frame7_2"
 import { Application, extend } from "@pixi/react"
 import type { ComponentType } from "react"
 import gsap from "gsap"
@@ -29,6 +30,7 @@ const SCENES: ComponentType<SceneProps>[] = [
   Frame5,
   Frame6,
   Frame7_1,
+  Frame7_2,
 ]
 
 // 100% scroll height per scene, plus a base 100% for the initial view
