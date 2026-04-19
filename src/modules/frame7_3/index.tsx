@@ -55,9 +55,9 @@ function Frame73Desktop({ timeline }: { timeline: GSAPTimeline }) {
 
   return (
     <pixiContainer>
-      <pixiSprite  texture={Assets.get(ASSETS.bg73BlurOverlay)} width={overlay.w} height={overlay.h} x={overlay.x} y={overlay.y} alpha={p.overlayAlpha} />
+      <pixiSprite texture={Assets.get(ASSETS.bg73BlurOverlay)} width={overlay.w} height={overlay.h} x={overlay.x} y={overlay.y} alpha={p.overlayAlpha} />
       <pixiSprite texture={Assets.get(ASSETS.bg73)} width={bg.w} height={bg.h} x={bg.x} y={bg.y} alpha={p.bgAlpha} />
-      <pixiSprite  texture={Assets.get(ASSETS.terrain73)} width={terrain.w} height={terrain.h} x={terrain.x} y={terrain.y} alpha={p.terrainAlpha} />
+      <pixiSprite texture={Assets.get(ASSETS.terrain73)} width={terrain.w} height={terrain.h} x={terrain.x} y={terrain.y} alpha={p.terrainAlpha} />
     </pixiContainer>
   )
 }
