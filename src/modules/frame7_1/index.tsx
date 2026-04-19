@@ -8,7 +8,7 @@ const SMOOTH_EASE = "power2.inOut"
 const DOOR_OPEN_DURATION = 2.5
 const SCENE7_FADE_IN_DURATION = 1.2
 
-export function Frame7({ timeline, ctx }: SceneProps) {
+export function Frame7_1({ timeline, ctx }: SceneProps) {
     if (ctx.isMobile) return <Frame7Mobile timeline={timeline} />
     return <Frame7Desktop timeline={timeline} />
 }
