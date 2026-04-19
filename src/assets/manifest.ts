@@ -23,7 +23,7 @@ import youWerentLost from "./desktop/you-werent-lost..png"
 import justWaiting from "./desktop/just-wainting.png"
 import bg72 from "./desktop/bg72.png"
 import floor72 from "./desktop/floor72.png"
-import widgetVr from "./desktop/widget-vr.png"
+import lock from "./desktop/lock.png"
 import widgetCodeLeft from "./desktop/widget-code-left.png"
 import widgetCodeRight from "./desktop/widget-code-right.png"
 import iconN8n from "./desktop/icon-n8n.png"
@@ -82,7 +82,7 @@ export const ASSETS = {
   person: "person",
   bg72: "bg72",
   floor72: "floor72",
-  widgetVr: "widgetVr",
+  lock: "lock",
   widgetCodeLeft: "widgetCodeLeft",
   widgetCodeRight: "widgetCodeRight",
   iconN8n: "iconN8n",
@@ -132,7 +132,7 @@ export function loadAssets() {
       { alias: ASSETS.justWaiting, src: justWaiting },
       { alias: ASSETS.bg72, src: bg72 },
       { alias: ASSETS.floor72, src: floor72 },
-      { alias: ASSETS.widgetVr, src: widgetVr },
+      { alias: ASSETS.lock, src: lock },
       { alias: ASSETS.widgetCodeLeft, src: widgetCodeLeft },
       { alias: ASSETS.widgetCodeRight, src: widgetCodeRight },
       { alias: ASSETS.iconN8n, src: iconN8n },
