@@ -16,7 +16,7 @@ import reviews from "./desktop/reviews.png"
 import reviewChip1 from "./desktop/review-chip1.png"
 import reviewChip2 from "./desktop/review-chip-2.png"
 import reviewChip3 from "./desktop/review-chip-3.png"
-import bg71 from "./desktop/bg7-1.png"
+import bg71 from "./desktop/bg71.png"
 import doorLeaf from "./desktop/door-leaf.png"
 import doorPanel from "./desktop/door-panel.png"
 import youWerentLost from "./desktop/you-werent-lost..png"
@@ -40,8 +40,7 @@ import iconMidjourney from "./desktop/icon-midjourney.png"
 import textPermission from "./desktop/text-permission.png"
 import textRightTools from "./desktop/text-right-tools.png"
 import bg73 from "./desktop/bg73.png"
-// import sun from "./desktop/sun.png"
-// import behindEarly from "./desktop/behind-early.png"
+import halfSun from "./desktop/half-sun.png"
 
 
 // mobile
@@ -105,8 +104,7 @@ export const ASSETS = {
   textRightTools: "textRightTools",
   mobileBg72: "mobileBg72",
   bg73: "bg73",
-  // sun: "sun",
-  //   behindEarly: "behindEarly",
+  halfSun: "halfSun",
 } as const
 
 const MOBILE_BREAKPOINT = 768
@@ -158,8 +156,7 @@ export function loadAssets() {
       { alias: ASSETS.textPermission, src: textPermission },
       { alias: ASSETS.textRightTools, src: textRightTools },
       { alias: ASSETS.bg73, src: bg73 },
-      // { alias: ASSETS.sun, src: sun },
-      // { alias: ASSETS.behindEarly, src: behindEarly },
+      { alias: ASSETS.halfSun, src: halfSun },
     ])
 
     Assets.addBundle("mobile", [
