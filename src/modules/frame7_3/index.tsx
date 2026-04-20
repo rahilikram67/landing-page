@@ -5,9 +5,9 @@ import type { SceneProps } from "../../App"
 import { ASSETS } from "@/assets/manifest"
 
 const DOORS = [
-  { xf: 0.2101, yf: 0.6556, hf: 0.2300, flip: false },
-  { xf: 0.2929, yf: 0.6400, hf: 0.1800, flip: false },
-  { xf: 0.3612, yf: 0.6322, hf: 0.1333, flip: false },
+  { xf: 0.0901, yf: 0.5556, hf: 0.2300, flip: false },
+  { xf: 0.1929, yf: 0.5400, hf: 0.1800, flip: false },
+  { xf: 0.2812, yf: 0.5320, hf: 0.1333, flip: false },
   { xf: 0.6592, yf: 0.6322, hf: 0.1344, flip: true  },
   { xf: 0.7282, yf: 0.6400, hf: 0.1800, flip: true  },
   { xf: 0.8102, yf: 0.6556, hf: 0.2300, flip: true  },
