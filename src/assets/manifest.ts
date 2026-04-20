@@ -2,7 +2,7 @@ import { Assets } from "pixi.js"
 
 
 // desktop
-import bg5 from "./desktop/bg-5.png"
+import bg5 from "./desktop/bg5.png"
 import greenPlanet from "./desktop/green-planet.png"
 import greenPlanetText from "./desktop/green-planet-text.png"
 import redPlanet from "./desktop/red-planet.png"
