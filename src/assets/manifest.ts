@@ -41,7 +41,7 @@ import textPermission from "./desktop/text-permission.svg"
 import textRightTools from "./desktop/text-right-tools.svg"
 import bg73 from "./desktop/bg73.png"
 import halfSun from "./desktop/half-sun.png"
-import boyStanding from "./desktop/boy-standing.png"
+import boyStanding from "./desktop/boy-standing.svg"
 
 
 // mobile

@@ -51,23 +51,9 @@ function Frame73Desktop({ timeline }: { timeline: GSAPTimeline }) {
 
   const bg = fit(Assets.get(ASSETS.bg73))
 
-  const sunTex = Assets.get(ASSETS.halfSun)
-  const sunW = sw * 0.48
-  const sunH = sunTex.height / sunTex.width * sunW
-  const sunX = (sw - sunW) / 2
-  const sunY = sh * 0.38 - sunH * 0.35
-
-  const boyTex = Assets.get(ASSETS.boyStanding)
-  const boyW = sw
-  const boyH = boyTex.height / boyTex.width * boyW
-  const boyX = (sw - boyW) / 2
-  const boyY = sh - boyH
-
   return (
     <pixiContainer>
       <pixiSprite texture={Assets.get(ASSETS.bg73)} width={bg.w} height={bg.h} x={bg.x} y={bg.y} alpha={p.bgAlpha} />
-      <pixiSprite blendMode="screen" texture={sunTex} width={sunW-230} height={sunH-120} x={sunX+130} y={sunY+4.4} alpha={p.bgAlpha} />
-      <pixiSprite texture={boyTex} width={boyW} height={boyH} x={boyX-20} y={boyY+150} alpha={p.bgAlpha} />
     </pixiContainer>
   )
 }
