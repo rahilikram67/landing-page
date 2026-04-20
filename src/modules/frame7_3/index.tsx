@@ -4,12 +4,18 @@ import { Assets } from "pixi.js"
 import type { SceneProps } from "../../App"
 import { ASSETS } from "@/assets/manifest"
 
-const DOOR_H_FRAC = 0.55
-const DOOR_Y_FRAC = 0.22
-const DOOR_GAP_FRAC = 0.01
+// Figma frame: 1376×900. All values are fractions of FW/FH.
+const FW = 1376
+const FH = 900
 
-const LEFT_X_FRACS  = [0.04, 0.16, 0.28]
-const RIGHT_X_FRACS = [0.60, 0.72, 0.84]
+const DOORS = [
+  { xf: 289/FW,  yf: 590/FH, hf: 207/FH, flip: false },
+  { xf: 403/FW,  yf: 576/FH, hf: 162/FH, flip: false },
+  { xf: 497/FW,  yf: 569/FH, hf: 120/FH, flip: false },
+  { xf: 907/FW,  yf: 569/FH, hf: 121/FH, flip: true  },
+  { xf: 1002/FW, yf: 576/FH, hf: 162/FH, flip: true  },
+  { xf: 1115/FW, yf: 590/FH, hf: 207/FH, flip: true  },
+] as const
 
 function Frame73Desktop({ timeline }: { timeline: GSAPTimeline }) {
   const { app } = useApplication()
@@ -52,26 +58,31 @@ function Frame73Desktop({ timeline }: { timeline: GSAPTimeline }) {
   const panelTex = Assets.get(ASSETS.doorPanel)
   const leafTex  = Assets.get(ASSETS.doorLeaf)
 
-  const doorH = sh * DOOR_H_FRAC
-  const doorY = sh * DOOR_Y_FRAC
-  const panelW = doorH * (panelTex.width / panelTex.height)
-
   const insetX = (panelTex.width  - leafTex.width)  / 2 / panelTex.width
   const insetY = (panelTex.height - leafTex.height) / 2 / panelTex.height
-  const leafW  = panelW * (1 - insetX * 2)
-  const leafH  = doorH  * (1 - insetY * 2)
-  const hingeX = panelW * (1 - insetX)
-  const hingeY = doorH  * insetY + leafH / 2
-
-  const allXFracs = [...LEFT_X_FRACS, ...RIGHT_X_FRACS]
 
   return (
     <pixiContainer>
       <pixiSprite texture={bgTex} width={bgW} height={bgH} x={bgX} y={bgY} alpha={p.bgAlpha} />
-      {allXFracs.map((fx, i) => {
-        const panelX = sw * fx - (i >= 3 ? 0 : panelW * DOOR_GAP_FRAC)
+
+      {DOORS.map((d, i) => {
+        const doorH = sh * d.hf
+        const panelW = doorH * (panelTex.width / panelTex.height)
+        const leafW  = panelW * (1 - insetX * 2)
+        const leafH  = doorH  * (1 - insetY * 2)
+        const hingeX = panelW * (1 - insetX)
+        const hingeY = doorH  * insetY + leafH / 2
+        const panelX = sw * d.xf
+        const panelY = sh * d.yf
+
         return (
-          <pixiContainer key={i} x={panelX} y={doorY} alpha={p.doorsAlpha}>
+          <pixiContainer
+            key={i}
+            x={d.flip ? panelX + panelW : panelX}
+            y={panelY}
+            scale={{ x: d.flip ? -1 : 1, y: 1 }}
+            alpha={p.doorsAlpha}
+          >
             <pixiSprite texture={panelTex} width={panelW} height={doorH} />
             <pixiContainer x={hingeX} y={hingeY}>
               <pixiSprite texture={leafTex} width={leafW} height={leafH} x={-leafW} y={-leafH / 2} />
