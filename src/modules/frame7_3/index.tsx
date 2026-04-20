@@ -4,17 +4,13 @@ import { Assets } from "pixi.js"
 import type { SceneProps } from "../../App"
 import { ASSETS } from "@/assets/manifest"
 
-// Figma frame: 1376×900. All values are fractions of FW/FH.
-const FW = 1376
-const FH = 900
-
 const DOORS = [
-  { xf: 289/FW,  yf: 590/FH, hf: 207/FH, flip: false },
-  { xf: 403/FW,  yf: 576/FH, hf: 162/FH, flip: false },
-  { xf: 497/FW,  yf: 569/FH, hf: 120/FH, flip: false },
-  { xf: 907/FW,  yf: 569/FH, hf: 121/FH, flip: true  },
-  { xf: 1002/FW, yf: 576/FH, hf: 162/FH, flip: true  },
-  { xf: 1115/FW, yf: 590/FH, hf: 207/FH, flip: true  },
+  { xf: 0.2101, yf: 0.6556, hf: 0.2300, flip: false },
+  { xf: 0.2929, yf: 0.6400, hf: 0.1800, flip: false },
+  { xf: 0.3612, yf: 0.6322, hf: 0.1333, flip: false },
+  { xf: 0.6592, yf: 0.6322, hf: 0.1344, flip: true  },
+  { xf: 0.7282, yf: 0.6400, hf: 0.1800, flip: true  },
+  { xf: 0.8102, yf: 0.6556, hf: 0.2300, flip: true  },
 ] as const
 
 function Frame73Desktop({ timeline }: { timeline: GSAPTimeline }) {
