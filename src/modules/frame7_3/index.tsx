@@ -225,7 +225,6 @@ function Frame73Mobile({ timeline }: { timeline: GSAPTimeline }) {
           </pixiContainer>
         )
       })}
-
       <pixiSprite texture={textTex} width={textW} height={textH} x={textX} y={textY} alpha={p.textAlpha} />
     </pixiContainer>
   )
