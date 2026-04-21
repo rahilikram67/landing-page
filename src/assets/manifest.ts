@@ -60,6 +60,7 @@ import mobileDoorPanel from "./mobile/door-panel.svg"
 import mobilePerson from "./mobile/person.svg"
 import mobileBg72 from "./mobile/bg72.svg"
 import mobileBg73 from "./mobile/bg73.png"
+import mobileBg74 from "./mobile/bg74.svg"
 
 
 export const ASSETS = {
@@ -110,6 +111,7 @@ export const ASSETS = {
   textRightTools: "textRightTools",
   mobileBg72: "mobileBg72",
   mobileBg73: "mobileBg73",
+  mobileBg74: "mobileBg74",
   bg73: "bg73",
   behindEarly: "behindEarly",
   halfSun: "halfSun",
@@ -197,6 +199,8 @@ export function loadAssets() {
       { alias: ASSETS.person, src: mobilePerson },
       { alias: ASSETS.mobileBg72, src: mobileBg72 },
       { alias: ASSETS.mobileBg73, src: mobileBg73 },
+      { alias: ASSETS.mobileBg74, src: mobileBg74 },
+      { alias: ASSETS.explorerText, src: explorerText },
       { alias: ASSETS.behindEarly, src: behindEarly },
       { alias: ASSETS.textPermission, src: textPermission },
       { alias: ASSETS.textRightTools, src: textRightTools },
