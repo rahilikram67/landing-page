@@ -16,6 +16,8 @@ import { Frame7_4 } from "./modules/frame7_4"
 extend({ Sprite, Container, Graphics })
 
 gsap.registerPlugin(ScrollTrigger)
+ScrollTrigger.normalizeScroll(true)
+ScrollTrigger.config({ ignoreMobileResize: true })
 
 
 export interface SceneCtx {
@@ -75,6 +77,13 @@ function App() {
             end: isDesktop ? DESKTOP_SCROLL : MOBILE_SCROLL,
             pin: true,
             scrub: 1,
+            ...(isMobile && {
+              snap: {
+                snapTo: 1 / SCENES.length,
+                duration: { min: 0.3, max: 0.6 },
+                ease: "power2.inOut",
+              },
+            }),
           },
         })
 
