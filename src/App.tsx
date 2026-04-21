@@ -29,10 +29,10 @@ export interface SceneProps {
 }
 
 const SCENES: ComponentType<SceneProps>[] = [
-  // Frame5,
-  // Frame6,
-  // Frame7_1,
-  // Frame7_2,
+  Frame5,
+  Frame6,
+  Frame7_1,
+  Frame7_2,
   Frame7_3,
 ]
 

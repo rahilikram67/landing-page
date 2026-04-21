@@ -52,10 +52,10 @@ import reviewBoy from "./mobile/review-boy.png"
 import reviewBoy2 from "./mobile/review-boy2.png"
 import reviewGirl from "./mobile/review-girl.png"
 import voiceExp from "./mobile/voice-exp.png"
-import mobileBg71 from "./mobile/bg71.png"
+import mobileBg71 from "./mobile/bg71.svg"
 import mobileDoorLeaf from "./mobile/door-leaf.png"
 import mobileDoorPanel from "./mobile/door-panel.png"
-import mobilePerson from "./mobile/person.png"
+import mobilePerson from "./mobile/person.svg"
 import mobileBg72 from "./mobile/bg72.png"
 
 
