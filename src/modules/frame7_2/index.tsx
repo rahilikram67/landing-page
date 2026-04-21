@@ -57,6 +57,7 @@ function Frame72Desktop({ timeline }: { timeline: GSAPTimeline }) {
     bgAlpha: 0,
     floorYOff: -0.4,
     textAlpha: 0,
+    exitAlpha: 1,
     icons: ICONS_DEF.map(() => ({ alpha: 0, yOff: 1 })),
   })
 
@@ -93,6 +94,14 @@ function Frame72Desktop({ timeline }: { timeline: GSAPTimeline }) {
       ease: "power2.out",
       onUpdate: forceRender,
     }, ">-0.2")
+
+    // Exit: fade out whole scene as Frame7_3 crossfades in
+    timeline.to(p, {
+      exitAlpha: 0,
+      duration: 1.2,
+      ease: "power1.inOut",
+      onUpdate: forceRender,
+    }, ">")
   }, [timeline, app.renderer])
 
   if (!app.renderer) return null
@@ -127,7 +136,7 @@ function Frame72Desktop({ timeline }: { timeline: GSAPTimeline }) {
   const toolsH = toolsTex.height / toolsTex.width * toolsW
 
   return (
-    <pixiContainer>
+    <pixiContainer alpha={p.exitAlpha}>
       <pixiSprite texture={bgTex} width={bgW} height={bgH} x={bgX} y={bgY} alpha={p.bgAlpha} />
       <pixiSprite texture={floorTex} width={floorW} height={floorH} x={floorX} y={floorY} alpha={p.bgAlpha} />
       {ICONS_DEF.map((def, i) => {
@@ -162,6 +171,7 @@ function Frame72Mobile({ timeline }: { timeline: GSAPTimeline }) {
     bgAlpha: 0,
     floorYOff: -0.4,
     textAlpha: 0,
+    exitAlpha: 1,
     icons: ICONS_DEF_MOBILE.map(() => ({ alpha: 0, yOff: 1 })),
   })
 
@@ -198,6 +208,14 @@ function Frame72Mobile({ timeline }: { timeline: GSAPTimeline }) {
       ease: "power2.out",
       onUpdate: forceRender,
     }, ">-0.2")
+
+    // Exit: fade out whole scene as Frame7_3 crossfades in
+    timeline.to(p, {
+      exitAlpha: 0,
+      duration: 1.2,
+      ease: "power1.inOut",
+      onUpdate: forceRender,
+    }, ">")
   }, [timeline, app.renderer])
 
   if (!app.renderer) return null
@@ -232,7 +250,7 @@ function Frame72Mobile({ timeline }: { timeline: GSAPTimeline }) {
   const toolsH = toolsTex.height / toolsTex.width * toolsW
 
   return (
-    <pixiContainer>
+    <pixiContainer alpha={p.exitAlpha}>
       <pixiSprite texture={bgTex} width={bgW} height={bgH} x={bgX} y={bgY} alpha={p.bgAlpha} />
       <pixiSprite texture={floorTex} width={floorW} height={floorH} x={floorX} y={floorY} alpha={p.bgAlpha} />
       {ICONS_DEF_MOBILE.map((def, i) => {

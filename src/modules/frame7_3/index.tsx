@@ -26,19 +26,20 @@ function Frame73Desktop({ timeline }: { timeline: GSAPTimeline }) {
     if (!timeline || !app.renderer) return
     const p = proxy.current
 
+    // Start bg crossfade at same time as Frame7_2 exit
     timeline.to(p, {
       bgAlpha: 1,
       duration: 1.2,
       ease: "power1.out",
       onUpdate: forceRender,
-    }, ">")
+    }, "<")
 
     timeline.to(p, {
       doorsAlpha: 1,
       duration: 1.4,
       ease: "power2.out",
       onUpdate: forceRender,
-    }, "<0.4")
+    }, ">-0.4")
 
     timeline.to(p, {
       textAlpha: 1,
@@ -139,19 +140,20 @@ function Frame73Mobile({ timeline }: { timeline: GSAPTimeline }) {
     if (!timeline || !app.renderer) return
     const p = proxy.current
 
+    // Start bg crossfade at same time as Frame7_2 exit
     timeline.to(p, {
       bgAlpha: 1,
       duration: 1.2,
       ease: "power1.out",
       onUpdate: forceRender,
-    }, ">")
+    }, "<")
 
     timeline.to(p, {
       doorsAlpha: 1,
       duration: 1.4,
       ease: "power2.out",
       onUpdate: forceRender,
-    }, "<0.4")
+    }, ">-0.4")
 
     timeline.to(p, {
       textAlpha: 1,
