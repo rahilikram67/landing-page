@@ -45,6 +45,10 @@ import behindEarly from "./desktop/behind-early.png"
 import halfSun from "./desktop/half-sun.png"
 import bg74 from "./desktop/bg74.svg"
 import explorerText from "./desktop/explorer-text.svg"
+import bg8 from "./desktop/bg8.svg"
+import startExploreText from "./desktop/start-explore-text.svg"
+import btnExplore from "./desktop/btn-explore.svg"
+import btnTeach from "./desktop/btn-teach.svg"
 
 
 // mobile
@@ -117,6 +121,10 @@ export const ASSETS = {
   halfSun: "halfSun",
   bg74: "bg74",
   explorerText: "explorerText",
+  bg8: "bg8",
+  startExploreText: "startExploreText",
+  btnExplore: "btnExplore",
+  btnTeach: "btnTeach",
 } as const
 
 const MOBILE_BREAKPOINT = 768
@@ -173,6 +181,10 @@ export function loadAssets() {
       { alias: ASSETS.halfSun, src: halfSun },
       { alias: ASSETS.bg74, src: bg74 },
       { alias: ASSETS.explorerText, src: explorerText },
+      { alias: ASSETS.bg8, src: bg8 },
+      { alias: ASSETS.startExploreText, src: startExploreText },
+      { alias: ASSETS.btnExplore, src: btnExplore },
+      { alias: ASSETS.btnTeach, src: btnTeach },
     ])
 
     Assets.addBundle("mobile", [

@@ -12,6 +12,7 @@ import { loadAssets } from "./assets/manifest"
 import { Container, Sprite, Graphics } from "pixi.js"
 import { Frame7_3 } from "./modules/frame7_3"
 import { Frame7_4 } from "./modules/frame7_4"
+import { Frame8 } from "./modules/frame8"
 
 extend({ Sprite, Container, Graphics })
 
@@ -38,6 +39,7 @@ const SCENES: ComponentType<SceneProps>[] = [
   Frame7_2,
   Frame7_3,
   Frame7_4,
+  Frame8,
 ]
 
 // 100% scroll height per scene, plus a base 100% for the initial view
