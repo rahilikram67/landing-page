@@ -19,6 +19,7 @@ import reviewChip3 from "./desktop/review-chip-3.svg"
 import bg71 from "./desktop/bg71.svg"
 import doorLeaf from "./desktop/door-leaf.svg"
 import doorPanel from "./desktop/door-panel.svg"
+import doorHandle from "./desktop/door-handle.svg"
 import youWerentLost from "./desktop/you-werent-lost.svg"
 import justWaiting from "./desktop/just-wainting.svg"
 import bg72 from "./desktop/bg72.svg"
@@ -81,6 +82,7 @@ export const ASSETS = {
   bg71: "bg71",
   doorLeaf: "doorLeaf",
   doorPanel: "doorPanel",
+  doorHandle: "doorHandle",
   youWerentLost: "youWerentLost",
   justWaiting: "justWaiting",
   person: "person",
@@ -135,6 +137,7 @@ export function loadAssets() {
       { alias: ASSETS.bg71, src: bg71 },
       { alias: ASSETS.doorLeaf, src: doorLeaf },
       { alias: ASSETS.doorPanel, src: doorPanel },
+      { alias: ASSETS.doorHandle, src: doorHandle },
       { alias: ASSETS.youWerentLost, src: youWerentLost },
       { alias: ASSETS.justWaiting, src: justWaiting },
       { alias: ASSETS.bg72, src: bg72 },

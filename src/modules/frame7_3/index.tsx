@@ -51,8 +51,9 @@ function Frame73Desktop({ timeline }: { timeline: GSAPTimeline }) {
   const bgX = (sw - bgW) / 2
   const bgY = (sh - bgH) / 2
 
-  const panelTex = Assets.get(ASSETS.doorPanel)
-  const leafTex  = Assets.get(ASSETS.doorLeaf)
+  const panelTex  = Assets.get(ASSETS.doorPanel)
+  const leafTex   = Assets.get(ASSETS.doorLeaf)
+  const handleTex = Assets.get(ASSETS.doorHandle)
 
   const insetX = (panelTex.width  - leafTex.width)  / 2 / panelTex.width
   const insetY = (panelTex.height - leafTex.height) / 2 / panelTex.height
@@ -71,6 +72,11 @@ function Frame73Desktop({ timeline }: { timeline: GSAPTimeline }) {
         const panelX = sw * d.xf
         const panelY = sh * d.yf
 
+        const handleW = leafW * 0.18
+        const handleH = handleTex.height / handleTex.width * handleW
+        const handleX = leafW * 0.12
+        const handleY = leafH * 0.5 - handleH / 2
+
         return (
           <pixiContainer
             key={i}
@@ -82,6 +88,7 @@ function Frame73Desktop({ timeline }: { timeline: GSAPTimeline }) {
             <pixiSprite texture={panelTex} width={panelW} height={doorH} />
             <pixiContainer x={hingeX} y={hingeY}>
               <pixiSprite texture={leafTex} width={leafW} height={leafH} x={-leafW} y={-leafH / 2} />
+              <pixiSprite texture={handleTex} width={handleW} height={handleH} x={-leafW + handleX} y={-leafH / 2 + handleY} />
             </pixiContainer>
           </pixiContainer>
         )
