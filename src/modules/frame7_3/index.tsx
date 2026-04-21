@@ -20,7 +20,7 @@ function Frame73Desktop({ timeline }: { timeline: GSAPTimeline }) {
   const { app } = useApplication()
   const [, forceRender] = useReducer(x => x + 1, 0)
 
-  const proxy = useRef({ bgAlpha: 0, doorsAlpha: 0, doorRotY: 0 })
+  const proxy = useRef({ bgAlpha: 0, doorsAlpha: 0, doorRotY: 0, textAlpha: 0 })
 
   useEffect(() => {
     if (!timeline || !app.renderer) return
@@ -39,6 +39,13 @@ function Frame73Desktop({ timeline }: { timeline: GSAPTimeline }) {
       ease: "power2.out",
       onUpdate: forceRender,
     }, "<0.4")
+
+    timeline.to(p, {
+      textAlpha: 1,
+      duration: 1.2,
+      ease: "power1.out",
+      onUpdate: forceRender,
+    }, "<0.3")
 
     timeline.to(p, {
       doorRotY: Math.PI,
@@ -69,6 +76,12 @@ function Frame73Desktop({ timeline }: { timeline: GSAPTimeline }) {
   const insetY = (panelTex.height - leafTex.height) / 2 / panelTex.height
 
   const doorScaleX = Math.cos(p.doorRotY)
+
+  const textTex = Assets.get(ASSETS.behindEarly)
+  const textW = sw * 0.35
+  const textH = textTex.height / textTex.width * textW
+  const textX = (sw - textW) / 2
+  const textY = sh * 0.08
 
   return (
     <pixiContainer>
@@ -105,6 +118,7 @@ function Frame73Desktop({ timeline }: { timeline: GSAPTimeline }) {
           </pixiContainer>
         )
       })}
+      <pixiSprite texture={textTex} width={textW} height={textH} x={textX} y={textY} alpha={p.textAlpha} />
     </pixiContainer>
   )
 }

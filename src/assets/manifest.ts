@@ -41,6 +41,7 @@ import iconMidjourney from "./desktop/icon-midjourney.svg"
 import textPermission from "./desktop/text-permission.svg"
 import textRightTools from "./desktop/text-right-tools.svg"
 import bg73 from "./desktop/bg73.png"
+import behindEarly from "./desktop/behind-early.png"
 import halfSun from "./desktop/half-sun.png"
 
 
@@ -106,6 +107,7 @@ export const ASSETS = {
   textRightTools: "textRightTools",
   mobileBg72: "mobileBg72",
   bg73: "bg73",
+  behindEarly: "behindEarly",
   halfSun: "halfSun",
 } as const
 
@@ -159,6 +161,7 @@ export function loadAssets() {
       { alias: ASSETS.textPermission, src: textPermission },
       { alias: ASSETS.textRightTools, src: textRightTools },
       { alias: ASSETS.bg73, src: bg73 },
+      { alias: ASSETS.behindEarly, src: behindEarly },
       { alias: ASSETS.halfSun, src: halfSun },
     ])
 
