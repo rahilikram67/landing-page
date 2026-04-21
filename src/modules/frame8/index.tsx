@@ -119,7 +119,105 @@ function Frame8Desktop({ timeline }: { timeline: GSAPTimeline }) {
   )
 }
 
+// Mobile: 375 × 812 reference frame
+// Content block w=330 centered, y=50%
+// start-explore-text (330×58): yf≈0.382
+// btn-explore (330×42): yf≈0.514
+// btn-teach (330×42): yf≈0.514 + 42/812 + 16/812 ≈ 0.586
+function Frame8Mobile({ timeline }: { timeline: GSAPTimeline }) {
+  const { app } = useApplication()
+  const [, forceRender] = useReducer(x => x + 1, 0)
+
+  const proxy = useRef({ bgAlpha: 0, contentAlpha: 0, btnAlpha: 0 })
+
+  useEffect(() => {
+    if (!timeline || !app.renderer) return
+    const p = proxy.current
+
+    timeline.to(p, {
+      bgAlpha: 1,
+      duration: 1.2,
+      ease: "power1.out",
+      onUpdate: forceRender,
+    }, ">")
+
+    timeline.to(p, {
+      contentAlpha: 1,
+      duration: 1.2,
+      ease: "power1.out",
+      onUpdate: forceRender,
+    }, "<0.3")
+
+    timeline.to(p, {
+      btnAlpha: 1,
+      duration: 1.0,
+      ease: "power1.out",
+      onUpdate: forceRender,
+    }, "<0.4")
+  }, [timeline, app.renderer])
+
+  if (!app.renderer) return null
+
+  const sw = app.screen.width
+  const sh = app.screen.height
+  const p  = proxy.current
+
+  const bgTex   = Assets.get(ASSETS.mobileBg8)
+  const bgScale = Math.max(sw / bgTex.width, sh / bgTex.height)
+  const bgW     = bgTex.width  * bgScale
+  const bgH     = bgTex.height * bgScale
+  const bgX     = (sw - bgW) / 2
+  const bgY     = (sh - bgH) / 2
+
+  // start-explore-text SVG 330 × 58 → full content width
+  const textTex = Assets.get(ASSETS.mobileStartExploreText)
+  const textW   = sw * 0.88
+  const textH   = textTex.height / textTex.width * textW
+  const textX   = (sw - textW) / 2
+  const textY   = sh * 0.382
+
+  // Buttons: SVG 330 × 42, full content width, stacked
+  const beTex  = Assets.get(ASSETS.mobileBtnExplore)
+  const btTex  = Assets.get(ASSETS.mobileBtnTeach)
+  const btnW   = sw * 0.88
+  const beH    = beTex.height / beTex.width * btnW
+  const btH    = btTex.height / btTex.width * btnW
+  const btnX   = (sw - btnW) / 2
+  const gap    = sh * (16 / 812)
+  const beY    = sh * 0.514
+  const btY    = beY + beH + gap
+
+  return (
+    <pixiContainer>
+      <pixiSprite texture={bgTex} width={bgW} height={bgH} x={bgX} y={bgY} alpha={p.bgAlpha} />
+      <pixiSprite texture={textTex} width={textW} height={textH} x={textX} y={textY} alpha={p.contentAlpha} />
+      <pixiSprite
+        texture={beTex}
+        width={btnW}
+        height={beH}
+        x={btnX}
+        y={beY}
+        alpha={p.btnAlpha}
+        eventMode="static"
+        cursor="pointer"
+        onClick={() => { window.location.href = BTN_EXPLORE_URL }}
+      />
+      <pixiSprite
+        texture={btTex}
+        width={btnW}
+        height={btH}
+        x={btnX}
+        y={btY}
+        alpha={p.btnAlpha}
+        eventMode="static"
+        cursor="pointer"
+        onClick={() => { window.location.href = BTN_TEACH_URL }}
+      />
+    </pixiContainer>
+  )
+}
+
 export function Frame8({ timeline, ctx }: SceneProps) {
-  if (ctx.isMobile) return null
+  if (ctx.isMobile) return <Frame8Mobile timeline={timeline} />
   return <Frame8Desktop timeline={timeline} />
 }

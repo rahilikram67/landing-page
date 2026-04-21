@@ -65,6 +65,10 @@ import mobilePerson from "./mobile/person.svg"
 import mobileBg72 from "./mobile/bg72.svg"
 import mobileBg73 from "./mobile/bg73.png"
 import mobileBg74 from "./mobile/bg74.svg"
+import mobileBg8 from "./mobile/bg8.svg"
+import mobileBtnExplore from "./mobile/btn-explore.svg"
+import mobileBtnTeach from "./mobile/btn-teach.svg"
+import mobileStartExploreText from "./mobile/start-explore-text.svg"
 
 
 export const ASSETS = {
@@ -125,6 +129,10 @@ export const ASSETS = {
   startExploreText: "startExploreText",
   btnExplore: "btnExplore",
   btnTeach: "btnTeach",
+  mobileBg8: "mobileBg8",
+  mobileBtnExplore: "mobileBtnExplore",
+  mobileBtnTeach: "mobileBtnTeach",
+  mobileStartExploreText: "mobileStartExploreText",
 } as const
 
 const MOBILE_BREAKPOINT = 768
@@ -212,6 +220,10 @@ export function loadAssets() {
       { alias: ASSETS.mobileBg72, src: mobileBg72 },
       { alias: ASSETS.mobileBg73, src: mobileBg73 },
       { alias: ASSETS.mobileBg74, src: mobileBg74 },
+      { alias: ASSETS.mobileBg8, src: mobileBg8 },
+      { alias: ASSETS.mobileBtnExplore, src: mobileBtnExplore },
+      { alias: ASSETS.mobileBtnTeach, src: mobileBtnTeach },
+      { alias: ASSETS.mobileStartExploreText, src: mobileStartExploreText },
       { alias: ASSETS.explorerText, src: explorerText },
       { alias: ASSETS.behindEarly, src: behindEarly },
       { alias: ASSETS.textPermission, src: textPermission },
