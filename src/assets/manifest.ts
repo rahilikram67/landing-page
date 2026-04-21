@@ -53,10 +53,10 @@ import reviewBoy2 from "./mobile/review-boy2.png"
 import reviewGirl from "./mobile/review-girl.png"
 import voiceExp from "./mobile/voice-exp.png"
 import mobileBg71 from "./mobile/bg71.svg"
-import mobileDoorLeaf from "./mobile/door-leaf.png"
-import mobileDoorPanel from "./mobile/door-panel.png"
+import mobileDoorLeaf from "./mobile/door-leaf.svg"
+import mobileDoorPanel from "./mobile/door-panel.svg"
 import mobilePerson from "./mobile/person.svg"
-import mobileBg72 from "./mobile/bg72.png"
+import mobileBg72 from "./mobile/bg72.svg"
 
 
 export const ASSETS = {
