@@ -124,8 +124,8 @@ function Frame73Desktop({ timeline }: { timeline: GSAPTimeline }) {
 }
 
 const MOBILE_DOORS = [
-  { xf: 0.47, yf: 0.524, hf: 0.1200 },
-  { xf: 0.28, yf: 0.541, hf: 0.1611 },
+  { xf: 0.48, yf: 0.524, hf: 0.1200 },
+  { xf: 0.28, yf: 0.535, hf: 0.1611 },
   { xf: 0.03, yf: 0.555, hf: 0.2053 },
 ] as const
 
