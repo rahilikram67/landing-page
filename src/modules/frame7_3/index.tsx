@@ -74,7 +74,7 @@ function Frame73Desktop({ timeline }: { timeline: GSAPTimeline }) {
 
         const handleW = leafW * 0.18
         const handleH = handleTex.height / handleTex.width * handleW
-        const handleX = leafW * 0.12
+        const handleX = leafW * (1 - 0.12) - handleW
         const handleY = leafH * 0.5 - handleH / 2
 
         return (
