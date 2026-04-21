@@ -5,12 +5,12 @@ import type { SceneProps } from "../../App"
 import { ASSETS } from "@/assets/manifest"
 
 const DOORS = [
-  { xf: 0.2928, yf: 0.5022, hf: 0.1344, flip: false },
-  { xf: 0.6592, yf: 0.5022, hf: 0.1344, flip: true  },
-  { xf: 0.2071, yf: 0.5100, hf: 0.1800, flip: false },
-  { xf: 0.7282, yf: 0.5100, hf: 0.1800, flip: true  },
-  { xf: 0.1069, yf: 0.5256, hf: 0.2300, flip: false },
-  { xf: 0.8102, yf: 0.5256, hf: 0.2300, flip: true  },
+  { xf: 0.2628, yf: 0.5022, hf: 0.1344, flip: false },
+  { xf: 0.6892, yf: 0.5022, hf: 0.1344, flip: true  },
+  { xf: 0.1771, yf: 0.5100, hf: 0.1800, flip: false },
+  { xf: 0.7582, yf: 0.5100, hf: 0.1800, flip: true  },
+  { xf: 0.0769, yf: 0.5256, hf: 0.2300, flip: false },
+  { xf: 0.8402, yf: 0.5256, hf: 0.2300, flip: true  },
 ] as const
 
 const DOOR_OPEN_DURATION = 2.5
