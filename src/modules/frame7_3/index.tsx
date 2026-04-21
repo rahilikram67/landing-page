@@ -5,12 +5,12 @@ import type { SceneProps } from "../../App"
 import { ASSETS } from "@/assets/manifest"
 
 const DOORS = [
-  { xf: 0.1069, yf: 0.5556, hf: 0.2300, flip: false },
-  { xf: 0.2071, yf: 0.5400, hf: 0.1800, flip: false },
-  { xf: 0.2928, yf: 0.5322, hf: 0.1344, flip: false },
-  { xf: 0.6592, yf: 0.5322, hf: 0.1344, flip: true  },
-  { xf: 0.7282, yf: 0.5400, hf: 0.1800, flip: true  },
-  { xf: 0.8102, yf: 0.5556, hf: 0.2300, flip: true  },
+  { xf: 0.1069, yf: 0.5256, hf: 0.2300, flip: false },
+  { xf: 0.2071, yf: 0.5100, hf: 0.1800, flip: false },
+  { xf: 0.2928, yf: 0.5022, hf: 0.1344, flip: false },
+  { xf: 0.6592, yf: 0.5022, hf: 0.1344, flip: true  },
+  { xf: 0.7282, yf: 0.5100, hf: 0.1800, flip: true  },
+  { xf: 0.8102, yf: 0.5256, hf: 0.2300, flip: true  },
 ] as const
 
 function Frame73Desktop({ timeline }: { timeline: GSAPTimeline }) {
