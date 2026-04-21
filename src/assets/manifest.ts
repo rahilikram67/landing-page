@@ -43,6 +43,8 @@ import textRightTools from "./desktop/text-right-tools.svg"
 import bg73 from "./desktop/bg73.png"
 import behindEarly from "./desktop/behind-early.png"
 import halfSun from "./desktop/half-sun.png"
+import bg74 from "./desktop/bg74.svg"
+import explorerText from "./desktop/explorer-text.svg"
 
 
 // mobile
@@ -111,6 +113,8 @@ export const ASSETS = {
   bg73: "bg73",
   behindEarly: "behindEarly",
   halfSun: "halfSun",
+  bg74: "bg74",
+  explorerText: "explorerText",
 } as const
 
 const MOBILE_BREAKPOINT = 768
@@ -165,6 +169,8 @@ export function loadAssets() {
       { alias: ASSETS.bg73, src: bg73 },
       { alias: ASSETS.behindEarly, src: behindEarly },
       { alias: ASSETS.halfSun, src: halfSun },
+      { alias: ASSETS.bg74, src: bg74 },
+      { alias: ASSETS.explorerText, src: explorerText },
     ])
 
     Assets.addBundle("mobile", [
