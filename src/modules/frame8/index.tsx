@@ -85,6 +85,7 @@ function Frame8Desktop({ timeline }: { timeline: GSAPTimeline }) {
 
   return (
     <pixiContainer>
+       
       {/* Background */}
       <pixiSprite texture={bgTex} width={bgW} height={bgH} x={bgX} y={bgY} alpha={p.bgAlpha} />
 
