@@ -47,7 +47,7 @@ import halfSun from "./desktop/half-sun.png"
 
 // mobile
 import mobileBg5 from "./mobile/bg5.png"
-import mobileCircleBottomText from "./mobile/circle-bottom-text.png"
+import mobileCircleBottomText from "./mobile/circle-bottom-text.svg"
 import reviewBoy from "./mobile/review-boy.png"
 import reviewBoy2 from "./mobile/review-boy2.png"
 import reviewGirl from "./mobile/review-girl.png"
