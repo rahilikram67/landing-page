@@ -13,11 +13,14 @@ const DOORS = [
   { xf: 0.8102, yf: 0.5256, hf: 0.2300, flip: true  },
 ] as const
 
+const DOOR_OPEN_DURATION = 2.5
+const SMOOTH_EASE = "power2.inOut"
+
 function Frame73Desktop({ timeline }: { timeline: GSAPTimeline }) {
   const { app } = useApplication()
   const [, forceRender] = useReducer(x => x + 1, 0)
 
-  const proxy = useRef({ bgAlpha: 0, doorsAlpha: 0 })
+  const proxy = useRef({ bgAlpha: 0, doorsAlpha: 0, doorRotY: 0 })
 
   useEffect(() => {
     if (!timeline || !app.renderer) return
@@ -36,6 +39,13 @@ function Frame73Desktop({ timeline }: { timeline: GSAPTimeline }) {
       ease: "power2.out",
       onUpdate: forceRender,
     }, "<0.4")
+
+    timeline.to(p, {
+      doorRotY: Math.PI,
+      duration: DOOR_OPEN_DURATION,
+      ease: SMOOTH_EASE,
+      onUpdate: forceRender,
+    }, ">")
   }, [timeline, app.renderer])
 
   if (!app.renderer) return null
@@ -57,6 +67,8 @@ function Frame73Desktop({ timeline }: { timeline: GSAPTimeline }) {
 
   const insetX = (panelTex.width  - leafTex.width)  / 2 / panelTex.width
   const insetY = (panelTex.height - leafTex.height) / 2 / panelTex.height
+
+  const doorScaleX = Math.cos(p.doorRotY)
 
   return (
     <pixiContainer>
@@ -86,7 +98,7 @@ function Frame73Desktop({ timeline }: { timeline: GSAPTimeline }) {
             alpha={p.doorsAlpha}
           >
             <pixiSprite texture={panelTex} width={panelW} height={doorH} />
-            <pixiContainer x={hingeX} y={hingeY}>
+            <pixiContainer x={hingeX} y={hingeY} scale={{ x: doorScaleX, y: 1 }}>
               <pixiSprite texture={leafTex} width={leafW} height={leafH} x={-leafW} y={-leafH / 2} />
               <pixiSprite texture={handleTex} width={handleW} height={handleH} x={-leafW + handleX} y={-leafH / 2 + handleY} />
             </pixiContainer>
