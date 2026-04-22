@@ -49,6 +49,20 @@ import bg8 from "./desktop/bg8.svg"
 import startExploreText from "./desktop/start-explore-text.svg"
 import btnExplore from "./desktop/btn-explore.svg"
 import btnTeach from "./desktop/btn-teach.svg"
+import bg1BlurLeft from "./desktop/bottom-left-blur1.svg"
+import bg1BlurRight from "./desktop/top-right-blur1.svg"
+import everySecondText from "./desktop/every-second-google-text.svg"
+import millionsGoneText from "./desktop/millions-gone-text.svg"
+import inboxAlertChip from "./desktop/inbox-alert-chip.svg"
+import mailsChip from "./desktop/mails-chip.svg"
+import rewriteChip from "./desktop/rewrite-with-conf-chip.svg"
+import summarizeChip from "./desktop/summarize-my-notes-chip.svg"
+import reportChip from "./desktop/report-due-soon-chip.svg"
+import organizeChip from "./desktop/tool-organize-chip.svg"
+import error404Chip from "./desktop/error-404-chip.svg"
+import howToWriteChip from "./desktop/how-to-write-chip.svg"
+import explainCodeChip from "./desktop/explain-code-chip.svg"
+import diffMlAiChip from "./desktop/diff-ml-ai-chip.svg"
 
 
 // mobile
@@ -133,6 +147,20 @@ export const ASSETS = {
   mobileBtnExplore: "mobileBtnExplore",
   mobileBtnTeach: "mobileBtnTeach",
   mobileStartExploreText: "mobileStartExploreText",
+  bg1BlurLeft: "bg1BlurLeft",
+  bg1BlurRight: "bg1BlurRight",
+  everySecondText: "everySecondText",
+  millionsGoneText: "millionsGoneText",
+  inboxAlertChip: "inboxAlertChip",
+  mailsChip: "mailsChip",
+  rewriteChip: "rewriteChip",
+  summarizeChip: "summarizeChip",
+  reportChip: "reportChip",
+  organizeChip: "organizeChip",
+  error404Chip: "error404Chip",
+  howToWriteChip: "howToWriteChip",
+  explainCodeChip: "explainCodeChip",
+  diffMlAiChip: "diffMlAiChip",
 } as const
 
 const MOBILE_BREAKPOINT = 768
@@ -193,6 +221,20 @@ export function loadAssets() {
       { alias: ASSETS.startExploreText, src: startExploreText },
       { alias: ASSETS.btnExplore, src: btnExplore },
       { alias: ASSETS.btnTeach, src: btnTeach },
+      { alias: ASSETS.bg1BlurLeft, src: bg1BlurLeft },
+      { alias: ASSETS.bg1BlurRight, src: bg1BlurRight },
+      { alias: ASSETS.everySecondText, src: everySecondText },
+      { alias: ASSETS.millionsGoneText, src: millionsGoneText },
+      { alias: ASSETS.inboxAlertChip, src: inboxAlertChip },
+      { alias: ASSETS.mailsChip, src: mailsChip },
+      { alias: ASSETS.rewriteChip, src: rewriteChip },
+      { alias: ASSETS.summarizeChip, src: summarizeChip },
+      { alias: ASSETS.reportChip, src: reportChip },
+      { alias: ASSETS.organizeChip, src: organizeChip },
+      { alias: ASSETS.error404Chip, src: error404Chip },
+      { alias: ASSETS.howToWriteChip, src: howToWriteChip },
+      { alias: ASSETS.explainCodeChip, src: explainCodeChip },
+      { alias: ASSETS.diffMlAiChip, src: diffMlAiChip },
     ])
 
     Assets.addBundle("mobile", [
