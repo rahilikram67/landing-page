@@ -28,8 +28,7 @@ const CIRCLES_END = [
   { wf: 0.4709, xf: 0.2653, yf:  0.1422 },
 ]
 
-// dead-burnout text rect — Figma 21599-97950: x=334, y=334, w=708, h=232 in 1376×900
-const DEAD = { l: 0.2428, r: 0.7574, t: 0.3711, b: 0.6289 }
+type DeadRect = { l: number; r: number; t: number; b: number }
 
 function lerp(a: number, b: number, t: number) { return a + (b - a) * t }
 
@@ -39,30 +38,28 @@ function lerp(a: number, b: number, t: number) { return a + (b - a) * t }
  */
 function chipBorderTarget(
   xf: number, yf: number, wf: number, hf: number,
+  dead: DeadRect,
 ): { xf: number; yf: number } {
   const chipCX = xf + wf / 2
   const chipCY = yf + hf / 2
-  const deadCX = (DEAD.l + DEAD.r) / 2
-  const deadCY = (DEAD.t + DEAD.b) / 2
+  const deadCX = (dead.l + dead.r) / 2
+  const deadCY = (dead.t + dead.b) / 2
   const dx = chipCX - deadCX
   const dy = chipCY - deadCY
-  const deadAspect = (DEAD.b - DEAD.t) / (DEAD.r - DEAD.l)
+  const deadAspect = (dead.b - dead.t) / (dead.r - dead.l)
 
   let target: { xf: number; yf: number }
   if (Math.abs(dx) < 0.001 || Math.abs(dy / dx) >= deadAspect) {
-    // approach from top or bottom
     target = dy < 0
-      ? { xf, yf: DEAD.t - hf }  // chip above → bottom edge touches DEAD.top
-      : { xf, yf: DEAD.b }       // chip below → top edge touches DEAD.bottom
+      ? { xf, yf: dead.t - hf }
+      : { xf, yf: dead.b }
   } else {
-    // approach from left or right
     target = dx < 0
-      ? { xf: DEAD.l - wf, yf }  // chip left  → right edge touches DEAD.left
-      : { xf: DEAD.r,      yf }  // chip right → left  edge touches DEAD.right
+      ? { xf: dead.l - wf, yf }
+      : { xf: dead.r,      yf }
   }
 
-  // If target is farther from dead center than initial, the chip would move
-  // away from the text — keep it in place instead
+  // If target is farther from dead center than initial, keep chip in place
   const tCX = target.xf + wf / 2
   const tCY = target.yf + hf / 2
   const initDist2 = dx * dx + dy * dy
@@ -179,28 +176,38 @@ function Frame1Desktop({ timeline }: { timeline: GSAPTimeline }) {
 
   // dead-burnout-fades text — fades in
   const deadTex = Assets.get(ASSETS.deadBurnoutFades)
-  const deadW = sw * 0.5146
+  const deadWf = 0.5146
+  const deadXf = 0.2428
+  const deadYf = 0.3711
+  const deadW = sw * deadWf
   const deadH = (deadTex.height / deadTex.width) * deadW
+  // rect fully derived from live sw/sh — no static reference dimensions
+  const dead: DeadRect = {
+    l: deadXf,
+    r: deadXf + deadWf,
+    t: deadYf,
+    b: deadYf + deadH / sh,
+  }
 
-  // inbox card — converges to DEAD border
+  // inbox card — converges to dead border
   const inboxTex = Assets.get(ASSETS.inboxAlertChip)
   const inboxWf = 0.1787
   const inboxHf = (inboxTex.height / inboxTex.width) * inboxWf * (sw / sh)
   const inboxInitXf = 0.0313
   const inboxInitYf = 0.4311
-  const inboxTgt = chipBorderTarget(inboxInitXf, inboxInitYf, inboxWf, inboxHf)
+  const inboxTgt = chipBorderTarget(inboxInitXf, inboxInitYf, inboxWf, inboxHf, dead)
   const inboxW = sw * inboxWf
   const inboxH = (inboxTex.height / inboxTex.width) * inboxW
   const inboxX = sw * lerp(inboxInitXf, inboxTgt.xf, chipProg)
   const inboxY = sh * lerp(inboxInitYf, inboxTgt.yf, chipProg)
 
-  // mails card — converges to DEAD border
+  // mails card — converges to dead border
   const mailsTex = Assets.get(ASSETS.mailsChip)
   const mailsWf = 0.1509
   const mailsHf = (mailsTex.height / mailsTex.width) * mailsWf * (sw / sh)
   const mailsInitXf = 0.8241
   const mailsInitYf = 0.1778
-  const mailsTgt = chipBorderTarget(mailsInitXf, mailsInitYf, mailsWf, mailsHf)
+  const mailsTgt = chipBorderTarget(mailsInitXf, mailsInitYf, mailsWf, mailsHf, dead)
   const mailsW = sw * mailsWf
   const mailsH = (mailsTex.height / mailsTex.width) * mailsW
   const mailsX = sw * lerp(mailsInitXf, mailsTgt.xf, chipProg)
@@ -219,7 +226,7 @@ function Frame1Desktop({ timeline }: { timeline: GSAPTimeline }) {
       <pixiSprite texture={millTex}  width={millW}  height={millH}  x={millX}  y={millY}  blendMode="overlay" alpha={textAlpha} />
 
       {/* dead-burnout-fades — fades in */}
-      <pixiSprite texture={deadTex} width={deadW} height={deadH} x={sw * DEAD.l} y={sh * DEAD.t} alpha={deadAlpha} blendMode="overlay" />
+      <pixiSprite texture={deadTex} width={deadW} height={deadH} x={sw * dead.l} y={sh * dead.t} alpha={deadAlpha} blendMode="overlay" />
 
       {/* circles — shrink toward end-state */}
       {circles.map(({ size, x, y }, i) => (
@@ -236,7 +243,7 @@ function Frame1Desktop({ timeline }: { timeline: GSAPTimeline }) {
         const w = sw * wf
         const h = (tex.height / tex.width) * w
         const hf = h / sh
-        const tgt = chipBorderTarget(xf, yf, wf, hf)
+        const tgt = chipBorderTarget(xf, yf, wf, hf, dead)
         return (
           <pixiSprite
             key={key}
