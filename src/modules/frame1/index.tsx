@@ -4,17 +4,16 @@ import { Assets } from "pixi.js"
 import type { SceneProps } from "../../App"
 import { ASSETS } from "@/assets/manifest"
 
-// Figma reference frame: 1376 × 900
-// [assetKey, xf, yf, wf]  — x/y/w as fractions of screen width; height derived from texture aspect ratio
+// [assetKey, xf, yf, wf]  — all fractions of sw/sh; height derived from texture aspect ratio
 const CHIPS: [string, number, number, number][] = [
-  [ASSETS.rewriteChip, 778.64 / 1376, 564 / 900, 235.621 / 1376],
-  [ASSETS.summarizeChip, 672 / 1376, 208.61 / 900, 159.5 / 1376],
-  [ASSETS.reportChip, 948.22 / 1376, 486 / 900, 281.644 / 1376],
-  [ASSETS.organizeChip, 189 / 1376, 568.28 / 900, 317.175 / 1376],
-  [ASSETS.error404Chip, 862 / 1376, 184.73 / 900, 155.997 / 1376],
-  [ASSETS.howToWriteChip, 319.76 / 1376, 85 / 900, 312.362 / 1376],
-  [ASSETS.explainCodeChip, 575.56 / 1376, 634 / 900, 215.378 / 1376],
-  [ASSETS.diffMlAiChip, 120.7 / 1376, 135 / 900, 263.584 / 1376],
+  [ASSETS.rewriteChip,     0.5659, 0.6267, 0.1712],
+  [ASSETS.summarizeChip,   0.4884, 0.2318, 0.1159],
+  [ASSETS.reportChip,      0.6891, 0.5400, 0.2047],
+  [ASSETS.organizeChip,    0.1374, 0.6314, 0.2305],
+  [ASSETS.error404Chip,    0.6264, 0.2053, 0.1134],
+  [ASSETS.howToWriteChip,  0.2324, 0.0944, 0.2270],
+  [ASSETS.explainCodeChip, 0.4183, 0.7044, 0.1565],
+  [ASSETS.diffMlAiChip,    0.0877, 0.1500, 0.1916],
 ]
 
 function Frame1Desktop({ timeline }: { timeline: GSAPTimeline }) {
@@ -33,28 +32,25 @@ function Frame1Desktop({ timeline }: { timeline: GSAPTimeline }) {
   const sh = app.screen.height
 
 
-  // Three concentric circles — positions/sizes from Figma node 21599-97575/97576/97577 (ref 1376×900)
+  // Three concentric circles — Figma nodes 21599-97575/97576/97577
   const circleTex = Assets.get(ASSETS.circle)
   const circles = [
-    { wf: 1180 / 1376, xf: 99 / 1376, yf: -139 / 900 },
-    { wf: 1000 / 1376, xf: 189 / 1376, yf: -49 / 900 },
-    { wf: 800 / 1376, xf: 288 / 1376, yf: 50 / 900 },
-  ].map(({ wf, xf, yf }) => {
-    const size = sw * wf
-    return { size, x: sw * xf, y: sh * yf }
-  })
+    { wf: 0.8576, xf: 0.0720, yf: -0.1544 },
+    { wf: 0.7267, xf: 0.1374, yf: -0.0544 },
+    { wf: 0.5814, xf: 0.2093, yf:  0.0556 },
+  ].map(({ wf, xf, yf }) => ({ size: sw * wf, x: sw * xf, y: sh * yf }))
 
   const inboxTex = Assets.get(ASSETS.inboxAlertChip)
-  const inboxW = sw * (245.885 / 1376)
+  const inboxW = sw * 0.1787
   const inboxH = (inboxTex.height / inboxTex.width) * inboxW
-  const inboxX = sw * (43 / 1376)
-  const inboxY = sh * (388 / 900)
+  const inboxX = sw * 0.0313
+  const inboxY = sh * 0.4311
 
   const mailsTex = Assets.get(ASSETS.mailsChip)
-  const mailsW = sw * (207.636 / 1376)
+  const mailsW = sw * 0.1509
   const mailsH = (mailsTex.height / mailsTex.width) * mailsW
-  const mailsX = sw * (1134 / 1376)
-  const mailsY = sh * (160 / 900)
+  const mailsX = sw * 0.8241
+  const mailsY = sh * 0.1778
 
 
   const bg1Tex = Assets.get(ASSETS.bg1)
