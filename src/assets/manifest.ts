@@ -52,6 +52,8 @@ import btnTeach from "./desktop/btn-teach.svg"
 import bg1 from "./desktop/bg1.svg"
 import bg1BlurLeft from "./desktop/bottom-left-blur1.svg"
 import bg1BlurRight from "./desktop/top-right-blur1.svg"
+import topRightBlur2 from "./desktop/top-right-blur2.svg"
+import deadBurnoutFades from "./desktop/dead-burnout-fades.svg"
 import everySecondText from "./desktop/every-second-google-text.svg"
 import millionsGoneText from "./desktop/millions-gone-text.svg"
 import inboxAlertChip from "./desktop/inbox-alert-chip.svg"
@@ -151,6 +153,8 @@ export const ASSETS = {
   bg1: "bg1",
   bg1BlurLeft: "bg1BlurLeft",
   bg1BlurRight: "bg1BlurRight",
+  topRightBlur2: "topRightBlur2",
+  deadBurnoutFades: "deadBurnoutFades",
   everySecondText: "everySecondText",
   millionsGoneText: "millionsGoneText",
   inboxAlertChip: "inboxAlertChip",
@@ -226,6 +230,8 @@ export function loadAssets() {
       { alias: ASSETS.bg1, src: bg1 },
       { alias: ASSETS.bg1BlurLeft, src: bg1BlurLeft },
       { alias: ASSETS.bg1BlurRight, src: bg1BlurRight },
+      { alias: ASSETS.topRightBlur2, src: topRightBlur2 },
+      { alias: ASSETS.deadBurnoutFades, src: deadBurnoutFades },
       { alias: ASSETS.everySecondText, src: everySecondText },
       { alias: ASSETS.millionsGoneText, src: millionsGoneText },
       { alias: ASSETS.inboxAlertChip, src: inboxAlertChip },

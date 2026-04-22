@@ -1,10 +1,10 @@
-import { useEffect } from "react"
+import { useEffect, useRef, useState } from "react"
 import { useApplication } from "@pixi/react"
 import { Assets } from "pixi.js"
 import type { SceneProps } from "../../App"
 import { ASSETS } from "@/assets/manifest"
 
-// [assetKey, xf, yf, wf]  — all fractions of sw/sh; height derived from texture aspect ratio
+// [assetKey, xf, yf, wf] — fractions of sw/sh; height from texture aspect ratio
 const CHIPS: [string, number, number, number][] = [
   [ASSETS.rewriteChip,     0.5659, 0.6267, 0.1712],
   [ASSETS.summarizeChip,   0.4884, 0.2318, 0.1159],
@@ -16,14 +16,91 @@ const CHIPS: [string, number, number, number][] = [
   [ASSETS.diffMlAiChip,    0.0877, 0.1500, 0.1916],
 ]
 
+// Circle initial → end-state fractions (Figma: 21599-97575/76/77 → 21599-97937/38/39)
+const CIRCLES_INIT = [
+  { wf: 0.8576, xf: 0.0720, yf: -0.1544 },
+  { wf: 0.7267, xf: 0.1374, yf: -0.0544 },
+  { wf: 0.5814, xf: 0.2093, yf:  0.0556 },
+]
+const CIRCLES_END = [
+  { wf: 0.6919, xf: 0.1541, yf: -0.0278 },
+  { wf: 0.5843, xf: 0.2072, yf:  0.0533 },
+  { wf: 0.4709, xf: 0.2653, yf:  0.1422 },
+]
+
+function lerp(a: number, b: number, t: number) { return a + (b - a) * t }
+
 function Frame1Desktop({ timeline }: { timeline: GSAPTimeline }) {
   const { app } = useApplication()
 
+  const proxy = useRef({
+    blur2Alpha: 0,
+    blur2DXF:   0,   // fraction of sw: 0 → -0.3
+    blur2DYF:   0,   // fraction of sh: 0 →  0.25
+    textAlpha:  1,
+    deadAlpha:  0,
+    chipProg:   0,
+    circProg:   0,
+  })
 
+  const [blur2Alpha,  setBlur2Alpha]  = useState(0)
+  const [blur2DXF,    setBlur2DXF]    = useState(0)
+  const [blur2DYF,    setBlur2DYF]    = useState(0)
+  const [textAlpha,   setTextAlpha]   = useState(1)
+  const [deadAlpha,   setDeadAlpha]   = useState(0)
+  const [chipProg,    setChipProg]    = useState(0)
+  const [circProg,    setCircProg]    = useState(0)
 
   useEffect(() => {
     if (!timeline || !app.renderer) return
+    const p = proxy.current
 
+    // blur2: fade in and drift top-right → bottom-left
+    timeline.to(p, {
+      blur2Alpha: 1,
+      duration: 1.5,
+      ease: "power1.out",
+      onUpdate() { setBlur2Alpha(p.blur2Alpha) },
+    }, ">")
+    timeline.to(p, {
+      blur2DXF: -0.3,
+      blur2DYF:  0.25,
+      duration: 2.0,
+      ease: "power1.inOut",
+      onUpdate() { setBlur2DXF(p.blur2DXF); setBlur2DYF(p.blur2DYF) },
+    }, "<")
+
+    // every/mill texts fade out
+    timeline.to(p, {
+      textAlpha: 0,
+      duration: 1.0,
+      ease: "power1.in",
+      onUpdate() { setTextAlpha(p.textAlpha) },
+    }, "<")
+
+    // circles shrink
+    timeline.to(p, {
+      circProg: 1,
+      duration: 1.5,
+      ease: "power1.inOut",
+      onUpdate() { setCircProg(p.circProg) },
+    }, "<")
+
+    // dead-burnout text fades in
+    timeline.to(p, {
+      deadAlpha: 1,
+      duration: 1.0,
+      ease: "power1.out",
+      onUpdate() { setDeadAlpha(p.deadAlpha) },
+    }, ">-0.8")
+
+    // chips converge toward dead-burnout text
+    timeline.to(p, {
+      chipProg: 1,
+      duration: 1.5,
+      ease: "power2.inOut",
+      onUpdate() { setChipProg(p.chipProg) },
+    }, "<")
   }, [timeline, app.renderer])
 
   if (!app.renderer) return null
@@ -31,14 +108,29 @@ function Frame1Desktop({ timeline }: { timeline: GSAPTimeline }) {
   const sw = app.screen.width
   const sh = app.screen.height
 
+  // Background blurs
+  const blurLTex = Assets.get(ASSETS.bg1BlurLeft)
+  const blurRTex = Assets.get(ASSETS.bg1BlurRight)
+  const blurLW = blurLTex.width * (sh / blurLTex.height)
+  const blurRW = blurRTex.width * (sh / blurRTex.height)
 
-  // Three concentric circles — Figma nodes 21599-97575/97576/97577
+  // top-right-blur2 — rendered at full screen size, drifts left+down
+  const blur2Tex = Assets.get(ASSETS.topRightBlur2)
+  const blur2W = sw
+  const blur2H = (blur2Tex.height / blur2Tex.width) * blur2W
+  const blur2X = sw * blur2DXF
+  const blur2Y = sh * blur2DYF
+
+  // Three concentric circles — lerp toward end-state as circProg advances
   const circleTex = Assets.get(ASSETS.circle)
-  const circles = [
-    { wf: 0.8576, xf: 0.0720, yf: -0.1544 },
-    { wf: 0.7267, xf: 0.1374, yf: -0.0544 },
-    { wf: 0.5814, xf: 0.2093, yf:  0.0556 },
-  ].map(({ wf, xf, yf }) => ({ size: sw * wf, x: sw * xf, y: sh * yf }))
+  const circles = CIRCLES_INIT.map((init, i) => {
+    const end = CIRCLES_END[i]
+    return {
+      size: sw * lerp(init.wf, end.wf, circProg),
+      x:    sw * lerp(init.xf, end.xf, circProg),
+      y:    sh * lerp(init.yf, end.yf, circProg),
+    }
+  })
 
   const inboxTex = Assets.get(ASSETS.inboxAlertChip)
   const inboxW = sw * 0.1787
@@ -52,74 +144,71 @@ function Frame1Desktop({ timeline }: { timeline: GSAPTimeline }) {
   const mailsX = sw * 0.8241
   const mailsY = sh * 0.1778
 
-
-  // Blur backgrounds — scale to fill full height, width proportional
-  const blurLTex = Assets.get(ASSETS.bg1BlurLeft)
-  const blurRTex = Assets.get(ASSETS.bg1BlurRight)
-  const blurLW = blurLTex.width * (sh / blurLTex.height)
-  const blurRW = blurRTex.width * (sh / blurRTex.height)
-
-  // Text line 1 — xf derived from calc(50%+16px - 50% of text), yf=277/900
+  // "every second" / "millions gone" — fade out
   const everyTex = Assets.get(ASSETS.everySecondText)
   const everyW = sw * 0.8111
-  const everyH = everyTex.height / everyTex.width * everyW
+  const everyH = (everyTex.height / everyTex.width) * everyW
   const everyX = (sw - everyW) / 2 + sw * 0.0116
   const everyY = sh * 0.3078
 
-  // Text line 2 — same x, yf=438/900
   const millTex = Assets.get(ASSETS.millionsGoneText)
   const millW = sw * 0.8111
-  const millH = millTex.height / millTex.width * millW
+  const millH = (millTex.height / millTex.width) * millW
   const millX = (sw - millW) / 2 + sw * 0.0116
   const millY = sh * 0.4867
+
+  // dead-burnout-fades text — Figma 21599-97950: x=334/1376, y=334/900, w=708/1376
+  const deadTex = Assets.get(ASSETS.deadBurnoutFades)
+  const deadW = sw * 0.5146
+  const deadH = (deadTex.height / deadTex.width) * deadW
+  const deadX = sw * 0.2428
+  const deadY = sh * 0.3711
+
+  // chips converge toward dead-burnout text center (≈ 0.5, 0.37)
+  const deadCX = 0.2428 + 0.5146 / 2   // ≈ 0.5001
 
   return (
     <pixiContainer>
       <pixiSprite texture={blurLTex} width={blurLW} height={sh} x={0} y={0} />
       <pixiSprite texture={blurRTex} width={blurRW} height={sh} x={sw - blurRW} y={0} />
-      <pixiSprite texture={everyTex} width={everyW} height={everyH} x={everyX} y={everyY} blendMode="overlay" />
-      <pixiSprite texture={millTex}  width={millW}  height={millH}  x={millX}  y={millY}  blendMode="overlay" /> 
-      
 
-      {/* Circles */}
+      {/* top-right-blur2: fades in, drifts top-right → bottom-left */}
+      {/* <pixiSprite texture={blur2Tex} width={blur2W} height={blur2H} x={blur2X} y={blur2Y} alpha={blur2Alpha} /> */}
 
+      {/* every second / millions gone — fade out */}
+      <pixiSprite texture={everyTex} width={everyW} height={everyH} x={everyX} y={everyY} blendMode="overlay" alpha={textAlpha} />
+      <pixiSprite texture={millTex}  width={millW}  height={millH}  x={millX}  y={millY}  blendMode="overlay" alpha={textAlpha} />
+
+      {/* dead-burnout-fades — fades in */}
+      <pixiSprite texture={deadTex} width={deadW} height={deadH} x={deadX} y={deadY} alpha={deadAlpha} />
+
+      {/* circles — shrink toward end-state */}
       {circles.map(({ size, x, y }, i) => (
         <pixiSprite key={i} texture={circleTex} width={size} height={size} x={x} y={y} />
       ))}
-      {/* Cards */}
+
+      {/* cards */}
       <pixiSprite texture={inboxTex} width={inboxW} height={inboxH} x={inboxX} y={inboxY} />
       <pixiSprite texture={mailsTex} width={mailsW} height={mailsH} x={mailsX} y={mailsY} />
 
-
-     
-
-
-
-
-
-
-
-      {/* Central text */}
-
-      {/* Floating chips — positions/widths are fractions of screen; height from texture aspect ratio */}
+      {/* chips — converge toward dead-burnout text center */}
       {CHIPS.map(([key, xf, yf, wf]) => {
         const tex = Assets.get(key)
         const w = sw * wf
         const h = (tex.height / tex.width) * w
+        const targetXf = deadCX - wf / 2
+        const targetYf = 0.3711
         return (
           <pixiSprite
             key={key}
             texture={tex}
             width={w}
             height={h}
-            x={sw * xf}
-            y={sh * yf}
+            x={sw * lerp(xf, targetXf, chipProg)}
+            y={sh * lerp(yf, targetYf, chipProg)}
           />
         )
       })}
-
-
-
     </pixiContainer>
   )
 }
