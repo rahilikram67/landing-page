@@ -4,18 +4,17 @@ import { Frame5 } from "./modules/frame5"
 import { Frame6 } from "./modules/frame6"
 import { Frame7_1 } from "./modules/frame7_1"
 import { Frame7_2 } from "./modules/frame7_2"
-// import { Frame7_3 } from "./modules/frame7_3/old"
+import { Frame7_3 } from "./modules/frame7_3"
+import { Frame7_4 } from "./modules/frame7_4"
+import { Frame8 } from "./modules/frame8"
 import { Application, extend } from "@pixi/react"
 import type { ComponentType } from "react"
 import gsap from "gsap"
 import { ScrollTrigger } from "gsap/ScrollTrigger"
 import { loadAssets } from "./assets/manifest"
-import { Container, Sprite, Graphics } from "pixi.js"
-import { Frame7_3 } from "./modules/frame7_3"
-import { Frame7_4 } from "./modules/frame7_4"
-import { Frame8 } from "./modules/frame8"
+import { Container, Sprite, Graphics,Text } from "pixi.js"
 
-extend({ Sprite, Container, Graphics })
+extend({ Sprite, Container, Graphics,Text })
 
 gsap.registerPlugin(ScrollTrigger)
 ScrollTrigger.normalizeScroll(true)

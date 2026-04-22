@@ -20,7 +20,7 @@ const CHIPS: [string, number, number, number, number][] = [
 function Frame1Desktop({ timeline }: { timeline: GSAPTimeline }) {
   const { app } = useApplication()
   const [, forceRender] = useReducer(x => x + 1, 0)
-  
+
 
   useEffect(() => {
     if (!timeline || !app.renderer) return
@@ -83,13 +83,14 @@ function Frame1Desktop({ timeline }: { timeline: GSAPTimeline }) {
       {/* Blurs */}
 
       
-      
       <pixiSprite texture={blurLTex} width={blurLW} height={sh} x={0} y={0} />
       <pixiSprite texture={blurRTex} width={blurRW} height={sh} x={sw - blurRW} y={0} />
       
-      
       <pixiSprite texture={everyTex} width={everyW} height={everyH} x={everyX} y={everyY} blendMode="overlay" />
-      <pixiSprite texture={millTex} width={millW} height={millH} x={millX} y={millY} blendMode="overlay" />
+      <pixiSprite texture={millTex}  width={millW}  height={millH}  x={millX}  y={millY}  blendMode="overlay" />
+
+
+
       {/* Circles */}
       <pixiSprite texture={circleTex} width={circleSize} height={circleSize} x={circleX} y={circleY} />
 
@@ -99,6 +100,9 @@ function Frame1Desktop({ timeline }: { timeline: GSAPTimeline }) {
 
 
       
+
+
+
 
       {/* Central text */}
 
@@ -118,7 +122,7 @@ function Frame1Desktop({ timeline }: { timeline: GSAPTimeline }) {
           />
         )
       })}
-      
+
     </pixiContainer>
   )
 }
