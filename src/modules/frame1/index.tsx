@@ -32,43 +32,72 @@ type DeadRect = { l: number; r: number; t: number; b: number }
 
 function lerp(a: number, b: number, t: number) { return a + (b - a) * t }
 
+// Fraction of chip dimension that overlaps with the dead-burnout rect at rest.
+const CHIP_OVERLAP = 0.25
+
 /**
- * Return the position where a chip (xf,yf,wf,hf) should stop so its nearest
- * edge just grazes the dead-burnout rect border — it never enters inside.
+ * Trace the chip center along the line toward the dead-text center and stop it
+ * at the boundary where CHIP_OVERLAP fraction of the chip overlaps the dead rect.
+ * Works for any approach direction including diagonal (e.g. upper-right mails card).
+ * If the chip center is already inside that boundary it is left in place.
  */
 function chipBorderTarget(
   xf: number, yf: number, wf: number, hf: number,
   dead: DeadRect,
 ): { xf: number; yf: number } {
-  const chipCX = xf + wf / 2
-  const chipCY = yf + hf / 2
+  const hw = wf / 2
+  const hh = hf / 2
+  const chipCX = xf + hw
+  const chipCY = yf + hh
   const deadCX = (dead.l + dead.r) / 2
   const deadCY = (dead.t + dead.b) / 2
-  const dx = chipCX - deadCX
-  const dy = chipCY - deadCY
-  const deadAspect = (dead.b - dead.t) / (dead.r - dead.l)
 
-  let target: { xf: number; yf: number }
-  if (Math.abs(dx) < 0.001 || Math.abs(dy / dx) >= deadAspect) {
-    // Center chip on the top/bottom border so it appears visually at the text level
-    target = dy < 0
-      ? { xf, yf: dead.t - hf / 1.3 }
-      : { xf, yf: dead.b - hf / 3 }
-  } else {
-    // Center chip on the left/right border
-    target = dx < 0
-      ? { xf: dead.l - wf / 1.3, yf:yf * 0.95 }
-      : { xf: dead.r - wf / 3, yf:yf * 0.95 }
+  // "Stop boundary" for the chip center: chip overlaps dead rect by CHIP_OVERLAP
+  const stop = {
+    l: dead.l - hw + wf * CHIP_OVERLAP,
+    r: dead.r + hw - wf * CHIP_OVERLAP,
+    t: dead.t - hh + hf * CHIP_OVERLAP,
+    b: dead.b + hh - hf * CHIP_OVERLAP,
   }
 
-  // If target is farther from dead center than initial, keep chip in place
-  const tCX = target.xf + wf / 2
-  const tCY = target.yf + hf / 2
-  const initDist2 = dx * dx + dy * dy
-  const targDist2 = (tCX - deadCX) ** 2 + (tCY - deadCY) ** 2
-  if (targDist2 > initDist2 + 1e-6) return { xf, yf }
+  // Already inside the stop boundary — no movement needed
+  if (chipCX >= stop.l && chipCX <= stop.r && chipCY >= stop.t && chipCY <= stop.b) {
+    return { xf, yf }
+  }
 
-  return target
+  const dx = deadCX - chipCX
+  const dy = deadCY - chipCY
+  let tMin = 1 // capped at dead center (always inside stop boundary)
+
+  if (Math.abs(dy) > 1e-9) {
+    const tT = (stop.t - chipCY) / dy
+    if (tT > 1e-9 && tT < tMin) {
+      const ix = chipCX + tT * dx
+      if (ix >= stop.l && ix <= stop.r) tMin = tT
+    }
+    const tB = (stop.b - chipCY) / dy
+    if (tB > 1e-9 && tB < tMin) {
+      const ix = chipCX + tB * dx
+      if (ix >= stop.l && ix <= stop.r) tMin = tB
+    }
+  }
+  if (Math.abs(dx) > 1e-9) {
+    const tL = (stop.l - chipCX) / dx
+    if (tL > 1e-9 && tL < tMin) {
+      const iy = chipCY + tL * dy
+      if (iy >= stop.t && iy <= stop.b) tMin = tL
+    }
+    const tR = (stop.r - chipCX) / dx
+    if (tR > 1e-9 && tR < tMin) {
+      const iy = chipCY + tR * dy
+      if (iy >= stop.t && iy <= stop.b) tMin = tR
+    }
+  }
+
+  return {
+    xf: chipCX + tMin * dx - hw,
+    yf: chipCY + tMin * dy - hh,
+  }
 }
 
 function Frame1Desktop({ timeline }: { timeline: GSAPTimeline }) {
@@ -213,7 +242,7 @@ function Frame1Desktop({ timeline }: { timeline: GSAPTimeline }) {
   const mailsW = sw * mailsWf
   const mailsH = (mailsTex.height / mailsTex.width) * mailsW
   const mailsX = sw * lerp(mailsInitXf, mailsTgt.xf, chipProg)
-  const mailsY = sh * lerp(mailsInitYf, mailsTgt.yf*1.5, chipProg)
+  const mailsY = sh * lerp(mailsInitYf, mailsTgt.yf, chipProg)
 
   return (
     <pixiContainer>
