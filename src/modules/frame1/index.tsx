@@ -28,7 +28,38 @@ const CIRCLES_END = [
   { wf: 0.4709, xf: 0.2653, yf:  0.1422 },
 ]
 
+// dead-burnout text rect — Figma 21599-97950: x=334, y=334, w=708, h=232 in 1376×900
+const DEAD = { l: 0.2428, r: 0.7574, t: 0.3711, b: 0.6289 }
+
 function lerp(a: number, b: number, t: number) { return a + (b - a) * t }
+
+/**
+ * Return the position where a chip (xf,yf,wf,hf) should stop so its nearest
+ * edge just grazes the dead-burnout rect border — it never enters inside.
+ */
+function chipBorderTarget(
+  xf: number, yf: number, wf: number, hf: number,
+): { xf: number; yf: number } {
+  const chipCX = xf + wf / 2
+  const chipCY = yf + hf / 2
+  const deadCX = (DEAD.l + DEAD.r) / 2
+  const deadCY = (DEAD.t + DEAD.b) / 2
+  const dx = chipCX - deadCX
+  const dy = chipCY - deadCY
+  const deadAspect = (DEAD.b - DEAD.t) / (DEAD.r - DEAD.l)
+
+  if (Math.abs(dx) < 0.001 || Math.abs(dy / dx) >= deadAspect) {
+    // approach from top or bottom
+    return dy < 0
+      ? { xf, yf: DEAD.t - hf }  // chip above → bottom edge touches DEAD.top
+      : { xf, yf: DEAD.b }       // chip below → top edge touches DEAD.bottom
+  } else {
+    // approach from left or right
+    return dx < 0
+      ? { xf: DEAD.l - wf, yf }  // chip left  → right edge touches DEAD.left
+      : { xf: DEAD.r,      yf }  // chip right → left  edge touches DEAD.right
+  }
+}
 
 function Frame1Desktop({ timeline }: { timeline: GSAPTimeline }) {
   const { app } = useApplication()
@@ -42,6 +73,7 @@ function Frame1Desktop({ timeline }: { timeline: GSAPTimeline }) {
   })
 
   const [blur2Alpha,  setBlur2Alpha]  = useState(0)
+  
   const [textAlpha,   setTextAlpha]   = useState(1)
   const [deadAlpha,   setDeadAlpha]   = useState(0)
   const [chipProg,    setChipProg]    = useState(0)
@@ -51,15 +83,17 @@ function Frame1Desktop({ timeline }: { timeline: GSAPTimeline }) {
     if (!timeline || !app.renderer) return
     const p = proxy.current
 
-    // blur2: fade in and drift top-right → bottom-left
+    // blur2: fade in + drift top-right → bottom-left
     timeline.to(p, {
-      blur2Alpha: 1,
-      duration: 1.5,
-      ease: "power1.out",
-      onUpdate() { setBlur2Alpha(p.blur2Alpha) },
+      blur2Alpha: 1, blur2DXF: -0.3, blur2DYF: 0.25,
+      duration: 2.0,
+      ease: "power1.inOut",
+      onUpdate() {
+        setBlur2Alpha(p.blur2Alpha)
+      },
     }, ">")
 
-    // every/mill texts fade out
+    // every/mill texts fade out (concurrent)
     timeline.to(p, {
       textAlpha: 0,
       duration: 1.0,
@@ -67,7 +101,7 @@ function Frame1Desktop({ timeline }: { timeline: GSAPTimeline }) {
       onUpdate() { setTextAlpha(p.textAlpha) },
     }, "<")
 
-    // circles shrink
+    // circles shrink (concurrent)
     timeline.to(p, {
       circProg: 1,
       duration: 1.5,
@@ -83,7 +117,7 @@ function Frame1Desktop({ timeline }: { timeline: GSAPTimeline }) {
       onUpdate() { setDeadAlpha(p.deadAlpha) },
     }, ">-0.8")
 
-    // chips converge toward dead-burnout text
+    // chips + cards converge to border (concurrent with dead text)
     timeline.to(p, {
       chipProg: 1,
       duration: 1.5,
@@ -97,18 +131,18 @@ function Frame1Desktop({ timeline }: { timeline: GSAPTimeline }) {
   const sw = app.screen.width
   const sh = app.screen.height
 
-  // Background blurs
+  // background blurs
   const blurLTex = Assets.get(ASSETS.bg1BlurLeft)
   const blurRTex = Assets.get(ASSETS.bg1BlurRight)
   const blurLW = blurLTex.width * (sh / blurLTex.height)
   const blurRW = blurRTex.width * (sh / blurRTex.height)
 
-  // top-right-blur2 — rendered at full screen size, drifts left+down
+  // top-right-blur2 — drifts left + down
   const blur2Tex = Assets.get(ASSETS.topRightBlur2)
   const blur2W = sw
   const blur2H = (blur2Tex.height / blur2Tex.width) * blur2W
 
-  // Three concentric circles — lerp toward end-state as circProg advances
+  // circles — lerp from initial to end-state
   const circleTex = Assets.get(ASSETS.circle)
   const circles = CIRCLES_INIT.map((init, i) => {
     const end = CIRCLES_END[i]
@@ -118,18 +152,6 @@ function Frame1Desktop({ timeline }: { timeline: GSAPTimeline }) {
       y:    sh * lerp(init.yf, end.yf, circProg),
     }
   })
-
-  const inboxTex = Assets.get(ASSETS.inboxAlertChip)
-  const inboxW = sw * 0.1787
-  const inboxH = (inboxTex.height / inboxTex.width) * inboxW
-  const inboxX = sw * 0.0313
-  const inboxY = sh * 0.4311
-
-  const mailsTex = Assets.get(ASSETS.mailsChip)
-  const mailsW = sw * 0.1509
-  const mailsH = (mailsTex.height / mailsTex.width) * mailsW
-  const mailsX = sw * 0.8241
-  const mailsY = sh * 0.1778
 
   // "every second" / "millions gone" — fade out
   const everyTex = Assets.get(ASSETS.everySecondText)
@@ -144,15 +166,34 @@ function Frame1Desktop({ timeline }: { timeline: GSAPTimeline }) {
   const millX = (sw - millW) / 2 + sw * 0.0116
   const millY = sh * 0.4867
 
-  // dead-burnout-fades text — Figma 21599-97950: x=334/1376, y=334/900, w=708/1376
+  // dead-burnout-fades text — fades in
   const deadTex = Assets.get(ASSETS.deadBurnoutFades)
   const deadW = sw * 0.5146
   const deadH = (deadTex.height / deadTex.width) * deadW
-  const deadX = sw * 0.2428
-  const deadY = sh * 0.3711
 
-  // chips converge toward dead-burnout text center (≈ 0.5, 0.37)
-  const deadCX = 0.2428 + 0.5146 / 2   // ≈ 0.5001
+  // inbox card — converges to DEAD border
+  const inboxTex = Assets.get(ASSETS.inboxAlertChip)
+  const inboxWf = 0.1787
+  const inboxHf = (inboxTex.height / inboxTex.width) * inboxWf * (sw / sh)
+  const inboxInitXf = 0.0313
+  const inboxInitYf = 0.4311
+  const inboxTgt = chipBorderTarget(inboxInitXf, inboxInitYf, inboxWf, inboxHf)
+  const inboxW = sw * inboxWf
+  const inboxH = (inboxTex.height / inboxTex.width) * inboxW
+  const inboxX = sw * lerp(inboxInitXf, inboxTgt.xf, chipProg)
+  const inboxY = sh * lerp(inboxInitYf, inboxTgt.yf, chipProg)
+
+  // mails card — converges to DEAD border
+  const mailsTex = Assets.get(ASSETS.mailsChip)
+  const mailsWf = 0.1509
+  const mailsHf = (mailsTex.height / mailsTex.width) * mailsWf * (sw / sh)
+  const mailsInitXf = 0.8241
+  const mailsInitYf = 0.1778
+  const mailsTgt = chipBorderTarget(mailsInitXf, mailsInitYf, mailsWf, mailsHf)
+  const mailsW = sw * mailsWf
+  const mailsH = (mailsTex.height / mailsTex.width) * mailsW
+  const mailsX = sw * lerp(mailsInitXf, mailsTgt.xf, chipProg)
+  const mailsY = sh * lerp(mailsInitYf, mailsTgt.yf, chipProg)
 
   return (
     <pixiContainer>
@@ -167,36 +208,35 @@ function Frame1Desktop({ timeline }: { timeline: GSAPTimeline }) {
       <pixiSprite texture={millTex}  width={millW}  height={millH}  x={millX}  y={millY}  blendMode="overlay" alpha={textAlpha} />
 
       {/* dead-burnout-fades — fades in */}
-      
+      <pixiSprite texture={deadTex} width={deadW} height={deadH} x={sw * DEAD.l} y={sh * DEAD.t} alpha={deadAlpha} blendMode="overlay" />
 
       {/* circles — shrink toward end-state */}
       {circles.map(({ size, x, y }, i) => (
         <pixiSprite key={i} texture={circleTex} width={size} height={size} x={x} y={y} />
       ))}
 
-      {/* cards */}
+      {/* cards — converge to dead-burnout text border */}
       <pixiSprite texture={inboxTex} width={inboxW} height={inboxH} x={inboxX} y={inboxY} />
       <pixiSprite texture={mailsTex} width={mailsW} height={mailsH} x={mailsX} y={mailsY} />
 
-      {/* chips — converge toward dead-burnout text center */}
+      {/* chips — converge to dead-burnout text border */}
       {CHIPS.map(([key, xf, yf, wf]) => {
         const tex = Assets.get(key)
         const w = sw * wf
         const h = (tex.height / tex.width) * w
-        const targetXf = deadCX - wf / 2
-        const targetYf = 0.3711
+        const hf = h / sh
+        const tgt = chipBorderTarget(xf, yf, wf, hf)
         return (
           <pixiSprite
             key={key}
             texture={tex}
             width={w}
             height={h}
-            x={sw * lerp(xf, targetXf, chipProg)}
-            y={sh * lerp(yf, targetYf, chipProg)}
+            x={sw * lerp(xf, tgt.xf, chipProg)}
+            y={sh * lerp(yf, tgt.yf, chipProg)}
           />
         )
       })}
-      <pixiSprite texture={deadTex} width={deadW} height={deadH} x={deadX} y={deadY} alpha={deadAlpha} blendMode="overlay" />
     </pixiContainer>
   )
 }
