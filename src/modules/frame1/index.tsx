@@ -81,19 +81,24 @@ function Frame1Desktop({ timeline }: { timeline: GSAPTimeline }) {
   return (
     <pixiContainer>
       {/* Blurs */}
+
+      
       
       <pixiSprite texture={blurLTex} width={blurLW} height={sh} x={0} y={0} />
       <pixiSprite texture={blurRTex} width={blurRW} height={sh} x={sw - blurRW} y={0} />
       
-      <pixiSprite texture={everyTex} width={everyW} height={everyH} x={everyX} y={everyY} />
-      <pixiSprite texture={millTex} width={millW} height={millH} x={millX} y={millY} />
-
+      
+      <pixiSprite texture={everyTex} width={everyW} height={everyH} x={everyX} y={everyY} blendMode="overlay" />
+      <pixiSprite texture={millTex} width={millW} height={millH} x={millX} y={millY} blendMode="overlay" />
       {/* Circles */}
       <pixiSprite texture={circleTex} width={circleSize} height={circleSize} x={circleX} y={circleY} />
 
       {/* Cards */}
       <pixiSprite texture={inboxTex} width={inboxW} height={inboxH} x={inboxX} y={inboxY} />
       <pixiSprite texture={mailsTex} width={mailsW} height={mailsH} x={mailsX} y={mailsY} />
+
+
+      
 
       {/* Central text */}
 
@@ -113,6 +118,7 @@ function Frame1Desktop({ timeline }: { timeline: GSAPTimeline }) {
           />
         )
       })}
+      
     </pixiContainer>
   )
 }
