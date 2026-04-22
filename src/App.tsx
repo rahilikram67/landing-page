@@ -120,7 +120,8 @@ function App() {
       >
         {assetsReady && sceneProps && <Application
           resizeTo={containerRef}
-          backgroundAlpha={0}
+          backgroundAlpha={1}
+          background="#fff"
           antialias
           autoStart
           className="absolute inset-0 size-full"

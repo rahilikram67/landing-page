@@ -73,15 +73,12 @@ function Frame1Desktop({ timeline }: { timeline: GSAPTimeline }) {
   const millX = (sw - millW) / 2 + sw * 0.0116
   const millY = sh * 0.4867
 
-
-  const bg1Tex = Assets.get(ASSETS.bg1)
-
   return (
     <pixiContainer>
       <pixiSprite texture={blurLTex} width={blurLW} height={sh} x={0} y={0} />
       <pixiSprite texture={blurRTex} width={blurRW} height={sh} x={sw - blurRW} y={0} />
-      <pixiSprite texture={everyTex} width={everyW} height={everyH} x={everyX} y={everyY} alpha={0.5} blendMode="overlay" />
-      <pixiSprite texture={millTex}  width={millW}  height={millH}  x={millX}  y={millY} alpha={0.5}  blendMode="overlay" /> 
+      <pixiSprite texture={everyTex} width={everyW} height={everyH} x={everyX} y={everyY} blendMode="overlay" />
+      <pixiSprite texture={millTex}  width={millW}  height={millH}  x={millX}  y={millY}  blendMode="overlay" /> 
       
 
       {/* Circles */}
