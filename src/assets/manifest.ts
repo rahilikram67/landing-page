@@ -49,6 +49,7 @@ import bg8 from "./desktop/bg8.svg"
 import startExploreText from "./desktop/start-explore-text.svg"
 import btnExplore from "./desktop/btn-explore.svg"
 import btnTeach from "./desktop/btn-teach.svg"
+import bg1 from "./desktop/bg1.svg"
 import bg1BlurLeft from "./desktop/bottom-left-blur1.svg"
 import bg1BlurRight from "./desktop/top-right-blur1.svg"
 import everySecondText from "./desktop/every-second-google-text.svg"
@@ -147,6 +148,7 @@ export const ASSETS = {
   mobileBtnExplore: "mobileBtnExplore",
   mobileBtnTeach: "mobileBtnTeach",
   mobileStartExploreText: "mobileStartExploreText",
+  bg1: "bg1",
   bg1BlurLeft: "bg1BlurLeft",
   bg1BlurRight: "bg1BlurRight",
   everySecondText: "everySecondText",
@@ -221,6 +223,7 @@ export function loadAssets() {
       { alias: ASSETS.startExploreText, src: startExploreText },
       { alias: ASSETS.btnExplore, src: btnExplore },
       { alias: ASSETS.btnTeach, src: btnTeach },
+      { alias: ASSETS.bg1, src: bg1 },
       { alias: ASSETS.bg1BlurLeft, src: bg1BlurLeft },
       { alias: ASSETS.bg1BlurRight, src: bg1BlurRight },
       { alias: ASSETS.everySecondText, src: everySecondText },

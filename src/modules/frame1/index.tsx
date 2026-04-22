@@ -1,4 +1,4 @@
-import { useEffect, useReducer, useRef } from "react"
+import { useEffect } from "react"
 import { useApplication } from "@pixi/react"
 import { Assets } from "pixi.js"
 import type { SceneProps } from "../../App"
@@ -19,7 +19,7 @@ const CHIPS: [string, number, number, number, number][] = [
 
 function Frame1Desktop({ timeline }: { timeline: GSAPTimeline }) {
   const { app } = useApplication()
-  const [, forceRender] = useReducer(x => x + 1, 0)
+  
 
 
   useEffect(() => {
@@ -36,13 +36,7 @@ function Frame1Desktop({ timeline }: { timeline: GSAPTimeline }) {
 
   const sw = app.screen.width
   const sh = app.screen.height
-  // const p = proxy.current
 
-  // Blur backgrounds — scale to fill full height, width proportional
-  const blurLTex = Assets.get(ASSETS.bg1BlurLeft)
-  const blurRTex = Assets.get(ASSETS.bg1BlurRight)
-  const blurLW = blurLTex.width * (sh / blurLTex.height)
-  const blurRW = blurRTex.width * (sh / blurRTex.height)
 
   // Circles — centered, 85.75% of container width (1180/1376)
   const circleTex = Assets.get(ASSETS.circle)
@@ -64,32 +58,12 @@ function Frame1Desktop({ timeline }: { timeline: GSAPTimeline }) {
   const mailsX = sw * 0.8241
   const mailsY = sh * 0.1778
 
-  // Text line 1 — xf derived from calc(50%+16px - 50% of text), yf=277/900
-  const everyTex = Assets.get(ASSETS.everySecondText)
-  const everyW = sw * 0.8111
-  const everyH = everyTex.height / everyTex.width * everyW
-  const everyX = (sw - everyW) / 2 + sw * 0.0116
-  const everyY = sh * 0.3078
 
-  // Text line 2 — same x, yf=438/900
-  const millTex = Assets.get(ASSETS.millionsGoneText)
-  const millW = sw * 0.8111
-  const millH = millTex.height / millTex.width * millW
-  const millX = (sw - millW) / 2 + sw * 0.0116
-  const millY = sh * 0.4867
+  const bg1Tex = Assets.get(ASSETS.bg1)
 
   return (
     <pixiContainer>
-      {/* Blurs */}
-
-      
-      <pixiSprite texture={blurLTex} width={blurLW} height={sh} x={0} y={0} />
-      <pixiSprite texture={blurRTex} width={blurRW} height={sh} x={sw - blurRW} y={0} />
-      
-      <pixiSprite texture={everyTex} width={everyW} height={everyH} x={everyX} y={everyY} blendMode="overlay" />
-      <pixiSprite texture={millTex}  width={millW}  height={millH}  x={millX}  y={millY}  blendMode="overlay" />
-
-
+      <pixiSprite texture={bg1Tex} width={sw} height={sh} x={0} y={0} />
 
       {/* Circles */}
       <pixiSprite texture={circleTex} width={circleSize} height={circleSize} x={circleX} y={circleY} />
