@@ -50,13 +50,15 @@ function chipBorderTarget(
 
   let target: { xf: number; yf: number }
   if (Math.abs(dx) < 0.001 || Math.abs(dy / dx) >= deadAspect) {
+    // Center chip on the top/bottom border so it appears visually at the text level
     target = dy < 0
-      ? { xf, yf: dead.t - hf }
-      : { xf, yf: dead.b }
+      ? { xf, yf: dead.t - hf / 1.3 }
+      : { xf, yf: dead.b - hf / 3 }
   } else {
+    // Center chip on the left/right border
     target = dx < 0
-      ? { xf: dead.l - wf, yf }
-      : { xf: dead.r,      yf }
+      ? { xf: dead.l - wf / 1.3, yf:yf * 0.95 }
+      : { xf: dead.r - wf / 3, yf:yf * 0.95 }
   }
 
   // If target is farther from dead center than initial, keep chip in place
@@ -211,7 +213,7 @@ function Frame1Desktop({ timeline }: { timeline: GSAPTimeline }) {
   const mailsW = sw * mailsWf
   const mailsH = (mailsTex.height / mailsTex.width) * mailsW
   const mailsX = sw * lerp(mailsInitXf, mailsTgt.xf, chipProg)
-  const mailsY = sh * lerp(mailsInitYf, mailsTgt.yf, chipProg)
+  const mailsY = sh * lerp(mailsInitYf, mailsTgt.yf*1.5, chipProg)
 
   return (
     <pixiContainer>
