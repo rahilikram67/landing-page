@@ -18,7 +18,7 @@ extend({ Sprite, Container, Graphics })
 
 gsap.registerPlugin(ScrollTrigger)
 ScrollTrigger.normalizeScroll(true)
-ScrollTrigger.config({ ignoreMobileResize: true })
+// ScrollTrigger.config({ ignoreMobileResize: true })
 
 
 export interface SceneCtx {
@@ -81,8 +81,8 @@ function App() {
             scrub: 1,
             ...(isMobile && {
               snap: {
-                snapTo: 1 / SCENES.length,
-                duration: { min: 0.3, max: 0.6 },
+                // snapTo: 1 / SCENES.length,
+                // duration: { min: 0.3, max: 0.6 },
                 ease: "power2.inOut",
               },
             }),
@@ -115,7 +115,7 @@ function App() {
       <div
         id="scroll-container"
         ref={containerRef}
-        className="relative w-full h-screen mt-auto mx-auto max-w-[1440px] overflow-hidden max-h-[851px]"
+        className="relative w-full h-screen mt-auto mx-auto max-w-[1440px] overflow-hidden md:max-h-[851px]"
       >
         {assetsReady && sceneProps && <Application
           resizeTo={containerRef}
