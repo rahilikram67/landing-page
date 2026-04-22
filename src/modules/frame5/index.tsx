@@ -22,13 +22,21 @@ export function Frame5({ timeline, ctx }: SceneProps) {
 
 function Frame5Mobile({ timeline }: { timeline: GSAPTimeline }) {
     const { app } = useApplication()
-    const proxyRef = useRef({ slide: 0, yShift: 0, fadeOut: 1 })
+    const proxyRef = useRef({ slide: 0, yShift: 0, fadeOut: 1, fadeIn: 0 })
     const [slide, setSlide] = useState(0)
     const [yShift, setYShift] = useState(0)
     const [fadeOut, setFadeOut] = useState(1)
+    const [fadeIn, setFadeIn] = useState(0)
 
     useEffect(() => {
         if (!timeline || !app.renderer) return
+
+        timeline.to(proxyRef.current, {
+            fadeIn: 1,
+            duration: 1.2,
+            ease: "power1.out",
+            onUpdate() { setFadeIn(proxyRef.current.fadeIn) },
+        }, ">")
 
         timeline.to(proxyRef.current, {
             slide: PLANETS.length,
@@ -36,7 +44,7 @@ function Frame5Mobile({ timeline }: { timeline: GSAPTimeline }) {
             onUpdate() {
                 setSlide(proxyRef.current.slide)
             },
-        })
+        }, ">-0.2")
 
         const target = app.screen.height * 0.54
         timeline.to(proxyRef.current, {
@@ -71,7 +79,7 @@ function Frame5Mobile({ timeline }: { timeline: GSAPTimeline }) {
     const gap = sh * 0.01
 
     return (
-        <>
+        <pixiContainer alpha={fadeIn}>
             <pixiSprite
                 texture={bgTexture}
                 width={sw}
@@ -152,17 +160,18 @@ function Frame5Mobile({ timeline }: { timeline: GSAPTimeline }) {
                     />
                 )
             })()}
-        </>
+        </pixiContainer>
     )
 }
 
 function Frame5Desktop({ timeline }: { timeline: GSAPTimeline }) {
     const { app } = useApplication()
-    const proxyRef = useRef({ angle: 0, yShift: 0, opacity: 1 })
+    const proxyRef = useRef({ angle: 0, yShift: 0, opacity: 1, fadeIn: 0 })
     const orbitTweenRef = useRef<gsap.core.Tween | null>(null)
     const [angleOffset, setAngleOffset] = useState(0)
     const [yShift, setYShift] = useState(0)
     const [opacity, setOpacity] = useState(1)
+    const [fadeIn, setFadeIn] = useState(0)
 
     useEffect(() => {
         const tween = gsap.to(proxyRef.current, {
@@ -180,6 +189,13 @@ function Frame5Desktop({ timeline }: { timeline: GSAPTimeline }) {
 
     useEffect(() => {
         if (!timeline || !app.renderer) return
+
+        timeline.to(proxyRef.current, {
+            fadeIn: 1,
+            duration: 1.2,
+            ease: "power1.out",
+            onUpdate() { setFadeIn(proxyRef.current.fadeIn) },
+        }, ">")
 
         const target = app.screen.height * 0.7
         timeline.to(proxyRef.current, {
@@ -225,7 +241,7 @@ function Frame5Desktop({ timeline }: { timeline: GSAPTimeline }) {
     const gap = baseSize * 0.01
 
     return (
-        <>
+        <pixiContainer alpha={fadeIn}>
             <pixiSprite
                 texture={bgTexture}
                 width={app.screen.width}
@@ -288,6 +304,6 @@ function Frame5Desktop({ timeline }: { timeline: GSAPTimeline }) {
                     </pixiContainer>
                 )
             })}
-        </>
+        </pixiContainer>
     )
 }
