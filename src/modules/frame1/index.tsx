@@ -48,17 +48,28 @@ function chipBorderTarget(
   const dy = chipCY - deadCY
   const deadAspect = (DEAD.b - DEAD.t) / (DEAD.r - DEAD.l)
 
+  let target: { xf: number; yf: number }
   if (Math.abs(dx) < 0.001 || Math.abs(dy / dx) >= deadAspect) {
     // approach from top or bottom
-    return dy < 0
+    target = dy < 0
       ? { xf, yf: DEAD.t - hf }  // chip above → bottom edge touches DEAD.top
       : { xf, yf: DEAD.b }       // chip below → top edge touches DEAD.bottom
   } else {
     // approach from left or right
-    return dx < 0
+    target = dx < 0
       ? { xf: DEAD.l - wf, yf }  // chip left  → right edge touches DEAD.left
       : { xf: DEAD.r,      yf }  // chip right → left  edge touches DEAD.right
   }
+
+  // If target is farther from dead center than initial, the chip would move
+  // away from the text — keep it in place instead
+  const tCX = target.xf + wf / 2
+  const tCY = target.yf + hf / 2
+  const initDist2 = dx * dx + dy * dy
+  const targDist2 = (tCX - deadCX) ** 2 + (tCY - deadCY) ** 2
+  if (targDist2 > initDist2 + 1e-6) return { xf, yf }
+
+  return target
 }
 
 function Frame1Desktop({ timeline }: { timeline: GSAPTimeline }) {
