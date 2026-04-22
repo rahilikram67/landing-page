@@ -13,7 +13,7 @@ import gsap from "gsap"
 import { ScrollTrigger } from "gsap/ScrollTrigger"
 import { loadAssets } from "./assets/manifest"
 import { Container, Sprite, Graphics,Text } from "pixi.js"
-
+import 'pixi.js/advanced-blend-modes'
 extend({ Sprite, Container, Graphics,Text })
 
 gsap.registerPlugin(ScrollTrigger)
@@ -124,6 +124,7 @@ function App() {
           antialias
           autoStart
           className="absolute inset-0 size-full"
+          useBackBuffer={true}
         >
           <pixiContainer>
             {SCENES.map((Scene, i) => (

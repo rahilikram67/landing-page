@@ -53,11 +53,36 @@ function Frame1Desktop({ timeline }: { timeline: GSAPTimeline }) {
   const mailsY = sh * 0.1778
 
 
+  // Blur backgrounds — scale to fill full height, width proportional
+  const blurLTex = Assets.get(ASSETS.bg1BlurLeft)
+  const blurRTex = Assets.get(ASSETS.bg1BlurRight)
+  const blurLW = blurLTex.width * (sh / blurLTex.height)
+  const blurRW = blurRTex.width * (sh / blurRTex.height)
+
+  // Text line 1 — xf derived from calc(50%+16px - 50% of text), yf=277/900
+  const everyTex = Assets.get(ASSETS.everySecondText)
+  const everyW = sw * 0.8111
+  const everyH = everyTex.height / everyTex.width * everyW
+  const everyX = (sw - everyW) / 2 + sw * 0.0116
+  const everyY = sh * 0.3078
+
+  // Text line 2 — same x, yf=438/900
+  const millTex = Assets.get(ASSETS.millionsGoneText)
+  const millW = sw * 0.8111
+  const millH = millTex.height / millTex.width * millW
+  const millX = (sw - millW) / 2 + sw * 0.0116
+  const millY = sh * 0.4867
+
+
   const bg1Tex = Assets.get(ASSETS.bg1)
 
   return (
     <pixiContainer>
-      <pixiSprite texture={bg1Tex} width={sw} height={sh} x={0} y={0} />
+      <pixiSprite texture={blurLTex} width={blurLW} height={sh} x={0} y={0} />
+      <pixiSprite texture={blurRTex} width={blurRW} height={sh} x={sw - blurRW} y={0} />
+      <pixiSprite texture={everyTex} width={everyW} height={everyH} x={everyX} y={everyY} alpha={0.5} blendMode="overlay" />
+      <pixiSprite texture={millTex}  width={millW}  height={millH}  x={millX}  y={millY} alpha={0.5}  blendMode="overlay" /> 
+      
 
       {/* Circles */}
 
@@ -67,6 +92,9 @@ function Frame1Desktop({ timeline }: { timeline: GSAPTimeline }) {
       {/* Cards */}
       <pixiSprite texture={inboxTex} width={inboxW} height={inboxH} x={inboxX} y={inboxY} />
       <pixiSprite texture={mailsTex} width={mailsW} height={mailsH} x={mailsX} y={mailsY} />
+
+
+     
 
 
 
