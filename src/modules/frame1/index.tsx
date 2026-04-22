@@ -35,8 +35,6 @@ function Frame1Desktop({ timeline }: { timeline: GSAPTimeline }) {
 
   const proxy = useRef({
     blur2Alpha: 0,
-    blur2DXF:   0,   // fraction of sw: 0 → -0.3
-    blur2DYF:   0,   // fraction of sh: 0 →  0.25
     textAlpha:  1,
     deadAlpha:  0,
     chipProg:   0,
@@ -44,8 +42,6 @@ function Frame1Desktop({ timeline }: { timeline: GSAPTimeline }) {
   })
 
   const [blur2Alpha,  setBlur2Alpha]  = useState(0)
-  const [blur2DXF,    setBlur2DXF]    = useState(0)
-  const [blur2DYF,    setBlur2DYF]    = useState(0)
   const [textAlpha,   setTextAlpha]   = useState(1)
   const [deadAlpha,   setDeadAlpha]   = useState(0)
   const [chipProg,    setChipProg]    = useState(0)
@@ -62,13 +58,6 @@ function Frame1Desktop({ timeline }: { timeline: GSAPTimeline }) {
       ease: "power1.out",
       onUpdate() { setBlur2Alpha(p.blur2Alpha) },
     }, ">")
-    timeline.to(p, {
-      blur2DXF: -0.3,
-      blur2DYF:  0.25,
-      duration: 2.0,
-      ease: "power1.inOut",
-      onUpdate() { setBlur2DXF(p.blur2DXF); setBlur2DYF(p.blur2DYF) },
-    }, "<")
 
     // every/mill texts fade out
     timeline.to(p, {
@@ -118,8 +107,6 @@ function Frame1Desktop({ timeline }: { timeline: GSAPTimeline }) {
   const blur2Tex = Assets.get(ASSETS.topRightBlur2)
   const blur2W = sw
   const blur2H = (blur2Tex.height / blur2Tex.width) * blur2W
-  const blur2X = sw * blur2DXF
-  const blur2Y = sh * blur2DYF
 
   // Three concentric circles — lerp toward end-state as circProg advances
   const circleTex = Assets.get(ASSETS.circle)
@@ -173,14 +160,14 @@ function Frame1Desktop({ timeline }: { timeline: GSAPTimeline }) {
       <pixiSprite texture={blurRTex} width={blurRW} height={sh} x={sw - blurRW} y={0} />
 
       {/* top-right-blur2: fades in, drifts top-right → bottom-left */}
-      {/* <pixiSprite texture={blur2Tex} width={blur2W} height={blur2H} x={blur2X} y={blur2Y} alpha={blur2Alpha} /> */}
+      <pixiSprite texture={blur2Tex} width={blur2W} height={blur2H} alpha={blur2Alpha} />
 
       {/* every second / millions gone — fade out */}
       <pixiSprite texture={everyTex} width={everyW} height={everyH} x={everyX} y={everyY} blendMode="overlay" alpha={textAlpha} />
       <pixiSprite texture={millTex}  width={millW}  height={millH}  x={millX}  y={millY}  blendMode="overlay" alpha={textAlpha} />
 
       {/* dead-burnout-fades — fades in */}
-      <pixiSprite texture={deadTex} width={deadW} height={deadH} x={deadX} y={deadY} alpha={deadAlpha} />
+      
 
       {/* circles — shrink toward end-state */}
       {circles.map(({ size, x, y }, i) => (
@@ -209,6 +196,7 @@ function Frame1Desktop({ timeline }: { timeline: GSAPTimeline }) {
           />
         )
       })}
+      <pixiSprite texture={deadTex} width={deadW} height={deadH} x={deadX} y={deadY} alpha={deadAlpha} blendMode="overlay" />
     </pixiContainer>
   )
 }
