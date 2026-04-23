@@ -346,13 +346,6 @@ function Frame12Desktop({ timeline }: { timeline: GSAPTimeline }) {
         y={lerp(whatIfY, sh + whatIfH, whatIfExitProg)}
         alpha={whatIfAlpha} blendMode="overlay" />
 
-      {/* {[0, 1].map((i) => (
-        <pixiSprite key={i} texture={whatIfTex} width={whatIfW} height={whatIfH}
-          x={whatIfX}
-          y={lerp(whatIfY, sh + whatIfH, whatIfExitProg)}
-          alpha={whatIfAlpha} blendMode="overlay" />
-      ))} */}
-
 
       {/* circles — shrink then expand off screen */}
       {circles.map(({ size, x, y }, i) => (
@@ -393,7 +386,276 @@ function Frame12Desktop({ timeline }: { timeline: GSAPTimeline }) {
   )
 }
 
+// ─── Mobile ──────────────────────────────────────────────────────────────────
+
+// 5-chip subset; fractions derived from Figma 375px mobile frame
+const CHIPS_MOBILE: [string, number, number, number][] = [
+  [ASSETS.summarizeChip,  0.516, 0.158, 0.23],
+  [ASSETS.howToWriteChip, 0.023, 0.316, 0.42],
+  [ASSETS.error404Chip,   0.761, 0.378, 0.18],
+  [ASSETS.rewriteChip,    0.415, 0.616, 0.30],
+  [ASSETS.organizeChip,   0.025, 0.717, 0.38],
+]
+
+// Circles are proportionally larger on portrait mobile
+const CIRCLES_INIT_WF_MOBILE = [1.8, 1.5, 1.1]
+const CIRCLES_END_WF_MOBILE  = [1.4, 1.1, 0.8]
+
+function Frame12Mobile({ timeline }: { timeline: GSAPTimeline }) {
+  const { app } = useApplication()
+
+  const proxy = useRef({
+    blur2Alpha:     0,
+    textAlpha:      1,
+    deadAlpha:      0,
+    chipProg:       0,
+    circProg:       0,
+    bgBlur3Alpha:   0,
+    whatIfAlpha:    0,
+    whatIfExitProg: 0,
+    chipOutProg:    0,
+    circOutProg:    0,
+  })
+
+  const [blur2Alpha,     setBlur2Alpha]     = useState(0)
+  const [textAlpha,      setTextAlpha]      = useState(1)
+  const [deadAlpha,      setDeadAlpha]      = useState(0)
+  const [chipProg,       setChipProg]       = useState(0)
+  const [circProg,       setCircProg]       = useState(0)
+  const [bgBlur3Alpha,   setBgBlur3Alpha]   = useState(0)
+  const [whatIfAlpha,    setWhatIfAlpha]    = useState(0)
+  const [whatIfExitProg, setWhatIfExitProg] = useState(0)
+  const [chipOutProg,    setChipOutProg]    = useState(0)
+  const [circOutProg,    setCircOutProg]    = useState(0)
+
+  useEffect(() => {
+    if (!timeline || !app.renderer) return
+    const p = proxy.current
+
+    timeline.to(p, {
+      blur2Alpha: 1,
+      duration: 2.0, ease: "power1.inOut",
+      onUpdate() { setBlur2Alpha(p.blur2Alpha) },
+    }, ">")
+
+    timeline.to(p, {
+      textAlpha: 0,
+      duration: 1.0, ease: "power1.in",
+      onUpdate() { setTextAlpha(p.textAlpha) },
+    }, "<")
+
+    timeline.to(p, {
+      circProg: 1,
+      duration: 1.5, ease: "power1.inOut",
+      onUpdate() { setCircProg(p.circProg) },
+    }, "<")
+
+    timeline.to(p, {
+      deadAlpha: 1,
+      duration: 1.0, ease: "power1.out",
+      onUpdate() { setDeadAlpha(p.deadAlpha) },
+    }, ">-0.8")
+
+    timeline.to(p, {
+      chipProg: 1,
+      duration: 1.5, ease: "power2.inOut",
+      onUpdate() { setChipProg(p.chipProg) },
+    }, "<")
+
+    // exit phase
+    timeline.to(p, {
+      chipOutProg: 1,
+      duration: 1.2, ease: "power2.in",
+      onUpdate() { setChipOutProg(p.chipOutProg) },
+    }, ">0.2")
+
+    timeline.to(p, {
+      circOutProg: 1,
+      duration: 1.5, ease: "power1.in",
+      onUpdate() { setCircOutProg(p.circOutProg) },
+    }, "<")
+
+    timeline.to(p, {
+      deadAlpha: 0,
+      duration: 0.8, ease: "power1.in",
+      onUpdate() { setDeadAlpha(p.deadAlpha) },
+    }, "<")
+
+    timeline.to(p, {
+      bgBlur3Alpha: 1,
+      duration: 1.2, ease: "power1.out",
+      onUpdate() { setBgBlur3Alpha(p.bgBlur3Alpha) },
+    }, "<0.4")
+
+    timeline.to(p, {
+      whatIfAlpha: 1,
+      duration: 1.0, ease: "power1.out",
+      onUpdate() { setWhatIfAlpha(p.whatIfAlpha) },
+    }, "<0.2")
+
+    // mobile: what-if text slides RIGHT off screen
+    timeline.to(p, {
+      whatIfExitProg: 1,
+      duration: 1.0, ease: "power2.in",
+      onUpdate() { setWhatIfExitProg(p.whatIfExitProg) },
+    }, ">0.5")
+  }, [timeline, app.renderer])
+
+  if (!app.renderer) return null
+
+  const sw = app.screen.width
+  const sh = app.screen.height
+
+  // backgrounds
+  const blurLTex  = Assets.get(ASSETS.bg1BlurLeft)
+  const blurRTex  = Assets.get(ASSETS.bg1BlurRight)
+  const blurLW    = blurLTex.width * (sh / blurLTex.height)
+  const blurRW    = blurRTex.width * (sh / blurRTex.height)
+  const blur2Tex  = Assets.get(ASSETS.topRightBlur2)
+  const bgBlur3Tex = Assets.get(ASSETS.bgBlur3)
+
+  // circles
+  const circleTex = Assets.get(ASSETS.circle)
+  const circles = CIRCLES_INIT_WF_MOBILE.map((initWf, i) => {
+    const shrunkWf = lerp(initWf, CIRCLES_END_WF_MOBILE[i], circProg)
+    const finalWf  = lerp(shrunkWf, CIRCLES_INIT_WF_MOBILE[0] * 3, circOutProg)
+    const size = sw * finalWf
+    return { size, x: sw / 2 - size / 2, y: sh / 2 - size / 2 }
+  })
+
+  // "every second" / "millions gone"
+  const everyTex = Assets.get(ASSETS.everySecondText)
+  const everyW   = sw * 0.92
+  const everyH   = (everyTex.height / everyTex.width) * everyW
+  const everyX   = (sw - everyW) / 2
+  const everyY   = sh * 0.44
+
+  const millTex  = Assets.get(ASSETS.millionsGoneText)
+  const millW    = sw * 0.92
+  const millH    = (millTex.height / millTex.width) * millW
+  const millX    = (sw - millW) / 2
+  const millY    = sh * 0.56
+
+  // dead-burnout text — centred, fractions from Figma 375×812 frame
+  const deadTex  = Assets.get(ASSETS.deadBurnoutFades)
+  const deadWf   = 0.80
+  const deadXf   = (1 - deadWf) / 2   // horizontally centred
+  const deadYf   = 0.485
+  const deadW    = sw * deadWf
+  const deadH    = (deadTex.height / deadTex.width) * deadW
+  const dead: DeadRect = {
+    l: deadXf,
+    r: deadXf + deadWf,
+    t: deadYf,
+    b: deadYf + deadH / sh,
+  }
+  const deadCX_px = sw * (dead.l + dead.r) / 2
+  const deadCY_px = sh * (dead.t + dead.b) / 2
+
+  // what-if text — slides RIGHT on mobile exit
+  const whatIfTex = Assets.get(ASSETS.whatIfBetterText)
+  const whatIfWf  = 0.77
+  const whatIfW   = sw * whatIfWf
+  const whatIfH   = (whatIfTex.height / whatIfTex.width) * whatIfW
+  const whatIfBaseX = (sw - whatIfW) / 2
+  const whatIfX   = lerp(whatIfBaseX, sw + whatIfW, whatIfExitProg)
+  const whatIfY   = sh * deadYf
+
+  // inbox card — Figma 375px: 147×147px at left=56.5, top=109
+  const inboxTex  = Assets.get(ASSETS.inboxAlertChip)
+  const inboxWf   = 0.392
+  const inboxHf   = (inboxTex.height / inboxTex.width) * inboxWf * (sw / sh)
+  const inboxInitXf = 0.151
+  const inboxInitYf = 0.134
+  const inboxTgt  = chipBorderTarget(inboxInitXf, inboxInitYf, inboxWf, inboxHf, dead)
+  const inboxW    = sw * inboxWf
+  const inboxH    = (inboxTex.height / inboxTex.width) * inboxW
+  const inboxX    = sw * lerp(inboxInitXf, inboxTgt.xf, chipProg)
+  const inboxY    = sh * lerp(inboxInitYf, inboxTgt.yf, chipProg)
+
+  // mails card — Figma 375px: 122×122px at left=176.5, top=659
+  const mailsTex  = Assets.get(ASSETS.mailsChip)
+  const mailsWf   = 0.325
+  const mailsHf   = (mailsTex.height / mailsTex.width) * mailsWf * (sw / sh)
+  const mailsInitXf = 0.471
+  const mailsInitYf = 0.811
+  const mailsTgt  = chipBorderTarget(mailsInitXf, mailsInitYf, mailsWf, mailsHf, dead)
+  const mailsW    = sw * mailsWf
+  const mailsH    = (mailsTex.height / mailsTex.width) * mailsW
+  const mailsX    = sw * lerp(mailsInitXf, mailsTgt.xf, chipProg)
+  const mailsY    = sh * lerp(mailsInitYf, mailsTgt.yf, chipProg)
+
+  function chipExitPos(tgtXf: number, tgtYf: number, wf: number, hf: number) {
+    const tgtCX    = sw * (tgtXf + wf / 2)
+    const tgtCY    = sh * (tgtYf + hf / 2)
+    const angle    = Math.atan2(tgtCY - deadCY_px, tgtCX - deadCX_px)
+    const dist     = Math.hypot(tgtCY - deadCY_px, tgtCX - deadCX_px)
+    const curAngle = angle + chipOutProg * (Math.PI / 5)
+    const curDist  = dist  + chipOutProg * Math.max(sw, sh) * 1.5
+    return {
+      x: deadCX_px + curDist * Math.cos(curAngle) - sw * wf / 2,
+      y: deadCY_px + curDist * Math.sin(curAngle) - sh * hf / 2,
+    }
+  }
+
+  return (
+    <pixiContainer>
+      <pixiSprite texture={blurLTex}   width={blurLW} height={sh} x={0}           y={0} />
+      <pixiSprite texture={blurRTex}   width={blurRW} height={sh} x={sw - blurRW} y={0} />
+      <pixiSprite texture={blur2Tex}   width={sw}     height={sh} alpha={blur2Alpha} />
+      <pixiSprite texture={bgBlur3Tex} width={sw}     height={sh} alpha={bgBlur3Alpha} />
+
+      <pixiSprite texture={everyTex} width={everyW} height={everyH} x={everyX} y={everyY} blendMode="overlay" alpha={textAlpha} />
+      <pixiSprite texture={millTex}  width={millW}  height={millH}  x={millX}  y={millY}  blendMode="overlay" alpha={textAlpha} />
+
+      {[0, 1].map((i) => (
+        <pixiSprite key={i} texture={deadTex} width={deadW} height={deadH}
+          x={sw * dead.l} y={sh * dead.t} alpha={deadAlpha} blendMode="overlay" />
+      ))}
+
+      {/* what-if: slides right on mobile */}
+      {[0, 1].map((i) => (
+        <pixiSprite key={i} texture={whatIfTex} width={whatIfW} height={whatIfH}
+          x={whatIfX} y={whatIfY} alpha={whatIfAlpha} blendMode="overlay" />
+      ))}
+
+      {circles.map(({ size, x, y }, i) => (
+        <pixiSprite key={i} texture={circleTex} width={size} height={size} x={x} y={y} />
+      ))}
+
+      {/* cards */}
+      {(() => {
+        const ip = chipOutProg > 0 ? chipExitPos(inboxTgt.xf, inboxTgt.yf, inboxWf, inboxHf) : { x: inboxX, y: inboxY }
+        const mp = chipOutProg > 0 ? chipExitPos(mailsTgt.xf, mailsTgt.yf, mailsWf, mailsHf) : { x: mailsX, y: mailsY }
+        return (
+          <>
+            <pixiSprite texture={inboxTex} width={inboxW} height={inboxH} x={ip.x} y={ip.y} />
+            <pixiSprite texture={mailsTex} width={mailsW} height={mailsH} x={mp.x} y={mp.y} />
+          </>
+        )
+      })()}
+
+      {/* chips */}
+      {CHIPS_MOBILE.map(([key, xf, yf, wf]) => {
+        const tex = Assets.get(key)
+        const w   = sw * wf
+        const h   = (tex.height / tex.width) * w
+        const hf  = h / sh
+        const tgt = chipBorderTarget(xf, yf, wf, hf, dead)
+        const pos = chipOutProg > 0
+          ? chipExitPos(tgt.xf, tgt.yf, wf, hf)
+          : { x: sw * lerp(xf, tgt.xf, chipProg), y: sh * lerp(yf, tgt.yf, chipProg) }
+        return (
+          <pixiSprite key={key} texture={tex} width={w} height={h} x={pos.x} y={pos.y} />
+        )
+      })}
+    </pixiContainer>
+  )
+}
+
+// ─── Export ──────────────────────────────────────────────────────────────────
+
 export function Frame12({ timeline, ctx }: SceneProps) {
-  if (ctx.isMobile) return null
+  if (ctx.isMobile) return <Frame12Mobile timeline={timeline} />
   return <Frame12Desktop timeline={timeline} />
 }
