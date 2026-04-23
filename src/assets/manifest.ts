@@ -88,6 +88,8 @@ import mobileBg8 from "./mobile/bg8.svg"
 import mobileBtnExplore from "./mobile/btn-explore.svg"
 import mobileBtnTeach from "./mobile/btn-teach.svg"
 import mobileStartExploreText from "./mobile/start-explore-text.svg"
+import mobileEverySecondText from "./mobile/every-second-google-text.svg"
+import mobileMillionsGoneText from "./mobile/millions-gone-text.svg"
 
 
 export const ASSETS = {
@@ -303,8 +305,8 @@ export function loadAssets() {
       { alias: ASSETS.bg1BlurRight,    src: bg1BlurRight },
       { alias: ASSETS.topRightBlur2,   src: topRightBlur2 },
       { alias: ASSETS.bgBlur3,         src: bgBlur3 },
-      { alias: ASSETS.everySecondText, src: everySecondText },
-      { alias: ASSETS.millionsGoneText,src: millionsGoneText },
+      { alias: ASSETS.everySecondText, src: mobileEverySecondText },
+      { alias: ASSETS.millionsGoneText,src: mobileMillionsGoneText },
       { alias: ASSETS.deadBurnoutFades,src: deadBurnoutFades },
       { alias: ASSETS.whatIfBetterText,src: whatIfBetterText },
       { alias: ASSETS.inboxAlertChip,  src: inboxAlertChip },

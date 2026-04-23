@@ -388,14 +388,19 @@ function Frame12Desktop({ timeline }: { timeline: GSAPTimeline }) {
 
 // ─── Mobile ──────────────────────────────────────────────────────────────────
 
-// 5-chip subset; fractions derived from Figma 375px mobile frame
-const CHIPS_MOBILE: [string, number, number, number][] = [
-  [ASSETS.summarizeChip, 0.516, 0.158, 0.23],
-  [ASSETS.howToWriteChip, 0.023, 0.316, 0.42],
-  [ASSETS.error404Chip, 0.761, 0.378, 0.18],
-  [ASSETS.rewriteChip, 0.415, 0.616, 0.30],
-  [ASSETS.organizeChip, 0.025, 0.717, 0.38],
+// [key, initXf, initYf, wf, tgtXf, tgtYf]
+// init = Figma Frame 1 mobile · tgt = Figma Frame 2 mobile (verified non-overlapping)
+// container 596×596 @ top:144 in 375×812 frame → absolute = pos - (110.5, -144)
+const CHIPS_MOBILE: [string, number, number, number, number, number][] = [
+  [ASSETS.summarizeChip, 0.516, 0.158, 0.23, 0.561, 0.323],
+  [ASSETS.howToWriteChip, 0.023, 0.316, 0.42, -0.007, 0.363],
+  [ASSETS.error404Chip, 0.761, 0.378, 0.18, 0.711, 0.441],
+  [ASSETS.rewriteChip, 0.415, 0.616, 0.30, 0.487, 0.567],
+  [ASSETS.organizeChip, 0.025, 0.717, 0.38, -0.007, 0.599],
 ]
+// card targets from Figma Frame 2 mobile
+const INBOX_M_TGT = { xf: 0.374, yf: 0.334 }
+const MAILS_M_TGT = { xf: 0.345, yf: 0.622 }
 
 // Circles are proportionally larger on portrait mobile
 const CIRCLES_INIT_WF_MOBILE = [1.8, 1.5, 1.1]
@@ -561,29 +566,27 @@ function Frame12Mobile({ timeline }: { timeline: GSAPTimeline }) {
   const whatIfX = lerp(whatIfBaseX, sw + whatIfW, whatIfExitProg)
   const whatIfY = sh * deadYf
 
-  // inbox card — Figma 375px: 147×147px at left=56.5, top=109
+  // inbox card — init: Figma Frame 1, target: Figma Frame 2 (INBOX_M_TGT)
   const inboxTex = Assets.get(ASSETS.inboxAlertChip)
   const inboxWf = 0.392
   const inboxHf = (inboxTex.height / inboxTex.width) * inboxWf * (sw / sh)
   const inboxInitXf = 0.151
   const inboxInitYf = 0.134
-  const inboxTgt = chipBorderTarget(inboxInitXf, inboxInitYf, inboxWf, inboxHf, dead)
   const inboxW = sw * inboxWf
   const inboxH = (inboxTex.height / inboxTex.width) * inboxW
-  const inboxX = sw * lerp(inboxInitXf, inboxTgt.xf, chipProg)
-  const inboxY = sh * lerp(inboxInitYf, inboxTgt.yf, chipProg)
+  const inboxX = sw * lerp(inboxInitXf, INBOX_M_TGT.xf, chipProg)
+  const inboxY = sh * lerp(inboxInitYf, INBOX_M_TGT.yf, chipProg)
 
-  // mails card — Figma 375px: 122×122px at left=176.5, top=659
+  // mails card — init: Figma Frame 1, target: Figma Frame 2 (MAILS_M_TGT)
   const mailsTex = Assets.get(ASSETS.mailsChip)
   const mailsWf = 0.325
   const mailsHf = (mailsTex.height / mailsTex.width) * mailsWf * (sw / sh)
   const mailsInitXf = 0.471
   const mailsInitYf = 0.811
-  const mailsTgt = chipBorderTarget(mailsInitXf, mailsInitYf, mailsWf, mailsHf, dead)
   const mailsW = sw * mailsWf
   const mailsH = (mailsTex.height / mailsTex.width) * mailsW
-  const mailsX = sw * lerp(mailsInitXf, mailsTgt.xf, chipProg)
-  const mailsY = sh * lerp(mailsInitYf, mailsTgt.yf, chipProg)
+  const mailsX = sw * lerp(mailsInitXf, MAILS_M_TGT.xf, chipProg)
+  const mailsY = sh * lerp(mailsInitYf, MAILS_M_TGT.yf, chipProg)
 
   function chipExitPos(tgtXf: number, tgtYf: number, wf: number, hf: number) {
     const tgtCX = sw * (tgtXf + wf / 2)
@@ -613,16 +616,17 @@ function Frame12Mobile({ timeline }: { timeline: GSAPTimeline }) {
           x={sw * dead.l} y={sh * dead.t} alpha={deadAlpha} blendMode="overlay" />
       ))}
 
-      <pixiSprite texture={whatIfTex} width={whatIfW} height={whatIfH} x={whatIfX} y={whatIfY} alpha={whatIfAlpha} blendMode="overlay" />
+      <pixiSprite texture={whatIfTex} width={whatIfW} height={whatIfH}
+        x={whatIfX} y={whatIfY} alpha={whatIfAlpha} blendMode="overlay" />
 
       {circles.map(({ size, x, y }, i) => (
         <pixiSprite key={i} texture={circleTex} width={size} height={size} x={x} y={y} />
       ))}
 
-      {/* cards */}
+      {/* cards — direct Figma Frame 2 targets, no chipBorderTarget */}
       {(() => {
-        const ip = chipOutProg > 0 ? chipExitPos(inboxTgt.xf, inboxTgt.yf, inboxWf, inboxHf) : { x: inboxX, y: inboxY }
-        const mp = chipOutProg > 0 ? chipExitPos(mailsTgt.xf, mailsTgt.yf, mailsWf, mailsHf) : { x: mailsX, y: mailsY }
+        const ip = chipOutProg > 0 ? chipExitPos(INBOX_M_TGT.xf, INBOX_M_TGT.yf, inboxWf, inboxHf) : { x: inboxX, y: inboxY }
+        const mp = chipOutProg > 0 ? chipExitPos(MAILS_M_TGT.xf, MAILS_M_TGT.yf, mailsWf, mailsHf) : { x: mailsX, y: mailsY }
         return (
           <>
             <pixiSprite texture={inboxTex} width={inboxW} height={inboxH} x={ip.x} y={ip.y} />
@@ -631,16 +635,15 @@ function Frame12Mobile({ timeline }: { timeline: GSAPTimeline }) {
         )
       })()}
 
-      {/* chips */}
-      {CHIPS_MOBILE.map(([key, xf, yf, wf]) => {
+      {/* chips — direct Figma Frame 2 targets, no chipBorderTarget */}
+      {CHIPS_MOBILE.map(([key, xf, yf, wf, tgtXf, tgtYf]) => {
         const tex = Assets.get(key)
         const w = sw * wf
         const h = (tex.height / tex.width) * w
         const hf = h / sh
-        const tgt = chipBorderTarget(xf, yf, wf, hf, dead)
         const pos = chipOutProg > 0
-          ? chipExitPos(tgt.xf, tgt.yf, wf, hf)
-          : { x: sw * lerp(xf, tgt.xf, chipProg), y: sh * lerp(yf, tgt.yf, chipProg) }
+          ? chipExitPos(tgtXf, tgtYf, wf, hf)
+          : { x: sw * lerp(xf, tgtXf, chipProg), y: sh * lerp(yf, tgtYf, chipProg) }
         return (
           <pixiSprite key={key} texture={tex} width={w} height={h} x={pos.x} y={pos.y} />
         )
