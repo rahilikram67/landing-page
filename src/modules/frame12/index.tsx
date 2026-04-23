@@ -104,6 +104,7 @@ function Frame12Desktop({ timeline }: { timeline: GSAPTimeline }) {
     circProg: 0,
     bgBlur3Alpha: 0,
     whatIfAlpha: 0,
+    whatIfExitProg: 0,
     chipOutProg: 0,
     circOutProg: 0,
   })
@@ -115,6 +116,7 @@ function Frame12Desktop({ timeline }: { timeline: GSAPTimeline }) {
   const [circProg, setCircProg] = useState(0)
   const [bgBlur3Alpha, setBgBlur3Alpha] = useState(0)
   const [whatIfAlpha, setWhatIfAlpha] = useState(0)
+  const [whatIfExitProg, setWhatIfExitProg] = useState(0)
   const [chipOutProg, setChipOutProg] = useState(0)
   const [circOutProg, setCircOutProg] = useState(0)
 
@@ -205,6 +207,14 @@ function Frame12Desktop({ timeline }: { timeline: GSAPTimeline }) {
       ease: "power1.out",
       onUpdate() { setWhatIfAlpha(p.whatIfAlpha) },
     }, "<0.2")
+
+    // what-if-better text drops down off frame after fully visible
+    timeline.to(p, {
+      whatIfExitProg: 1,
+      duration: 1.0,
+      ease: "power2.in",
+      onUpdate() { setWhatIfExitProg(p.whatIfExitProg) },
+    }, ">0.5")
   }, [timeline, app.renderer])
 
   if (!app.renderer) return null
@@ -330,9 +340,19 @@ function Frame12Desktop({ timeline }: { timeline: GSAPTimeline }) {
           x={sw * dead.l} y={sh * dead.t} alpha={deadAlpha} blendMode="overlay" />
       ))}
 
+
       <pixiSprite texture={whatIfTex} width={whatIfW} height={whatIfH}
-        x={whatIfX} y={whatIfY} alpha={whatIfAlpha} blendMode="overlay" />
-      
+        x={whatIfX}
+        y={lerp(whatIfY, sh + whatIfH, whatIfExitProg)}
+        alpha={whatIfAlpha} blendMode="overlay" />
+
+      {/* {[0, 1].map((i) => (
+        <pixiSprite key={i} texture={whatIfTex} width={whatIfW} height={whatIfH}
+          x={whatIfX}
+          y={lerp(whatIfY, sh + whatIfH, whatIfExitProg)}
+          alpha={whatIfAlpha} blendMode="overlay" />
+      ))} */}
+
 
       {/* circles — shrink then expand off screen */}
       {circles.map(({ size, x, y }, i) => (
