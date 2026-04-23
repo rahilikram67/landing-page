@@ -178,8 +178,7 @@ function Frame1Desktop({ timeline }: { timeline: GSAPTimeline }) {
 
   // top-right-blur2 — drifts left + down
   const blur2Tex = Assets.get(ASSETS.topRightBlur2)
-  const blur2W = sw
-  const blur2H = (blur2Tex.height / blur2Tex.width) * blur2W
+  
 
   // circles — lerp from initial to end-state
   const circleTex = Assets.get(ASSETS.circle)
@@ -250,7 +249,7 @@ function Frame1Desktop({ timeline }: { timeline: GSAPTimeline }) {
       <pixiSprite texture={blurRTex} width={blurRW} height={sh} x={sw - blurRW} y={0} />
 
       {/* top-right-blur2: fades in, drifts top-right → bottom-left */}
-      <pixiSprite texture={blur2Tex} width={blur2W} height={blur2H} alpha={blur2Alpha} />
+      <pixiSprite texture={blur2Tex} width={sw} height={sh} alpha={blur2Alpha} />
 
       {/* every second / millions gone — fade out */}
       <pixiSprite texture={everyTex} width={everyW} height={everyH} x={everyX} y={everyY} blendMode="overlay" alpha={textAlpha} />
