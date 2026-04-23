@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from "react"
+import { Fragment, useEffect, useRef, useState } from "react"
 import { useApplication } from "@pixi/react"
 import { Assets } from "pixi.js"
 import type { SceneProps } from "../../App"
@@ -6,20 +6,20 @@ import { ASSETS } from "@/assets/manifest"
 
 // [assetKey, xf, yf, wf] — fractions of sw/sh; height from texture aspect ratio
 const CHIPS: [string, number, number, number][] = [
-  [ASSETS.rewriteChip,     0.5659, 0.6267, 0.1712],
-  [ASSETS.summarizeChip,   0.4884, 0.2318, 0.1159],
-  [ASSETS.reportChip,      0.6891, 0.5400, 0.2047],
-  [ASSETS.organizeChip,    0.1374, 0.6314, 0.2305],
-  [ASSETS.error404Chip,    0.6264, 0.2053, 0.1134],
-  [ASSETS.howToWriteChip,  0.2324, 0.0944, 0.2270],
+  [ASSETS.rewriteChip, 0.5659, 0.6867, 0.1712],
+  [ASSETS.summarizeChip, 0.4884, 0.2318, 0.1159],
+  [ASSETS.reportChip, 0.7091, 0.5400, 0.2047],
+  [ASSETS.organizeChip, 0.1374, 0.6814, 0.2305],
+  [ASSETS.error404Chip, 0.6264, 0.2053, 0.1134],
+  [ASSETS.howToWriteChip, 0.2324, 0.0944, 0.2270],
   [ASSETS.explainCodeChip, 0.4183, 0.7044, 0.1565],
-  [ASSETS.diffMlAiChip,    0.0877, 0.1500, 0.1916],
+  [ASSETS.diffMlAiChip, 0.0877, 0.1500, 0.1916],
 ]
 
 // Circle diameter fractions — all three circles are concentric with the screen centre.
 // xf/yf from Figma only hold at 1376×900; centre-pin is the only correct approach.
 const CIRCLES_INIT_WF = [0.8576, 0.7267, 0.5814]
-const CIRCLES_END_WF  = [0.6919, 0.5843, 0.4709]
+const CIRCLES_END_WF = [0.6919, 0.5843, 0.4709]
 
 type DeadRect = { l: number; r: number; t: number; b: number }
 
@@ -98,18 +98,18 @@ function Frame1Desktop({ timeline }: { timeline: GSAPTimeline }) {
 
   const proxy = useRef({
     blur2Alpha: 0,
-    textAlpha:  1,
-    deadAlpha:  0,
-    chipProg:   0,
-    circProg:   0,
+    textAlpha: 1,
+    deadAlpha: 0,
+    chipProg: 0,
+    circProg: 0,
   })
 
-  const [blur2Alpha,  setBlur2Alpha]  = useState(0)
-  
-  const [textAlpha,   setTextAlpha]   = useState(1)
-  const [deadAlpha,   setDeadAlpha]   = useState(0)
-  const [chipProg,    setChipProg]    = useState(0)
-  const [circProg,    setCircProg]    = useState(0)
+  const [blur2Alpha, setBlur2Alpha] = useState(0)
+
+  const [textAlpha, setTextAlpha] = useState(1)
+  const [deadAlpha, setDeadAlpha] = useState(0)
+  const [chipProg, setChipProg] = useState(0)
+  const [circProg, setCircProg] = useState(0)
 
   useEffect(() => {
     if (!timeline || !app.renderer) return
@@ -171,7 +171,7 @@ function Frame1Desktop({ timeline }: { timeline: GSAPTimeline }) {
 
   // top-right-blur2 — drifts left + down
   const blur2Tex = Assets.get(ASSETS.topRightBlur2)
-  
+
 
   // circles — always centred at screen centre, diameter lerps init → end
   const circleTex = Assets.get(ASSETS.circle)
@@ -242,12 +242,15 @@ function Frame1Desktop({ timeline }: { timeline: GSAPTimeline }) {
 
       {/* every second / millions gone — fade out */}
       <pixiSprite texture={everyTex} width={everyW} height={everyH} x={everyX} y={everyY} blendMode="overlay" alpha={textAlpha} />
-      <pixiSprite texture={millTex}  width={millW}  height={millH}  x={millX}  y={millY}  blendMode="overlay" alpha={textAlpha} />
+      <pixiSprite texture={millTex} width={millW} height={millH} x={millX} y={millY} blendMode="overlay" alpha={textAlpha} />
+
 
       {/* dead-burnout-fades — fades in */}
       {/* two stacked overlay passes for better legibility without removing blendMode */}
-      <pixiSprite texture={deadTex} width={deadW} height={deadH} x={sw * dead.l} y={sh * dead.t} alpha={deadAlpha} blendMode="overlay" />
-      <pixiSprite texture={deadTex} width={deadW} height={deadH} x={sw * dead.l} y={sh * dead.t} alpha={deadAlpha} blendMode="overlay" />
+      {[0, 1].map((i) => (
+        <pixiSprite key={i} texture={deadTex} width={deadW} height={deadH} x={sw * dead.l} y={sh * dead.t} alpha={deadAlpha} blendMode="overlay" />
+      ))}
+
 
       {/* circles — shrink toward end-state */}
       {circles.map(({ size, x, y }, i) => (
