@@ -126,7 +126,7 @@ function Frame12Desktop({ timeline }: { timeline: GSAPTimeline }) {
 
     // blur2: fade in + drift top-right → bottom-left
     timeline.to(p, {
-      blur2Alpha: 1, blur2DXF: -0.3, blur2DYF: 0.25,
+      blur2Alpha: 1,
       duration: 2.0,
       ease: "power1.inOut",
       onUpdate() {

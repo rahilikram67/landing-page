@@ -82,8 +82,8 @@ function App() {
             scrub: 1,
             ...(isMobile && {
               snap: {
-                // snapTo: 1 / SCENES.length,
-                // duration: { min: 0.3, max: 0.6 },
+                snapTo: 1 / SCENES.length,
+                duration: { min: 0.3, max: 0.6 },
                 ease: "power2.inOut",
               },
             }),
