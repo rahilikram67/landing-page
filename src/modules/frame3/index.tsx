@@ -79,13 +79,10 @@ function Frame3Desktop({ timeline }: { timeline: GSAPTimeline }) {
     return { tex, w, h }
   })
 
-  // Strip x: lerp between "all cards off-screen right" → "card 3 centred"
+  // Strip x: lerp from fully off-screen right → fully off-screen left
   const stripStartX = sw
-  const stripEndX   = sw / 2
-    - cards[0].w - cardGap
-    - cards[1].w - cardGap
-    - cards[2].w - cardGap
-    - cards[3].w / 2
+  const totalStripW = cards.reduce((acc, c) => acc + c.w, 0) + cardGap * (cards.length - 1)
+  const stripEndX   = -totalStripW
 
   const stripX  = lerp(stripStartX, stripEndX, sliderProg)
   const cardY   = (sh - sh * CARD_HF) / 2
