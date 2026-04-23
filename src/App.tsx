@@ -36,13 +36,13 @@ export interface SceneProps {
 const SCENES: ComponentType<SceneProps>[] = [
   Frame12,
   Frame3,
-  // Frame5,
-  // Frame6,
-  // Frame7_1,
-  // Frame7_2,
-  // Frame7_3,
-  // Frame7_4,
-  // Frame8,
+  Frame5,
+  Frame6,
+  Frame7_1,
+  Frame7_2,
+  Frame7_3,
+  Frame7_4,
+  Frame8,
 ]
 
 // 100% scroll height per scene, plus a base 100% for the initial view
