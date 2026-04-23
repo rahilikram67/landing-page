@@ -98,25 +98,25 @@ function Frame12Desktop({ timeline }: { timeline: GSAPTimeline }) {
 
   const proxy = useRef({
     blur2Alpha: 0,
-    textAlpha:  1,
-    deadAlpha:  0,
-    chipProg:   0,
-    circProg:   0,
+    textAlpha: 1,
+    deadAlpha: 0,
+    chipProg: 0,
+    circProg: 0,
     bgBlur3Alpha: 0,
-    whatIfAlpha:  0,
-    chipOutProg:  0,
-    circOutProg:  0,
+    whatIfAlpha: 0,
+    chipOutProg: 0,
+    circOutProg: 0,
   })
 
-  const [blur2Alpha,    setBlur2Alpha]    = useState(0)
-  const [textAlpha,     setTextAlpha]     = useState(1)
-  const [deadAlpha,     setDeadAlpha]     = useState(0)
-  const [chipProg,      setChipProg]      = useState(0)
-  const [circProg,      setCircProg]      = useState(0)
-  const [bgBlur3Alpha,  setBgBlur3Alpha]  = useState(0)
-  const [whatIfAlpha,   setWhatIfAlpha]   = useState(0)
-  const [chipOutProg,   setChipOutProg]   = useState(0)
-  const [circOutProg,   setCircOutProg]   = useState(0)
+  const [blur2Alpha, setBlur2Alpha] = useState(0)
+  const [textAlpha, setTextAlpha] = useState(1)
+  const [deadAlpha, setDeadAlpha] = useState(0)
+  const [chipProg, setChipProg] = useState(0)
+  const [circProg, setCircProg] = useState(0)
+  const [bgBlur3Alpha, setBgBlur3Alpha] = useState(0)
+  const [whatIfAlpha, setWhatIfAlpha] = useState(0)
+  const [chipOutProg, setChipOutProg] = useState(0)
+  const [circOutProg, setCircOutProg] = useState(0)
 
   useEffect(() => {
     if (!timeline || !app.renderer) return
@@ -226,7 +226,7 @@ function Frame12Desktop({ timeline }: { timeline: GSAPTimeline }) {
   const circleTex = Assets.get(ASSETS.circle)
   const circles = CIRCLES_INIT_WF.map((initWf, i) => {
     const shrunkWf = lerp(initWf, CIRCLES_END_WF[i], circProg)
-    const finalWf  = lerp(shrunkWf, CIRCLES_INIT_WF[0] * 3, circOutProg)
+    const finalWf = lerp(shrunkWf, CIRCLES_INIT_WF[0] * 3, circOutProg)
     const size = sw * finalWf
     return { size, x: sw / 2 - size / 2, y: sh / 2 - size / 2 }
   })
@@ -264,12 +264,12 @@ function Frame12Desktop({ timeline }: { timeline: GSAPTimeline }) {
   const deadCY_px = sh * (dead.t + dead.b) / 2
 
   // bg-blur3 + what-if-better text
-  const bgBlur3Tex  = Assets.get(ASSETS.bgBlur3)
-  const whatIfTex   = Assets.get(ASSETS.whatIfBetterText)
-  const whatIfW     = sw * deadWf
-  const whatIfH     = (whatIfTex.height / whatIfTex.width) * whatIfW
-  const whatIfX     = sw * deadXf
-  const whatIfY     = sh * deadYf
+  const bgBlur3Tex = Assets.get(ASSETS.bgBlur3)
+  const whatIfTex = Assets.get(ASSETS.whatIfBetterText)
+  const whatIfW = sw * deadWf
+  const whatIfH = (whatIfTex.height / whatIfTex.width) * whatIfW
+  const whatIfX = sw * deadXf
+  const whatIfY = sh * deadYf
 
   // inbox card — converges to dead border
   const inboxTex = Assets.get(ASSETS.inboxAlertChip)
@@ -299,10 +299,10 @@ function Frame12Desktop({ timeline }: { timeline: GSAPTimeline }) {
   function chipExitPos(tgtXf: number, tgtYf: number, wf: number, hf: number) {
     const tgtCX = sw * (tgtXf + wf / 2)
     const tgtCY = sh * (tgtYf + hf / 2)
-    const angle  = Math.atan2(tgtCY - deadCY_px, tgtCX - deadCX_px)
-    const dist   = Math.hypot(tgtCY - deadCY_px, tgtCX - deadCX_px)
+    const angle = Math.atan2(tgtCY - deadCY_px, tgtCX - deadCX_px)
+    const dist = Math.hypot(tgtCY - deadCY_px, tgtCX - deadCX_px)
     const curAngle = angle + chipOutProg * (Math.PI / 5)
-    const curDist  = dist  + chipOutProg * Math.max(sw, sh) * 1.5
+    const curDist = dist + chipOutProg * Math.max(sw, sh) * 1.5
     return {
       x: deadCX_px + curDist * Math.cos(curAngle) - sw * wf / 2,
       y: deadCY_px + curDist * Math.sin(curAngle) - sh * hf / 2,
@@ -311,8 +311,8 @@ function Frame12Desktop({ timeline }: { timeline: GSAPTimeline }) {
 
   return (
     <pixiContainer>
-      <pixiSprite texture={blurLTex}  width={blurLW} height={sh} x={0}          y={0} />
-      <pixiSprite texture={blurRTex}  width={blurRW} height={sh} x={sw - blurRW} y={0} />
+      <pixiSprite texture={blurLTex} width={blurLW} height={sh} x={0} y={0} />
+      <pixiSprite texture={blurRTex} width={blurRW} height={sh} x={sw - blurRW} y={0} />
 
       {/* top-right-blur2: fades in */}
       <pixiSprite texture={blur2Tex} width={sw} height={sh} alpha={blur2Alpha} />
@@ -322,7 +322,7 @@ function Frame12Desktop({ timeline }: { timeline: GSAPTimeline }) {
 
       {/* every second / millions gone — fade out */}
       <pixiSprite texture={everyTex} width={everyW} height={everyH} x={everyX} y={everyY} blendMode="overlay" alpha={textAlpha} />
-      <pixiSprite texture={millTex}  width={millW}  height={millH}  x={millX}  y={millY}  blendMode="overlay" alpha={textAlpha} />
+      <pixiSprite texture={millTex} width={millW} height={millH} x={millX} y={millY} blendMode="overlay" alpha={textAlpha} />
 
       {/* dead-burnout-fades — two stacked overlay passes for legibility */}
       {[0, 1].map((i) => (
@@ -330,11 +330,9 @@ function Frame12Desktop({ timeline }: { timeline: GSAPTimeline }) {
           x={sw * dead.l} y={sh * dead.t} alpha={deadAlpha} blendMode="overlay" />
       ))}
 
-      {/* what-if-better text — fades in after dead text exits */}
-      {[0, 1].map((i) => (
-        <pixiSprite key={i} texture={whatIfTex} width={whatIfW} height={whatIfH}
-          x={whatIfX} y={whatIfY} alpha={whatIfAlpha} blendMode="overlay" />
-      ))}
+      <pixiSprite texture={whatIfTex} width={whatIfW} height={whatIfH}
+        x={whatIfX} y={whatIfY} alpha={whatIfAlpha} blendMode="overlay" />
+      
 
       {/* circles — shrink then expand off screen */}
       {circles.map(({ size, x, y }, i) => (
@@ -360,9 +358,9 @@ function Frame12Desktop({ timeline }: { timeline: GSAPTimeline }) {
       {/* chips — converge then exit in circular arcs */}
       {CHIPS.map(([key, xf, yf, wf]) => {
         const tex = Assets.get(key)
-        const w   = sw * wf
-        const h   = (tex.height / tex.width) * w
-        const hf  = h / sh
+        const w = sw * wf
+        const h = (tex.height / tex.width) * w
+        const hf = h / sh
         const tgt = chipBorderTarget(xf, yf, wf, hf, dead)
         const pos = chipOutProg > 0
           ? chipExitPos(tgt.xf, tgt.yf, wf, hf)
