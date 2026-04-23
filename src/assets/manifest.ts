@@ -50,6 +50,12 @@ import startExploreText from "./desktop/start-explore-text.svg"
 import btnExplore from "./desktop/btn-explore.svg"
 import btnTeach from "./desktop/btn-teach.svg"
 import bg1 from "./desktop/bg1.svg"
+import bgBlurF3      from "./desktop/bg-blur-f3.svg"
+import bgBlurF32     from "./desktop/bg-blur-f3-2.svg"
+import studentLaptop  from "./desktop/student-laptop.svg"
+import studentLaptop2 from "./desktop/student-laptop2.svg"
+import designer       from "./desktop/designer.svg"
+import marketing      from "./desktop/marketing.svg"
 import bg1BlurLeft from "./desktop/bottom-left-blur1.svg"
 import bg1BlurRight from "./desktop/top-right-blur1.svg"
 import topRightBlur2 from "./desktop/top-right-blur2.svg"
@@ -154,6 +160,12 @@ export const ASSETS = {
   mobileBtnExplore: "mobileBtnExplore",
   mobileBtnTeach: "mobileBtnTeach",
   mobileStartExploreText: "mobileStartExploreText",
+  bgBlurF3:      "bgBlurF3",
+  bgBlurF32:     "bgBlurF32",
+  studentLaptop:  "studentLaptop",
+  studentLaptop2: "studentLaptop2",
+  designer:       "designer",
+  marketing:      "marketing",
   bg1: "bg1",
   bg1BlurLeft: "bg1BlurLeft",
   bg1BlurRight: "bg1BlurRight",
@@ -233,6 +245,12 @@ export function loadAssets() {
       { alias: ASSETS.startExploreText, src: startExploreText },
       { alias: ASSETS.btnExplore, src: btnExplore },
       { alias: ASSETS.btnTeach, src: btnTeach },
+      { alias: ASSETS.bgBlurF3,      src: bgBlurF3 },
+      { alias: ASSETS.bgBlurF32,     src: bgBlurF32 },
+      { alias: ASSETS.studentLaptop,  src: studentLaptop },
+      { alias: ASSETS.studentLaptop2, src: studentLaptop2 },
+      { alias: ASSETS.designer,       src: designer },
+      { alias: ASSETS.marketing,      src: marketing },
       { alias: ASSETS.bg1, src: bg1 },
       { alias: ASSETS.bg1BlurLeft, src: bg1BlurLeft },
       { alias: ASSETS.bg1BlurRight, src: bg1BlurRight },
