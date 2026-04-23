@@ -93,7 +93,7 @@ function chipBorderTarget(
   }
 }
 
-function Frame1Desktop({ timeline }: { timeline: GSAPTimeline }) {
+function Frame12Desktop({ timeline }: { timeline: GSAPTimeline }) {
   const { app } = useApplication()
 
   const proxy = useRef({
@@ -375,7 +375,7 @@ function Frame1Desktop({ timeline }: { timeline: GSAPTimeline }) {
   )
 }
 
-export function Frame1({ timeline, ctx }: SceneProps) {
+export function Frame12({ timeline, ctx }: SceneProps) {
   if (ctx.isMobile) return null
-  return <Frame1Desktop timeline={timeline} />
+  return <Frame12Desktop timeline={timeline} />
 }
