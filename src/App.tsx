@@ -19,7 +19,7 @@ extend({ Sprite, Container, Graphics,Text })
 
 gsap.registerPlugin(ScrollTrigger)
 ScrollTrigger.normalizeScroll(true)
-// ScrollTrigger.config({ ignoreMobileResize: true })
+ScrollTrigger.config({ ignoreMobileResize: true })
 
 
 export interface SceneCtx {
@@ -46,8 +46,8 @@ const SCENES: ComponentType<SceneProps>[] = [
 ]
 
 // 100% scroll height per scene, plus a base 100% for the initial view
-const DESKTOP_SCROLL = `+=${SCENES.length * 150}%`
-const MOBILE_SCROLL  = `+=${SCENES.length * 100}%`
+const DESKTOP_SCROLL = `+=${SCENES.length * 120}%`
+const MOBILE_SCROLL  = `+=${SCENES.length * 80}%`
 
 function App() {
   const containerRef = useRef<HTMLDivElement>(null)
