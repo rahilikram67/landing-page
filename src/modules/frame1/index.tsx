@@ -245,6 +245,8 @@ function Frame1Desktop({ timeline }: { timeline: GSAPTimeline }) {
       <pixiSprite texture={millTex}  width={millW}  height={millH}  x={millX}  y={millY}  blendMode="overlay" alpha={textAlpha} />
 
       {/* dead-burnout-fades — fades in */}
+      {/* two stacked overlay passes for better legibility without removing blendMode */}
+      <pixiSprite texture={deadTex} width={deadW} height={deadH} x={sw * dead.l} y={sh * dead.t} alpha={deadAlpha} blendMode="overlay" />
       <pixiSprite texture={deadTex} width={deadW} height={deadH} x={sw * dead.l} y={sh * dead.t} alpha={deadAlpha} blendMode="overlay" />
 
       {/* circles — shrink toward end-state */}
