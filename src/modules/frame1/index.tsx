@@ -16,17 +16,10 @@ const CHIPS: [string, number, number, number][] = [
   [ASSETS.diffMlAiChip,    0.0877, 0.1500, 0.1916],
 ]
 
-// Circle initial → end-state fractions (Figma: 21599-97575/76/77 → 21599-97937/38/39)
-const CIRCLES_INIT = [
-  { wf: 0.8576, xf: 0.0720, yf: -0.1544 },
-  { wf: 0.7267, xf: 0.1374, yf: -0.0544 },
-  { wf: 0.5814, xf: 0.2093, yf:  0.0556 },
-]
-const CIRCLES_END = [
-  { wf: 0.6919, xf: 0.1541, yf: -0.0278 },
-  { wf: 0.5843, xf: 0.2072, yf:  0.0533 },
-  { wf: 0.4709, xf: 0.2653, yf:  0.1422 },
-]
+// Circle diameter fractions — all three circles are concentric with the screen centre.
+// xf/yf from Figma only hold at 1376×900; centre-pin is the only correct approach.
+const CIRCLES_INIT_WF = [0.8576, 0.7267, 0.5814]
+const CIRCLES_END_WF  = [0.6919, 0.5843, 0.4709]
 
 type DeadRect = { l: number; r: number; t: number; b: number }
 
@@ -180,15 +173,11 @@ function Frame1Desktop({ timeline }: { timeline: GSAPTimeline }) {
   const blur2Tex = Assets.get(ASSETS.topRightBlur2)
   
 
-  // circles — lerp from initial to end-state
+  // circles — always centred at screen centre, diameter lerps init → end
   const circleTex = Assets.get(ASSETS.circle)
-  const circles = CIRCLES_INIT.map((init, i) => {
-    const end = CIRCLES_END[i]
-    return {
-      size: sw * lerp(init.wf, end.wf, circProg),
-      x:    sw * lerp(init.xf, end.xf, circProg),
-      y:    sh * lerp(init.yf, end.yf, circProg),
-    }
+  const circles = CIRCLES_INIT_WF.map((initWf, i) => {
+    const size = sw * lerp(initWf, CIRCLES_END_WF[i], circProg)
+    return { size, x: sw / 2 - size / 2, y: sh / 2 - size / 2 }
   })
 
   // "every second" / "millions gone" — fade out
