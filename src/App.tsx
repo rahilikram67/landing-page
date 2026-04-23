@@ -80,13 +80,6 @@ function App() {
             end: isDesktop ? DESKTOP_SCROLL : MOBILE_SCROLL,
             pin: true,
             scrub: 1,
-            ...(isMobile && {
-              snap: {
-                snapTo: 1 / SCENES.length,
-                duration: { min: 0.3, max: 0.6 },
-                ease: "power2.inOut",
-              },
-            }),
           },
         })
 
