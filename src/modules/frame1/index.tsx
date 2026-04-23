@@ -1,4 +1,4 @@
-import { Fragment, useEffect, useRef, useState } from "react"
+import { useEffect, useRef, useState } from "react"
 import { useApplication } from "@pixi/react"
 import { Assets } from "pixi.js"
 import type { SceneProps } from "../../App"
@@ -98,18 +98,25 @@ function Frame1Desktop({ timeline }: { timeline: GSAPTimeline }) {
 
   const proxy = useRef({
     blur2Alpha: 0,
-    textAlpha: 1,
-    deadAlpha: 0,
-    chipProg: 0,
-    circProg: 0,
+    textAlpha:  1,
+    deadAlpha:  0,
+    chipProg:   0,
+    circProg:   0,
+    bgBlur3Alpha: 0,
+    whatIfAlpha:  0,
+    chipOutProg:  0,
+    circOutProg:  0,
   })
 
-  const [blur2Alpha, setBlur2Alpha] = useState(0)
-
-  const [textAlpha, setTextAlpha] = useState(1)
-  const [deadAlpha, setDeadAlpha] = useState(0)
-  const [chipProg, setChipProg] = useState(0)
-  const [circProg, setCircProg] = useState(0)
+  const [blur2Alpha,    setBlur2Alpha]    = useState(0)
+  const [textAlpha,     setTextAlpha]     = useState(1)
+  const [deadAlpha,     setDeadAlpha]     = useState(0)
+  const [chipProg,      setChipProg]      = useState(0)
+  const [circProg,      setCircProg]      = useState(0)
+  const [bgBlur3Alpha,  setBgBlur3Alpha]  = useState(0)
+  const [whatIfAlpha,   setWhatIfAlpha]   = useState(0)
+  const [chipOutProg,   setChipOutProg]   = useState(0)
+  const [circOutProg,   setCircOutProg]   = useState(0)
 
   useEffect(() => {
     if (!timeline || !app.renderer) return
@@ -156,6 +163,48 @@ function Frame1Desktop({ timeline }: { timeline: GSAPTimeline }) {
       ease: "power2.inOut",
       onUpdate() { setChipProg(p.chipProg) },
     }, "<")
+
+    // --- exit phase ---
+
+    // chips + cards fly outward in circular arcs
+    timeline.to(p, {
+      chipOutProg: 1,
+      duration: 1.2,
+      ease: "power2.in",
+      onUpdate() { setChipOutProg(p.chipOutProg) },
+    }, ">0.2")
+
+    // circles expand off screen (concurrent)
+    timeline.to(p, {
+      circOutProg: 1,
+      duration: 1.5,
+      ease: "power1.in",
+      onUpdate() { setCircOutProg(p.circOutProg) },
+    }, "<")
+
+    // dead text fades out (concurrent)
+    timeline.to(p, {
+      deadAlpha: 0,
+      duration: 0.8,
+      ease: "power1.in",
+      onUpdate() { setDeadAlpha(p.deadAlpha) },
+    }, "<")
+
+    // bg-blur3 fades in
+    timeline.to(p, {
+      bgBlur3Alpha: 1,
+      duration: 1.2,
+      ease: "power1.out",
+      onUpdate() { setBgBlur3Alpha(p.bgBlur3Alpha) },
+    }, "<0.4")
+
+    // what-if-better text fades in
+    timeline.to(p, {
+      whatIfAlpha: 1,
+      duration: 1.0,
+      ease: "power1.out",
+      onUpdate() { setWhatIfAlpha(p.whatIfAlpha) },
+    }, "<0.2")
   }, [timeline, app.renderer])
 
   if (!app.renderer) return null
@@ -173,10 +222,12 @@ function Frame1Desktop({ timeline }: { timeline: GSAPTimeline }) {
   const blur2Tex = Assets.get(ASSETS.topRightBlur2)
 
 
-  // circles — always centred at screen centre, diameter lerps init → end
+  // circles — always centred at screen centre; shrink then expand off screen
   const circleTex = Assets.get(ASSETS.circle)
   const circles = CIRCLES_INIT_WF.map((initWf, i) => {
-    const size = sw * lerp(initWf, CIRCLES_END_WF[i], circProg)
+    const shrunkWf = lerp(initWf, CIRCLES_END_WF[i], circProg)
+    const finalWf  = lerp(shrunkWf, CIRCLES_INIT_WF[0] * 3, circOutProg)
+    const size = sw * finalWf
     return { size, x: sw / 2 - size / 2, y: sh / 2 - size / 2 }
   })
 
@@ -208,6 +259,18 @@ function Frame1Desktop({ timeline }: { timeline: GSAPTimeline }) {
     b: deadYf + deadH / sh,
   }
 
+  // dead-text centre in pixels (used for circular chip exit)
+  const deadCX_px = sw * (dead.l + dead.r) / 2
+  const deadCY_px = sh * (dead.t + dead.b) / 2
+
+  // bg-blur3 + what-if-better text
+  const bgBlur3Tex  = Assets.get(ASSETS.bgBlur3)
+  const whatIfTex   = Assets.get(ASSETS.whatIfBetterText)
+  const whatIfW     = sw * deadWf
+  const whatIfH     = (whatIfTex.height / whatIfTex.width) * whatIfW
+  const whatIfX     = sw * deadXf
+  const whatIfY     = sh * deadYf
+
   // inbox card — converges to dead border
   const inboxTex = Assets.get(ASSETS.inboxAlertChip)
   const inboxWf = 0.1787
@@ -232,56 +295,80 @@ function Frame1Desktop({ timeline }: { timeline: GSAPTimeline }) {
   const mailsX = sw * lerp(mailsInitXf, mailsTgt.xf, chipProg)
   const mailsY = sh * lerp(mailsInitYf, mailsTgt.yf, chipProg)
 
+  /** Move a chip/card from its converged position outward in a circular arc. */
+  function chipExitPos(tgtXf: number, tgtYf: number, wf: number, hf: number) {
+    const tgtCX = sw * (tgtXf + wf / 2)
+    const tgtCY = sh * (tgtYf + hf / 2)
+    const angle  = Math.atan2(tgtCY - deadCY_px, tgtCX - deadCX_px)
+    const dist   = Math.hypot(tgtCY - deadCY_px, tgtCX - deadCX_px)
+    const curAngle = angle + chipOutProg * (Math.PI / 5)
+    const curDist  = dist  + chipOutProg * Math.max(sw, sh) * 1.5
+    return {
+      x: deadCX_px + curDist * Math.cos(curAngle) - sw * wf / 2,
+      y: deadCY_px + curDist * Math.sin(curAngle) - sh * hf / 2,
+    }
+  }
+
   return (
     <pixiContainer>
-      <pixiSprite texture={blurLTex} width={blurLW} height={sh} x={0} y={0} />
-      <pixiSprite texture={blurRTex} width={blurRW} height={sh} x={sw - blurRW} y={0} />
+      <pixiSprite texture={blurLTex}  width={blurLW} height={sh} x={0}          y={0} />
+      <pixiSprite texture={blurRTex}  width={blurRW} height={sh} x={sw - blurRW} y={0} />
 
-      {/* top-right-blur2: fades in, drifts top-right → bottom-left */}
+      {/* top-right-blur2: fades in */}
       <pixiSprite texture={blur2Tex} width={sw} height={sh} alpha={blur2Alpha} />
 
-      {/* fadein bg-blur3.svg with what-if-better-text */}
+      {/* bg-blur3: fades in during exit phase */}
+      <pixiSprite texture={bgBlur3Tex} width={sw} height={sh} alpha={bgBlur3Alpha} />
 
       {/* every second / millions gone — fade out */}
       <pixiSprite texture={everyTex} width={everyW} height={everyH} x={everyX} y={everyY} blendMode="overlay" alpha={textAlpha} />
-      <pixiSprite texture={millTex} width={millW} height={millH} x={millX} y={millY} blendMode="overlay" alpha={textAlpha} />
-      
+      <pixiSprite texture={millTex}  width={millW}  height={millH}  x={millX}  y={millY}  blendMode="overlay" alpha={textAlpha} />
 
-
-      {/* dead-burnout-fades — fades in */}
-      {/* two stacked overlay passes for better legibility without removing blendMode */}
+      {/* dead-burnout-fades — two stacked overlay passes for legibility */}
       {[0, 1].map((i) => (
-        <pixiSprite key={i} texture={deadTex} width={deadW} height={deadH} x={sw * dead.l} y={sh * dead.t} alpha={deadAlpha} blendMode="overlay" />
+        <pixiSprite key={i} texture={deadTex} width={deadW} height={deadH}
+          x={sw * dead.l} y={sh * dead.t} alpha={deadAlpha} blendMode="overlay" />
       ))}
 
-      {/* after above text fade out fadein what-if-better-text */}
+      {/* what-if-better text — fades in after dead text exits */}
+      {[0, 1].map((i) => (
+        <pixiSprite key={i} texture={whatIfTex} width={whatIfW} height={whatIfH}
+          x={whatIfX} y={whatIfY} alpha={whatIfAlpha} blendMode="overlay" />
+      ))}
 
-
-      {/* circles — shrink toward end-state */}
+      {/* circles — shrink then expand off screen */}
       {circles.map(({ size, x, y }, i) => (
         <pixiSprite key={i} texture={circleTex} width={size} height={size} x={x} y={y} />
       ))}
 
-      {/* cards — converge to dead-burnout text border */}
-      <pixiSprite texture={inboxTex} width={inboxW} height={inboxH} x={inboxX} y={inboxY} />
-      <pixiSprite texture={mailsTex} width={mailsW} height={mailsH} x={mailsX} y={mailsY} />
+      {/* cards — converge then exit */}
+      {(() => {
+        const inboxPos = chipOutProg > 0
+          ? chipExitPos(inboxTgt.xf, inboxTgt.yf, inboxWf, inboxHf)
+          : { x: inboxX, y: inboxY }
+        const mailsPos = chipOutProg > 0
+          ? chipExitPos(mailsTgt.xf, mailsTgt.yf, mailsWf, mailsHf)
+          : { x: mailsX, y: mailsY }
+        return (
+          <>
+            <pixiSprite texture={inboxTex} width={inboxW} height={inboxH} x={inboxPos.x} y={inboxPos.y} />
+            <pixiSprite texture={mailsTex} width={mailsW} height={mailsH} x={mailsPos.x} y={mailsPos.y} />
+          </>
+        )
+      })()}
 
-      {/* chips — converge to dead-burnout text border */}
+      {/* chips — converge then exit in circular arcs */}
       {CHIPS.map(([key, xf, yf, wf]) => {
         const tex = Assets.get(key)
-        const w = sw * wf
-        const h = (tex.height / tex.width) * w
-        const hf = h / sh
+        const w   = sw * wf
+        const h   = (tex.height / tex.width) * w
+        const hf  = h / sh
         const tgt = chipBorderTarget(xf, yf, wf, hf, dead)
+        const pos = chipOutProg > 0
+          ? chipExitPos(tgt.xf, tgt.yf, wf, hf)
+          : { x: sw * lerp(xf, tgt.xf, chipProg), y: sh * lerp(yf, tgt.yf, chipProg) }
         return (
-          <pixiSprite
-            key={key}
-            texture={tex}
-            width={w}
-            height={h}
-            x={sw * lerp(xf, tgt.xf, chipProg)}
-            y={sh * lerp(yf, tgt.yf, chipProg)}
-          />
+          <pixiSprite key={key} texture={tex} width={w} height={h} x={pos.x} y={pos.y} />
         )
       })}
     </pixiContainer>
