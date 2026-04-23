@@ -240,9 +240,12 @@ function Frame1Desktop({ timeline }: { timeline: GSAPTimeline }) {
       {/* top-right-blur2: fades in, drifts top-right → bottom-left */}
       <pixiSprite texture={blur2Tex} width={sw} height={sh} alpha={blur2Alpha} />
 
+      {/* fadein bg-blur3.svg with what-if-better-text */}
+
       {/* every second / millions gone — fade out */}
       <pixiSprite texture={everyTex} width={everyW} height={everyH} x={everyX} y={everyY} blendMode="overlay" alpha={textAlpha} />
       <pixiSprite texture={millTex} width={millW} height={millH} x={millX} y={millY} blendMode="overlay" alpha={textAlpha} />
+      
 
 
       {/* dead-burnout-fades — fades in */}
@@ -250,6 +253,8 @@ function Frame1Desktop({ timeline }: { timeline: GSAPTimeline }) {
       {[0, 1].map((i) => (
         <pixiSprite key={i} texture={deadTex} width={deadW} height={deadH} x={sw * dead.l} y={sh * dead.t} alpha={deadAlpha} blendMode="overlay" />
       ))}
+
+      {/* after above text fade out fadein what-if-better-text */}
 
 
       {/* circles — shrink toward end-state */}
