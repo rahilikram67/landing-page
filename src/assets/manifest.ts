@@ -96,6 +96,7 @@ import mobileBtnTeach from "./mobile/btn-teach.svg"
 import mobileStartExploreText from "./mobile/start-explore-text.svg"
 import mobileEverySecondText from "./mobile/every-second-google-text.svg"
 import mobileMillionsGoneText from "./mobile/millions-gone-text.svg"
+import mobileBgBlur3 from "./mobile/bg-blur-f3-2.svg"
 
 
 export const ASSETS = {
@@ -334,6 +335,13 @@ export function loadAssets() {
       { alias: ASSETS.organizeChip,    src: organizeChip },
       { alias: ASSETS.error404Chip,    src: error404Chip },
       { alias: ASSETS.howToWriteChip,  src: howToWriteChip },
+      // frame3 mobile — same SVG assets as desktop
+      { alias: ASSETS.bgBlurF3,       src: bgBlurF3 },
+      { alias: ASSETS.bgBlurF32,      src: mobileBgBlur3 },
+      { alias: ASSETS.studentLaptop,  src: studentLaptop },
+      { alias: ASSETS.studentLaptop2, src: studentLaptop2 },
+      { alias: ASSETS.designer,       src: designer },
+      { alias: ASSETS.marketing,      src: marketing },
     ])
 
     const bundle = isMobile() ? "mobile" : "desktop"

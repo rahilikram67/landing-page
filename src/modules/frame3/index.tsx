@@ -111,7 +111,102 @@ function Frame3Desktop({ timeline }: { timeline: GSAPTimeline }) {
   )
 }
 
+// ─── Mobile: cards slide bottom → top ────────────────────────────────────────
+
+// Cards fill 88% of screen width on mobile; height from texture aspect ratio
+const CARD_WF_M = 0.88
+
+function Frame3Mobile({ timeline }: { timeline: GSAPTimeline }) {
+  const { app } = useApplication()
+
+  const proxy = useRef({
+    sliderProg:    0,
+    bgBlur3Alpha:  0,
+    bgBlur32Alpha: 0,
+  })
+
+  const [sliderProg,    setSliderProg]    = useState(0)
+  const [bgBlur3Alpha,  setBgBlur3Alpha]  = useState(0)
+  const [bgBlur32Alpha, setBgBlur32Alpha] = useState(0)
+
+  useEffect(() => {
+    if (!timeline || !app.renderer) return
+    const p = proxy.current
+
+    timeline.to(p, {
+      sliderProg: 1,
+      duration: 3.5,
+      ease: "none",
+      onUpdate() { setSliderProg(p.sliderProg) },
+    }, ">")
+
+    timeline.to(p, {
+      bgBlur3Alpha: 1,
+      duration: 0.7,
+      ease: "power1.out",
+      onUpdate() { setBgBlur3Alpha(p.bgBlur3Alpha) },
+    }, "<1.575")
+
+    timeline.to(p, {
+      bgBlur32Alpha: 1,
+      duration: 0.7,
+      ease: "power1.out",
+      onUpdate() { setBgBlur32Alpha(p.bgBlur32Alpha) },
+    }, "<1.4")
+  }, [timeline, app.renderer])
+
+  if (!app.renderer) return null
+
+  const sw = app.screen.width
+  const sh = app.screen.height
+
+  const bgBlur3Tex  = Assets.get(ASSETS.bgBlurF3)
+  const bgBlur32Tex = Assets.get(ASSETS.bgBlurF32)
+
+  const cardGap = sh * 0.025
+
+  // Cards: width = 88% of sw, height from texture aspect ratio
+  const cards = CARD_KEYS.map(key => {
+    const tex = Assets.get(key)
+    const w = sw * CARD_WF_M
+    const h = (tex.height / tex.width) * w
+    return { tex, w, h }
+  })
+
+  const cardX = (sw - sw * CARD_WF_M) / 2  // horizontally centred
+
+  // Strip y: lerp from fully off-screen bottom → fully off-screen top
+  const stripStartY = sh
+  const totalStripH = cards.reduce((acc, c) => acc + c.h, 0) + cardGap * (cards.length - 1)
+  const stripEndY   = -totalStripH
+
+  const stripY = lerp(stripStartY, stripEndY, sliderProg)
+
+  return (
+    <pixiContainer>
+      <pixiSprite texture={bgBlur3Tex}  width={sw} height={sh} alpha={bgBlur3Alpha}  />
+      <pixiSprite texture={bgBlur32Tex} width={sw} height={sh} alpha={bgBlur32Alpha} />
+
+      {cards.map(({ tex, w, h }, i) => {
+        const yOffset = cards.slice(0, i).reduce((acc, c) => acc + c.h + cardGap, 0)
+        return (
+          <pixiSprite
+            key={i}
+            texture={tex}
+            width={w}
+            height={h}
+            x={cardX}
+            y={stripY + yOffset}
+          />
+        )
+      })}
+    </pixiContainer>
+  )
+}
+
+// ─── Export ──────────────────────────────────────────────────────────────────
+
 export function Frame3({ timeline, ctx }: SceneProps) {
-  if (ctx.isMobile) return null
+  if (ctx.isMobile) return <Frame3Mobile timeline={timeline} />
   return <Frame3Desktop timeline={timeline} />
 }
