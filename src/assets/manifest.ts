@@ -298,6 +298,22 @@ export function loadAssets() {
       { alias: ASSETS.iconPoe, src: iconPoe },
       { alias: ASSETS.iconGemini, src: iconGemini },
       { alias: ASSETS.iconMidjourney, src: iconMidjourney },
+      // frame12 mobile — same SVG assets as desktop
+      { alias: ASSETS.bg1BlurLeft,     src: bg1BlurLeft },
+      { alias: ASSETS.bg1BlurRight,    src: bg1BlurRight },
+      { alias: ASSETS.topRightBlur2,   src: topRightBlur2 },
+      { alias: ASSETS.bgBlur3,         src: bgBlur3 },
+      { alias: ASSETS.everySecondText, src: everySecondText },
+      { alias: ASSETS.millionsGoneText,src: millionsGoneText },
+      { alias: ASSETS.deadBurnoutFades,src: deadBurnoutFades },
+      { alias: ASSETS.whatIfBetterText,src: whatIfBetterText },
+      { alias: ASSETS.inboxAlertChip,  src: inboxAlertChip },
+      { alias: ASSETS.mailsChip,       src: mailsChip },
+      { alias: ASSETS.rewriteChip,     src: rewriteChip },
+      { alias: ASSETS.summarizeChip,   src: summarizeChip },
+      { alias: ASSETS.organizeChip,    src: organizeChip },
+      { alias: ASSETS.error404Chip,    src: error404Chip },
+      { alias: ASSETS.howToWriteChip,  src: howToWriteChip },
     ])
 
     const bundle = isMobile() ? "mobile" : "desktop"
