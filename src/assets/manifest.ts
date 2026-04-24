@@ -74,6 +74,13 @@ import error404Chip from "./desktop/error-404-chip.svg"
 import howToWriteChip from "./desktop/how-to-write-chip.svg"
 import explainCodeChip from "./desktop/explain-code-chip.svg"
 import diffMlAiChip from "./desktop/diff-ml-ai-chip.svg"
+import bgBlurF4_1 from "./desktop/bg-blur-4-f1.svg"
+import bgBlurF4_2 from "./desktop/bg-blur-4-f2.svg"
+import boyQuestions from "./desktop/boy-questions.svg"
+import iconClaude from "./desktop/claude.svg"
+import iconPerplexity from "./desktop/icon-perplexity.svg"
+import developersCoder from "./desktop/developers-coder-text.svg"
+import explorersText from "./desktop/explorers-text.svg"
 
 
 // mobile
@@ -186,6 +193,13 @@ export const ASSETS = {
   howToWriteChip: "howToWriteChip",
   explainCodeChip: "explainCodeChip",
   diffMlAiChip: "diffMlAiChip",
+  bgBlurF4_1: "bgBlurF4_1",
+  bgBlurF4_2: "bgBlurF4_2",
+  boyQuestions: "boyQuestions",
+  iconClaude: "iconClaude",
+  iconPerplexity: "iconPerplexity",
+  developersCoder: "developersCoder",
+  explorersText: "explorersText",
 } as const
 
 const MOBILE_BREAKPOINT = 768
@@ -271,6 +285,13 @@ export function loadAssets() {
       { alias: ASSETS.howToWriteChip, src: howToWriteChip },
       { alias: ASSETS.explainCodeChip, src: explainCodeChip },
       { alias: ASSETS.diffMlAiChip, src: diffMlAiChip },
+      { alias: ASSETS.bgBlurF4_1, src: bgBlurF4_1 },
+      { alias: ASSETS.bgBlurF4_2, src: bgBlurF4_2 },
+      { alias: ASSETS.boyQuestions, src: boyQuestions },
+      { alias: ASSETS.iconClaude, src: iconClaude },
+      { alias: ASSETS.iconPerplexity, src: iconPerplexity },
+      { alias: ASSETS.developersCoder, src: developersCoder },
+      { alias: ASSETS.explorersText, src: explorersText },
     ])
 
     Assets.addBundle("mobile", [
@@ -335,6 +356,14 @@ export function loadAssets() {
       { alias: ASSETS.organizeChip,    src: organizeChip },
       { alias: ASSETS.error404Chip,    src: error404Chip },
       { alias: ASSETS.howToWriteChip,  src: howToWriteChip },
+      // frame4 mobile — same assets as desktop
+      { alias: ASSETS.bgBlurF4_1, src: bgBlurF4_1 },
+      { alias: ASSETS.bgBlurF4_2, src: bgBlurF4_2 },
+      { alias: ASSETS.boyQuestions, src: boyQuestions },
+      { alias: ASSETS.iconClaude, src: iconClaude },
+      { alias: ASSETS.iconPerplexity, src: iconPerplexity },
+      { alias: ASSETS.developersCoder, src: developersCoder },
+      { alias: ASSETS.explorersText, src: explorersText },
       // frame3 mobile — same SVG assets as desktop
       { alias: ASSETS.bgBlurF3,       src: bgBlurF3 },
       { alias: ASSETS.bgBlurF32,      src: mobileBgBlur3 },

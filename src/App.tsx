@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState } from "react"
 import { Frame12 } from "./modules/frame1_2"
 import { Frame3 }  from "./modules/frame3"
+import { Frame4 }  from "./modules/frame4"
 import { Frame5 } from "./modules/frame5"
 import { Frame6 } from "./modules/frame6"
 import { Frame7_1 } from "./modules/frame7_1"
@@ -36,6 +37,7 @@ export interface SceneProps {
 const SCENES: ComponentType<SceneProps>[] = [
   Frame12,
   Frame3,
+  Frame4,
   Frame5,
   Frame6,
   Frame7_1,
