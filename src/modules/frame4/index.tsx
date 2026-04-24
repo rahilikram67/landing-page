@@ -295,14 +295,14 @@ function Frame4Mobile({ timeline }: { timeline: GSAPTimeline }) {
   const centerY = centerCy - centerH / 2
 
   const orbitRx = sw * 0.40
-  const orbitRy = sh * 0.28
+  const orbitRy = sh * 0.14
   const iconBase = sw * 0.13
 
   const text1W = sw * 0.82
   const text1H = (text1Tex.height / text1Tex.width) * text1W
   const text2W = sw * 0.66
   const text2H = (text2Tex.height / text2Tex.width) * text2W
-  const textY = centerY + centerH + sh * 0.02
+  const textY = sh * 0.80
 
   const iconOrder = Array.from({ length: ICON_COUNT }, (_, i) => i)
     .sort((a, b) => {
