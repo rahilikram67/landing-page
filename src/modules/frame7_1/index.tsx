@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from "react"
+import { useEffect, useRef, useReducer } from "react"
 import { useApplication } from "@pixi/react"
 import { Assets } from "pixi.js"
 import type { SceneProps } from "../../App"
@@ -17,14 +17,10 @@ export function Frame7_1({ timeline, ctx }: SceneProps) {
 
 function Frame7Desktop({ timeline }: { timeline: GSAPTimeline }) {
     const { app } = useApplication()
+    const [, forceRender] = useReducer(x => x + 1, 0)
     // doorRotY = simulated rotateY in radians, 0 (closed/facing viewer) → PI (open/180° flipped).
     // scale.x derived as cos(doorRotY) → sweeps 1 → 0 → -1 (edge-on at midpoint, mirrored at end).
     const proxyRef = useRef({ bgAlpha: 0, doorAlpha: 0, textAlpha: 0, doorRotY: 0, textYShift: 0, zoom: 0 })
-    const [bgAlpha, setBgAlpha] = useState(0)
-    const [doorAlpha, setDoorAlpha] = useState(0)
-    const [textAlpha, setTextAlpha] = useState(0)
-    const [doorRotY, setDoorRotY] = useState(0)
-    const [zoom, setZoom] = useState(0)
 
     useEffect(() => {
         if (!timeline || !app.renderer) return
@@ -34,7 +30,7 @@ function Frame7Desktop({ timeline }: { timeline: GSAPTimeline }) {
             bgAlpha: 1,
             duration: SCENE7_FADE_IN_DURATION,
             ease: "power1.out",
-            onUpdate() { setBgAlpha(proxyRef.current.bgAlpha) },
+            onUpdate: forceRender,
         }, ">")
 
         // Door fades in while background is still coming in
@@ -42,7 +38,7 @@ function Frame7Desktop({ timeline }: { timeline: GSAPTimeline }) {
             doorAlpha: 1,
             duration: SCENE7_FADE_IN_DURATION,
             ease: "power1.out",
-            onUpdate() { setDoorAlpha(proxyRef.current.doorAlpha) },
+            onUpdate: forceRender,
         }, "<")
 
         // Texts fade in last
@@ -50,32 +46,26 @@ function Frame7Desktop({ timeline }: { timeline: GSAPTimeline }) {
             textAlpha: 1,
             duration: SCENE7_FADE_IN_DURATION,
             ease: "power2.out",
-            onUpdate() {
-                setTextAlpha(proxyRef.current.textAlpha)
-            },
+            onUpdate: forceRender,
         }, "<")
 
         // --- Door open: leaf collapses from right edge (rotateY equivalent) ---
         // and text floats up (-120% of its block height) simultaneously.
         // textYShift is a unit value [0 → -1]; actual pixel offset is computed in render.
-        
+
 
         timeline.to(proxyRef.current, {
             doorRotY: Math.PI,
             duration: DOOR_OPEN_DURATION,
             ease: SMOOTH_EASE,
-            onUpdate() {
-                setDoorRotY(-proxyRef.current.doorRotY)
-            },
+            onUpdate: forceRender,
         }, ">")
 
         timeline.to(proxyRef.current, {
             zoom: 1.5,
             duration: DOOR_OPEN_DURATION,
             ease: SMOOTH_EASE,
-            onUpdate() { 
-                setZoom(proxyRef.current.zoom) 
-            },
+            onUpdate: forceRender,
         }, "<")
     }, [timeline, app.renderer])
 
@@ -84,6 +74,7 @@ function Frame7Desktop({ timeline }: { timeline: GSAPTimeline }) {
     const sw = app.screen.width
     const sh = app.screen.height
     const cx = sw / 2
+    const pr = proxyRef.current
 
     const bgTex = Assets.get(ASSETS.bg71)
     const bgScale = Math.max(sw / bgTex.width, sh / bgTex.height)
@@ -138,17 +129,17 @@ function Frame7Desktop({ timeline }: { timeline: GSAPTimeline }) {
     // scale.x = cos(rotY) sweeps 1 → 0 → -1 (full face → edge-on → mirrored back face).
     // No skew/rotation needed: a planar rotateY projects onto 2D as pure horizontal
     // foreshortening — the free edge traces a 3D semicircle but its on-screen X is cos(rotY)·W.
-    const doorScaleX = Math.cos(doorRotY)
+    const doorScaleX = Math.cos(pr.doorRotY)
 
     const panelCx = cx
     const panelCy = doorY + doorH / 2
     const targetScale = Math.max(sw / doorPanelW, sh / doorH)
-    const zoomScale = 1 + zoom * (targetScale - 1)
+    const zoomScale = 1 + pr.zoom * (targetScale - 1)
 
     return (
         <pixiContainer
             pivot={{ x: panelCx, y: panelCy }}
-            position={{ x: panelCx + (cx - panelCx) * zoom, y: panelCy + (sh / 2 - panelCy) * zoom }}
+            position={{ x: panelCx + (cx - panelCx) * pr.zoom, y: panelCy + (sh / 2 - panelCy) * pr.zoom }}
             scale={zoomScale}
         >
             <pixiSprite
@@ -157,9 +148,9 @@ function Frame7Desktop({ timeline }: { timeline: GSAPTimeline }) {
                 height={bgH}
                 x={bgX}
                 y={bgY}
-                alpha={bgAlpha}
+                alpha={pr.bgAlpha}
             />
-            <pixiContainer x={doorPanelX} y={doorY} alpha={doorAlpha}>
+            <pixiContainer x={doorPanelX} y={doorY} alpha={pr.doorAlpha}>
                 <pixiSprite
                     texture={doorPanelTex}
                     width={doorPanelW}
@@ -181,7 +172,7 @@ function Frame7Desktop({ timeline }: { timeline: GSAPTimeline }) {
                 height={youH}
                 x={youX}
                 y={youY}
-                alpha={textAlpha}
+                alpha={pr.textAlpha}
             />
             <pixiSprite
                 texture={justWaitingTex}
@@ -189,7 +180,7 @@ function Frame7Desktop({ timeline }: { timeline: GSAPTimeline }) {
                 height={jwH}
                 x={jwX}
                 y={jwY}
-                alpha={textAlpha}
+                alpha={pr.textAlpha}
             />
         </pixiContainer>
     )
@@ -197,12 +188,8 @@ function Frame7Desktop({ timeline }: { timeline: GSAPTimeline }) {
 
 function Frame7Mobile({ timeline }: { timeline: GSAPTimeline }) {
     const { app } = useApplication()
+    const [, forceRender] = useReducer(x => x + 1, 0)
     const proxyRef = useRef({ bgAlpha: 0, doorAlpha: 0, textAlpha: 0, doorRotY: 0, zoom: 0 })
-    const [bgAlpha, setBgAlpha] = useState(0)
-    const [doorAlpha, setDoorAlpha] = useState(0)
-    const [textAlpha, setTextAlpha] = useState(0)
-    const [doorRotY, setDoorRotY] = useState(0)
-    const [zoom, setZoom] = useState(0)
 
     useEffect(() => {
         if (!timeline || !app.renderer) return
@@ -211,37 +198,35 @@ function Frame7Mobile({ timeline }: { timeline: GSAPTimeline }) {
             bgAlpha: 1,
             duration: SCENE7_FADE_IN_DURATION,
             ease: "power1.out",
-            onUpdate() { setBgAlpha(proxyRef.current.bgAlpha) },
+            onUpdate: forceRender,
         }, ">")
 
         timeline.to(proxyRef.current, {
             doorAlpha: 1,
             duration: SCENE7_FADE_IN_DURATION,
             ease: "power1.out",
-            onUpdate() { setDoorAlpha(proxyRef.current.doorAlpha) },
+            onUpdate: forceRender,
         }, "<")
 
         timeline.to(proxyRef.current, {
             textAlpha: 1,
             duration: SCENE7_FADE_IN_DURATION,
             ease: "power2.out",
-            onUpdate() { setTextAlpha(proxyRef.current.textAlpha) },
+            onUpdate: forceRender,
         }, "<")
 
         timeline.to(proxyRef.current, {
             doorRotY: Math.PI,
             duration: DOOR_OPEN_DURATION,
             ease: SMOOTH_EASE,
-            onUpdate() { 
-                setDoorRotY(-proxyRef.current.doorRotY) 
-            },
+            onUpdate: forceRender,
         }, ">")
 
         timeline.to(proxyRef.current, {
             zoom: 1.5,
             duration: DOOR_OPEN_DURATION,
             ease: SMOOTH_EASE,
-            onUpdate() { setZoom(proxyRef.current.zoom) },
+            onUpdate: forceRender,
         }, "<")
     }, [timeline, app.renderer])
 
@@ -250,6 +235,7 @@ function Frame7Mobile({ timeline }: { timeline: GSAPTimeline }) {
     const sw = app.screen.width
     const sh = app.screen.height
     const cx = sw / 2
+    const pr = proxyRef.current
 
     const bgTex = Assets.get(ASSETS.bg71)
     const bgScale = Math.max(sw / bgTex.width, sh / bgTex.height)
@@ -291,17 +277,17 @@ function Frame7Mobile({ timeline }: { timeline: GSAPTimeline }) {
     const jwX = cx - jwW / 2
     const jwY = doorY - doorH * 0.1
 
-    const doorScaleX = Math.cos(doorRotY)
+    const doorScaleX = Math.cos(pr.doorRotY)
 
     const panelCx = cx
     const panelCy = doorY + doorH / 2
     const targetScale = Math.max(sw / doorPanelW, sh / doorH)
-    const zoomScale = 1 + zoom * (targetScale - 1)
+    const zoomScale = 1 + pr.zoom * (targetScale - 1)
 
     return (
         <pixiContainer
             pivot={{ x: panelCx, y: panelCy }}
-            position={{ x: panelCx + (cx - panelCx) * zoom, y: panelCy + (sh / 2 - panelCy) * zoom }}
+            position={{ x: panelCx + (cx - panelCx) * pr.zoom, y: panelCy + (sh / 2 - panelCy) * pr.zoom }}
             scale={zoomScale}
         >
             <pixiSprite
@@ -310,9 +296,9 @@ function Frame7Mobile({ timeline }: { timeline: GSAPTimeline }) {
                 height={bgH}
                 x={bgX}
                 y={bgY}
-                alpha={bgAlpha}
+                alpha={pr.bgAlpha}
             />
-            <pixiContainer x={doorPanelX} y={doorY} alpha={doorAlpha}>
+            <pixiContainer x={doorPanelX} y={doorY} alpha={pr.doorAlpha}>
                 <pixiSprite
                     texture={doorPanelTex}
                     width={doorPanelW}
@@ -334,7 +320,7 @@ function Frame7Mobile({ timeline }: { timeline: GSAPTimeline }) {
                 height={youH}
                 x={youX}
                 y={youY}
-                alpha={textAlpha}
+                alpha={pr.textAlpha}
             />
             <pixiSprite
                 texture={justWaitingTex}
@@ -342,7 +328,7 @@ function Frame7Mobile({ timeline }: { timeline: GSAPTimeline }) {
                 height={jwH}
                 x={jwX}
                 y={jwY}
-                alpha={textAlpha}
+                alpha={pr.textAlpha}
             />
             <pixiSprite
                 texture={personTex}
@@ -350,7 +336,7 @@ function Frame7Mobile({ timeline }: { timeline: GSAPTimeline }) {
                 height={personH}
                 x={personX}
                 y={personY}
-                alpha={bgAlpha}
+                alpha={pr.bgAlpha}
             />
         </pixiContainer>
     )

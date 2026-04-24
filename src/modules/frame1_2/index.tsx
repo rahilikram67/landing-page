@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from "react"
+import { useEffect, useRef, useReducer } from "react"
 import { useApplication } from "@pixi/react"
 import { Assets } from "pixi.js"
 import type { SceneProps } from "../../App"
@@ -95,6 +95,7 @@ function chipBorderTarget(
 
 function Frame12Desktop({ timeline }: { timeline: GSAPTimeline }) {
   const { app } = useApplication()
+  const [, forceRender] = useReducer(x => x + 1, 0)
 
   const proxy = useRef({
     blur2Alpha: 0,
@@ -109,17 +110,6 @@ function Frame12Desktop({ timeline }: { timeline: GSAPTimeline }) {
     circOutProg: 0,
   })
 
-  const [blur2Alpha, setBlur2Alpha] = useState(0)
-  const [textAlpha, setTextAlpha] = useState(1)
-  const [deadAlpha, setDeadAlpha] = useState(0)
-  const [chipProg, setChipProg] = useState(0)
-  const [circProg, setCircProg] = useState(0)
-  const [bgBlur3Alpha, setBgBlur3Alpha] = useState(0)
-  const [whatIfAlpha, setWhatIfAlpha] = useState(0)
-  const [whatIfExitProg, setWhatIfExitProg] = useState(0)
-  const [chipOutProg, setChipOutProg] = useState(0)
-  const [circOutProg, setCircOutProg] = useState(0)
-
   useEffect(() => {
     if (!timeline || !app.renderer) return
     const p = proxy.current
@@ -129,9 +119,7 @@ function Frame12Desktop({ timeline }: { timeline: GSAPTimeline }) {
       blur2Alpha: 1,
       duration: 2.0,
       ease: "power1.inOut",
-      onUpdate() {
-        setBlur2Alpha(p.blur2Alpha)
-      },
+      onUpdate: forceRender,
     }, ">")
 
     // every/mill texts fade out (concurrent)
@@ -139,7 +127,7 @@ function Frame12Desktop({ timeline }: { timeline: GSAPTimeline }) {
       textAlpha: 0,
       duration: 1.0,
       ease: "power1.in",
-      onUpdate() { setTextAlpha(p.textAlpha) },
+      onUpdate: forceRender,
     }, "<")
 
     // circles shrink (concurrent)
@@ -147,7 +135,7 @@ function Frame12Desktop({ timeline }: { timeline: GSAPTimeline }) {
       circProg: 1,
       duration: 1.5,
       ease: "power1.inOut",
-      onUpdate() { setCircProg(p.circProg) },
+      onUpdate: forceRender,
     }, "<")
 
     // dead-burnout text fades in
@@ -155,7 +143,7 @@ function Frame12Desktop({ timeline }: { timeline: GSAPTimeline }) {
       deadAlpha: 1,
       duration: 1.0,
       ease: "power1.out",
-      onUpdate() { setDeadAlpha(p.deadAlpha) },
+      onUpdate: forceRender,
     }, ">-0.8")
 
     // chips + cards converge to border (concurrent with dead text)
@@ -163,7 +151,7 @@ function Frame12Desktop({ timeline }: { timeline: GSAPTimeline }) {
       chipProg: 1,
       duration: 1.5,
       ease: "power2.inOut",
-      onUpdate() { setChipProg(p.chipProg) },
+      onUpdate: forceRender,
     }, "<")
 
     // --- exit phase ---
@@ -173,7 +161,7 @@ function Frame12Desktop({ timeline }: { timeline: GSAPTimeline }) {
       chipOutProg: 1,
       duration: 1.2,
       ease: "power2.in",
-      onUpdate() { setChipOutProg(p.chipOutProg) },
+      onUpdate: forceRender,
     }, ">0.2")
 
     // circles expand off screen (concurrent)
@@ -181,7 +169,7 @@ function Frame12Desktop({ timeline }: { timeline: GSAPTimeline }) {
       circOutProg: 1,
       duration: 1.5,
       ease: "power1.in",
-      onUpdate() { setCircOutProg(p.circOutProg) },
+      onUpdate: forceRender,
     }, "<")
 
     // dead text fades out (concurrent)
@@ -189,7 +177,7 @@ function Frame12Desktop({ timeline }: { timeline: GSAPTimeline }) {
       deadAlpha: 0,
       duration: 0.8,
       ease: "power1.in",
-      onUpdate() { setDeadAlpha(p.deadAlpha) },
+      onUpdate: forceRender,
     }, "<")
 
     // bg-blur3 fades in
@@ -197,7 +185,7 @@ function Frame12Desktop({ timeline }: { timeline: GSAPTimeline }) {
       bgBlur3Alpha: 1,
       duration: 1.2,
       ease: "power1.out",
-      onUpdate() { setBgBlur3Alpha(p.bgBlur3Alpha) },
+      onUpdate: forceRender,
     }, "<0.4")
 
     // what-if-better text fades in
@@ -205,7 +193,7 @@ function Frame12Desktop({ timeline }: { timeline: GSAPTimeline }) {
       whatIfAlpha: 1,
       duration: 1.0,
       ease: "power1.out",
-      onUpdate() { setWhatIfAlpha(p.whatIfAlpha) },
+      onUpdate: forceRender,
     }, "<0.2")
 
     // what-if-better text drops down off frame after fully visible
@@ -213,7 +201,7 @@ function Frame12Desktop({ timeline }: { timeline: GSAPTimeline }) {
       whatIfExitProg: 1,
       duration: 1.0,
       ease: "power2.in",
-      onUpdate() { setWhatIfExitProg(p.whatIfExitProg) },
+      onUpdate: forceRender,
     }, ">0.5")
   }, [timeline, app.renderer])
 
@@ -221,6 +209,7 @@ function Frame12Desktop({ timeline }: { timeline: GSAPTimeline }) {
 
   const sw = app.screen.width
   const sh = app.screen.height
+  const p = proxy.current
 
   // background blurs
   const blurLTex = Assets.get(ASSETS.bg1BlurLeft)
@@ -231,12 +220,11 @@ function Frame12Desktop({ timeline }: { timeline: GSAPTimeline }) {
   // top-right-blur2 — drifts left + down
   const blur2Tex = Assets.get(ASSETS.topRightBlur2)
 
-
   // circles — always centred at screen centre; shrink then expand off screen
   const circleTex = Assets.get(ASSETS.circle)
   const circles = CIRCLES_INIT_WF.map((initWf, i) => {
-    const shrunkWf = lerp(initWf, CIRCLES_END_WF[i], circProg)
-    const finalWf = lerp(shrunkWf, CIRCLES_INIT_WF[0] * 3, circOutProg)
+    const shrunkWf = lerp(initWf, CIRCLES_END_WF[i], p.circProg)
+    const finalWf = lerp(shrunkWf, CIRCLES_INIT_WF[0] * 3, p.circOutProg)
     const size = sw * finalWf
     return { size, x: sw / 2 - size / 2, y: sh / 2 - size / 2 }
   })
@@ -290,8 +278,8 @@ function Frame12Desktop({ timeline }: { timeline: GSAPTimeline }) {
   const inboxTgt = chipBorderTarget(inboxInitXf, inboxInitYf, inboxWf, inboxHf, dead)
   const inboxW = sw * inboxWf
   const inboxH = (inboxTex.height / inboxTex.width) * inboxW
-  const inboxX = sw * lerp(inboxInitXf, inboxTgt.xf, chipProg)
-  const inboxY = sh * lerp(inboxInitYf, inboxTgt.yf, chipProg)
+  const inboxX = sw * lerp(inboxInitXf, inboxTgt.xf, p.chipProg)
+  const inboxY = sh * lerp(inboxInitYf, inboxTgt.yf, p.chipProg)
 
   // mails card — converges to dead border
   const mailsTex = Assets.get(ASSETS.mailsChip)
@@ -302,8 +290,8 @@ function Frame12Desktop({ timeline }: { timeline: GSAPTimeline }) {
   const mailsTgt = chipBorderTarget(mailsInitXf, mailsInitYf, mailsWf, mailsHf, dead)
   const mailsW = sw * mailsWf
   const mailsH = (mailsTex.height / mailsTex.width) * mailsW
-  const mailsX = sw * lerp(mailsInitXf, mailsTgt.xf, chipProg)
-  const mailsY = sh * lerp(mailsInitYf, mailsTgt.yf, chipProg)
+  const mailsX = sw * lerp(mailsInitXf, mailsTgt.xf, p.chipProg)
+  const mailsY = sh * lerp(mailsInitYf, mailsTgt.yf, p.chipProg)
 
   /** Move a chip/card from its converged position outward in a circular arc. */
   function chipExitPos(tgtXf: number, tgtYf: number, wf: number, hf: number) {
@@ -311,8 +299,8 @@ function Frame12Desktop({ timeline }: { timeline: GSAPTimeline }) {
     const tgtCY = sh * (tgtYf + hf / 2)
     const angle = Math.atan2(tgtCY - deadCY_px, tgtCX - deadCX_px)
     const dist = Math.hypot(tgtCY - deadCY_px, tgtCX - deadCX_px)
-    const curAngle = angle + chipOutProg * (Math.PI / 5)
-    const curDist = dist + chipOutProg * Math.max(sw, sh) * 1.5
+    const curAngle = angle + p.chipOutProg * (Math.PI / 5)
+    const curDist = dist + p.chipOutProg * Math.max(sw, sh) * 1.5
     return {
       x: deadCX_px + curDist * Math.cos(curAngle) - sw * wf / 2,
       y: deadCY_px + curDist * Math.sin(curAngle) - sh * hf / 2,
@@ -325,27 +313,25 @@ function Frame12Desktop({ timeline }: { timeline: GSAPTimeline }) {
       <pixiSprite texture={blurRTex} width={blurRW} height={sh} x={sw - blurRW} y={0} />
 
       {/* top-right-blur2: fades in */}
-      <pixiSprite texture={blur2Tex} width={sw} height={sh} alpha={blur2Alpha} />
+      <pixiSprite texture={blur2Tex} width={sw} height={sh} alpha={p.blur2Alpha} />
 
       {/* bg-blur3: fades in during exit phase */}
-      <pixiSprite texture={bgBlur3Tex} width={sw} height={sh} alpha={bgBlur3Alpha} />
+      <pixiSprite texture={bgBlur3Tex} width={sw} height={sh} alpha={p.bgBlur3Alpha} />
 
       {/* every second / millions gone — fade out */}
-      <pixiSprite texture={everyTex} width={everyW} height={everyH} x={everyX} y={everyY} blendMode="overlay" alpha={textAlpha} />
-      <pixiSprite texture={millTex} width={millW} height={millH} x={millX} y={millY} blendMode="overlay" alpha={textAlpha} />
+      <pixiSprite texture={everyTex} width={everyW} height={everyH} x={everyX} y={everyY} blendMode="overlay" alpha={p.textAlpha} />
+      <pixiSprite texture={millTex} width={millW} height={millH} x={millX} y={millY} blendMode="overlay" alpha={p.textAlpha} />
 
       {/* dead-burnout-fades — two stacked overlay passes for legibility */}
       {[0, 1].map((i) => (
         <pixiSprite key={i} texture={deadTex} width={deadW} height={deadH}
-          x={sw * dead.l} y={sh * dead.t} alpha={deadAlpha} blendMode="overlay" />
+          x={sw * dead.l} y={sh * dead.t} alpha={p.deadAlpha} blendMode="overlay" />
       ))}
-
 
       <pixiSprite texture={whatIfTex} width={whatIfW} height={whatIfH}
         x={whatIfX}
-        y={lerp(whatIfY, sh + whatIfH, whatIfExitProg)}
-        alpha={whatIfAlpha} blendMode="overlay" />
-
+        y={lerp(whatIfY, sh + whatIfH, p.whatIfExitProg)}
+        alpha={p.whatIfAlpha} blendMode="overlay" />
 
       {/* circles — shrink then expand off screen */}
       {circles.map(({ size, x, y }, i) => (
@@ -354,10 +340,10 @@ function Frame12Desktop({ timeline }: { timeline: GSAPTimeline }) {
 
       {/* cards — converge then exit */}
       {(() => {
-        const inboxPos = chipOutProg > 0
+        const inboxPos = p.chipOutProg > 0
           ? chipExitPos(inboxTgt.xf, inboxTgt.yf, inboxWf, inboxHf)
           : { x: inboxX, y: inboxY }
-        const mailsPos = chipOutProg > 0
+        const mailsPos = p.chipOutProg > 0
           ? chipExitPos(mailsTgt.xf, mailsTgt.yf, mailsWf, mailsHf)
           : { x: mailsX, y: mailsY }
         return (
@@ -375,9 +361,9 @@ function Frame12Desktop({ timeline }: { timeline: GSAPTimeline }) {
         const h = (tex.height / tex.width) * w
         const hf = h / sh
         const tgt = chipBorderTarget(xf, yf, wf, hf, dead)
-        const pos = chipOutProg > 0
+        const pos = p.chipOutProg > 0
           ? chipExitPos(tgt.xf, tgt.yf, wf, hf)
-          : { x: sw * lerp(xf, tgt.xf, chipProg), y: sh * lerp(yf, tgt.yf, chipProg) }
+          : { x: sw * lerp(xf, tgt.xf, p.chipProg), y: sh * lerp(yf, tgt.yf, p.chipProg) }
         return (
           <pixiSprite key={key} texture={tex} width={w} height={h} x={pos.x} y={pos.y} />
         )
@@ -408,6 +394,7 @@ const CIRCLES_END_WF_MOBILE = [1.4, 1.1, 0.8]
 
 function Frame12Mobile({ timeline }: { timeline: GSAPTimeline }) {
   const { app } = useApplication()
+  const [, forceRender] = useReducer(x => x + 1, 0)
 
   const proxy = useRef({
     blur2Alpha: 0,
@@ -422,17 +409,6 @@ function Frame12Mobile({ timeline }: { timeline: GSAPTimeline }) {
     circOutProg: 0,
   })
 
-  const [blur2Alpha, setBlur2Alpha] = useState(0)
-  const [textAlpha, setTextAlpha] = useState(1)
-  const [deadAlpha, setDeadAlpha] = useState(0)
-  const [chipProg, setChipProg] = useState(0)
-  const [circProg, setCircProg] = useState(0)
-  const [bgBlur3Alpha, setBgBlur3Alpha] = useState(0)
-  const [whatIfAlpha, setWhatIfAlpha] = useState(0)
-  const [whatIfExitProg, setWhatIfExitProg] = useState(0)
-  const [chipOutProg, setChipOutProg] = useState(0)
-  const [circOutProg, setCircOutProg] = useState(0)
-
   useEffect(() => {
     if (!timeline || !app.renderer) return
     const p = proxy.current
@@ -440,69 +416,69 @@ function Frame12Mobile({ timeline }: { timeline: GSAPTimeline }) {
     timeline.to(p, {
       blur2Alpha: 1,
       duration: 2.0, ease: "power1.inOut",
-      onUpdate() { setBlur2Alpha(p.blur2Alpha) },
+      onUpdate: forceRender,
     }, ">")
 
     timeline.to(p, {
       textAlpha: 0,
       duration: 1.0, ease: "power1.in",
-      onUpdate() { setTextAlpha(p.textAlpha) },
+      onUpdate: forceRender,
     }, "<")
 
     timeline.to(p, {
       circProg: 1,
       duration: 1.5, ease: "power1.inOut",
-      onUpdate() { setCircProg(p.circProg) },
+      onUpdate: forceRender,
     }, "<")
 
     timeline.to(p, {
       deadAlpha: 1,
       duration: 1.0, ease: "power1.out",
-      onUpdate() { setDeadAlpha(p.deadAlpha) },
+      onUpdate: forceRender,
     }, ">-0.8")
 
     timeline.to(p, {
       chipProg: 1,
       duration: 1.5, ease: "power2.inOut",
-      onUpdate() { setChipProg(p.chipProg) },
+      onUpdate: forceRender,
     }, "<")
 
     // exit phase
     timeline.to(p, {
       chipOutProg: 1,
       duration: 1.2, ease: "power2.in",
-      onUpdate() { setChipOutProg(p.chipOutProg) },
+      onUpdate: forceRender,
     }, ">0.2")
 
     timeline.to(p, {
       circOutProg: 1,
       duration: 1.5, ease: "power1.in",
-      onUpdate() { setCircOutProg(p.circOutProg) },
+      onUpdate: forceRender,
     }, "<")
 
     timeline.to(p, {
       deadAlpha: 0,
       duration: 0.8, ease: "power1.in",
-      onUpdate() { setDeadAlpha(p.deadAlpha) },
+      onUpdate: forceRender,
     }, "<")
 
     timeline.to(p, {
       bgBlur3Alpha: 1,
       duration: 1.2, ease: "power1.out",
-      onUpdate() { setBgBlur3Alpha(p.bgBlur3Alpha) },
+      onUpdate: forceRender,
     }, "<0.4")
 
     timeline.to(p, {
       whatIfAlpha: 1,
       duration: 1.0, ease: "power1.out",
-      onUpdate() { setWhatIfAlpha(p.whatIfAlpha) },
+      onUpdate: forceRender,
     }, "<0.2")
 
     // mobile: what-if text slides RIGHT off screen
     timeline.to(p, {
       whatIfExitProg: 1,
       duration: 1.0, ease: "power2.in",
-      onUpdate() { setWhatIfExitProg(p.whatIfExitProg) },
+      onUpdate: forceRender,
     }, ">0.5")
   }, [timeline, app.renderer])
 
@@ -510,6 +486,7 @@ function Frame12Mobile({ timeline }: { timeline: GSAPTimeline }) {
 
   const sw = app.screen.width
   const sh = app.screen.height
+  const p = proxy.current
 
   // backgrounds
   const blurLTex = Assets.get(ASSETS.bg1BlurLeft)
@@ -522,8 +499,8 @@ function Frame12Mobile({ timeline }: { timeline: GSAPTimeline }) {
   // circles
   const circleTex = Assets.get(ASSETS.circle)
   const circles = CIRCLES_INIT_WF_MOBILE.map((initWf, i) => {
-    const shrunkWf = lerp(initWf, CIRCLES_END_WF_MOBILE[i], circProg)
-    const finalWf = lerp(shrunkWf, CIRCLES_INIT_WF_MOBILE[0] * 3, circOutProg)
+    const shrunkWf = lerp(initWf, CIRCLES_END_WF_MOBILE[i], p.circProg)
+    const finalWf = lerp(shrunkWf, CIRCLES_INIT_WF_MOBILE[0] * 3, p.circOutProg)
     const size = sw * finalWf
     return { size, x: sw / 2 - size / 2, y: sh / 2 - size / 2 }
   })
@@ -563,7 +540,7 @@ function Frame12Mobile({ timeline }: { timeline: GSAPTimeline }) {
   const whatIfW = sw * whatIfWf
   const whatIfH = (whatIfTex.height / whatIfTex.width) * whatIfW
   const whatIfBaseX = (sw - whatIfW) / 2
-  const whatIfX = lerp(whatIfBaseX, sw + whatIfW, whatIfExitProg)
+  const whatIfX = lerp(whatIfBaseX, sw + whatIfW, p.whatIfExitProg)
   const whatIfY = sh * deadYf
 
   // inbox card — init: Figma Frame 1, target: Figma Frame 2 (INBOX_M_TGT)
@@ -574,8 +551,8 @@ function Frame12Mobile({ timeline }: { timeline: GSAPTimeline }) {
   const inboxInitYf = 0.134
   const inboxW = sw * inboxWf
   const inboxH = (inboxTex.height / inboxTex.width) * inboxW
-  const inboxX = sw * lerp(inboxInitXf, INBOX_M_TGT.xf, chipProg)
-  const inboxY = sh * lerp(inboxInitYf, INBOX_M_TGT.yf, chipProg)
+  const inboxX = sw * lerp(inboxInitXf, INBOX_M_TGT.xf, p.chipProg)
+  const inboxY = sh * lerp(inboxInitYf, INBOX_M_TGT.yf, p.chipProg)
 
   // mails card — init: Figma Frame 1, target: Figma Frame 2 (MAILS_M_TGT)
   const mailsTex = Assets.get(ASSETS.mailsChip)
@@ -585,16 +562,16 @@ function Frame12Mobile({ timeline }: { timeline: GSAPTimeline }) {
   const mailsInitYf = 0.811
   const mailsW = sw * mailsWf
   const mailsH = (mailsTex.height / mailsTex.width) * mailsW
-  const mailsX = sw * lerp(mailsInitXf, MAILS_M_TGT.xf, chipProg)
-  const mailsY = sh * lerp(mailsInitYf, MAILS_M_TGT.yf, chipProg)
+  const mailsX = sw * lerp(mailsInitXf, MAILS_M_TGT.xf, p.chipProg)
+  const mailsY = sh * lerp(mailsInitYf, MAILS_M_TGT.yf, p.chipProg)
 
   function chipExitPos(tgtXf: number, tgtYf: number, wf: number, hf: number) {
     const tgtCX = sw * (tgtXf + wf / 2)
     const tgtCY = sh * (tgtYf + hf / 2)
     const angle = Math.atan2(tgtCY - deadCY_px, tgtCX - deadCX_px)
     const dist = Math.hypot(tgtCY - deadCY_px, tgtCX - deadCX_px)
-    const curAngle = angle + chipOutProg * (Math.PI / 5)
-    const curDist = dist + chipOutProg * Math.max(sw, sh) * 1.5
+    const curAngle = angle + p.chipOutProg * (Math.PI / 5)
+    const curDist = dist + p.chipOutProg * Math.max(sw, sh) * 1.5
     return {
       x: deadCX_px + curDist * Math.cos(curAngle) - sw * wf / 2,
       y: deadCY_px + curDist * Math.sin(curAngle) - sh * hf / 2,
@@ -605,19 +582,19 @@ function Frame12Mobile({ timeline }: { timeline: GSAPTimeline }) {
     <pixiContainer>
       <pixiSprite texture={blurLTex} width={blurLW} height={sh} x={0} y={0} />
       <pixiSprite texture={blurRTex} width={blurRW} height={sh} x={sw - blurRW} y={0} />
-      <pixiSprite texture={blur2Tex} width={sw} height={sh} alpha={blur2Alpha} />
-      <pixiSprite texture={bgBlur3Tex} width={sw} height={sh} alpha={bgBlur3Alpha} />
+      <pixiSprite texture={blur2Tex} width={sw} height={sh} alpha={p.blur2Alpha} />
+      <pixiSprite texture={bgBlur3Tex} width={sw} height={sh} alpha={p.bgBlur3Alpha} />
 
-      <pixiSprite texture={everyTex} width={everyW} height={everyH} x={everyX} y={everyY} blendMode="overlay" alpha={textAlpha} />
-      <pixiSprite texture={millTex} width={millW} height={millH} x={millX} y={millY} blendMode="overlay" alpha={textAlpha} />
+      <pixiSprite texture={everyTex} width={everyW} height={everyH} x={everyX} y={everyY} blendMode="overlay" alpha={p.textAlpha} />
+      <pixiSprite texture={millTex} width={millW} height={millH} x={millX} y={millY} blendMode="overlay" alpha={p.textAlpha} />
 
       {[0, 1].map((i) => (
         <pixiSprite key={i} texture={deadTex} width={deadW} height={deadH}
-          x={sw * dead.l} y={sh * dead.t} alpha={deadAlpha} blendMode="overlay" />
+          x={sw * dead.l} y={sh * dead.t} alpha={p.deadAlpha} blendMode="overlay" />
       ))}
 
       <pixiSprite texture={whatIfTex} width={whatIfW} height={whatIfH}
-        x={whatIfX} y={whatIfY} alpha={whatIfAlpha} blendMode="overlay" />
+        x={whatIfX} y={whatIfY} alpha={p.whatIfAlpha} blendMode="overlay" />
 
       {circles.map(({ size, x, y }, i) => (
         <pixiSprite key={i} texture={circleTex} width={size} height={size} x={x} y={y} />
@@ -625,8 +602,8 @@ function Frame12Mobile({ timeline }: { timeline: GSAPTimeline }) {
 
       {/* cards — direct Figma Frame 2 targets, no chipBorderTarget */}
       {(() => {
-        const ip = chipOutProg > 0 ? chipExitPos(INBOX_M_TGT.xf, INBOX_M_TGT.yf, inboxWf, inboxHf) : { x: inboxX, y: inboxY }
-        const mp = chipOutProg > 0 ? chipExitPos(MAILS_M_TGT.xf, MAILS_M_TGT.yf, mailsWf, mailsHf) : { x: mailsX, y: mailsY }
+        const ip = p.chipOutProg > 0 ? chipExitPos(INBOX_M_TGT.xf, INBOX_M_TGT.yf, inboxWf, inboxHf) : { x: inboxX, y: inboxY }
+        const mp = p.chipOutProg > 0 ? chipExitPos(MAILS_M_TGT.xf, MAILS_M_TGT.yf, mailsWf, mailsHf) : { x: mailsX, y: mailsY }
         return (
           <>
             <pixiSprite texture={inboxTex} width={inboxW} height={inboxH} x={ip.x} y={ip.y} />
@@ -641,9 +618,9 @@ function Frame12Mobile({ timeline }: { timeline: GSAPTimeline }) {
         const w = sw * wf
         const h = (tex.height / tex.width) * w
         const hf = h / sh
-        const pos = chipOutProg > 0
+        const pos = p.chipOutProg > 0
           ? chipExitPos(tgtXf, tgtYf, wf, hf)
-          : { x: sw * lerp(xf, tgtXf, chipProg), y: sh * lerp(yf, tgtYf, chipProg) }
+          : { x: sw * lerp(xf, tgtXf, p.chipProg), y: sh * lerp(yf, tgtYf, p.chipProg) }
         return (
           <pixiSprite key={key} texture={tex} width={w} height={h} x={pos.x} y={pos.y} />
         )

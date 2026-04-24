@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from "react"
+import { useEffect, useRef, useReducer } from "react"
 import { useApplication } from "@pixi/react"
 import { Assets } from "pixi.js"
 import type { SceneProps } from "../../App"
@@ -19,16 +19,13 @@ const CARD_HF = 0.82
 
 function Frame3Desktop({ timeline }: { timeline: GSAPTimeline }) {
   const { app } = useApplication()
+  const [, forceRender] = useReducer(x => x + 1, 0)
 
   const proxy = useRef({
     sliderProg:    0,
     bgBlur3Alpha:  0,
     bgBlur32Alpha: 0,
   })
-
-  const [sliderProg,    setSliderProg]    = useState(0)
-  const [bgBlur3Alpha,  setBgBlur3Alpha]  = useState(0)
-  const [bgBlur32Alpha, setBgBlur32Alpha] = useState(0)
 
   useEffect(() => {
     if (!timeline || !app.renderer) return
@@ -39,7 +36,7 @@ function Frame3Desktop({ timeline }: { timeline: GSAPTimeline }) {
       sliderProg: 1,
       duration: 3.5,
       ease: "none",
-      onUpdate() { setSliderProg(p.sliderProg) },
+      onUpdate: forceRender,
     }, ">")
 
     // bg-blur-f3 fades in at mid-slider (~45% = 1.575 s from slider start)
@@ -47,7 +44,7 @@ function Frame3Desktop({ timeline }: { timeline: GSAPTimeline }) {
       bgBlur3Alpha: 1,
       duration: 0.7,
       ease: "power1.out",
-      onUpdate() { setBgBlur3Alpha(p.bgBlur3Alpha) },
+      onUpdate: forceRender,
     }, "<1.575")
 
     // bg-blur-f3-2 fades in near end (~85% = 2.975 s from slider start)
@@ -56,7 +53,7 @@ function Frame3Desktop({ timeline }: { timeline: GSAPTimeline }) {
       bgBlur32Alpha: 1,
       duration: 0.7,
       ease: "power1.out",
-      onUpdate() { setBgBlur32Alpha(p.bgBlur32Alpha) },
+      onUpdate: forceRender,
     }, "<1.4")
   }, [timeline, app.renderer])
 
@@ -64,6 +61,7 @@ function Frame3Desktop({ timeline }: { timeline: GSAPTimeline }) {
 
   const sw = app.screen.width
   const sh = app.screen.height
+  const p = proxy.current
 
   const bgBlur3Tex  = Assets.get(ASSETS.bgBlurF3)
   const bgBlur32Tex = Assets.get(ASSETS.bgBlurF32)
@@ -83,30 +81,31 @@ function Frame3Desktop({ timeline }: { timeline: GSAPTimeline }) {
   const stripStartX = sw
   const totalStripW = cards.reduce((acc, c) => acc + c.w, 0) + cardGap * (cards.length - 1)
   const stripEndX   = -totalStripW
+  const stripX      = lerp(stripStartX, stripEndX, p.sliderProg)
+  const cardY       = (sh - sh * CARD_HF) / 2
 
-  const stripX  = lerp(stripStartX, stripEndX, sliderProg)
-  const cardY   = (sh - sh * CARD_HF) / 2
+  // Pre-compute cumulative x-offsets to avoid O(n²) slice+reduce inside map
+  const xOffsets = cards.map((_, i) =>
+    cards.slice(0, i).reduce((acc, c) => acc + c.w + cardGap, 0)
+  )
 
   return (
     <pixiContainer>
       {/* background blurs fade in during the slide */}
-      <pixiSprite texture={bgBlur3Tex}  width={sw} height={sh} alpha={bgBlur3Alpha}  />
-      <pixiSprite texture={bgBlur32Tex} width={sw} height={sh} alpha={bgBlur32Alpha} />
+      <pixiSprite texture={bgBlur3Tex}  width={sw} height={sh} alpha={p.bgBlur3Alpha}  />
+      <pixiSprite texture={bgBlur32Tex} width={sw} height={sh} alpha={p.bgBlur32Alpha} />
 
       {/* card strip — slides right → left */}
-      {cards.map(({ tex, w, h }, i) => {
-        const xOffset = cards.slice(0, i).reduce((acc, c) => acc + c.w + cardGap, 0)
-        return (
-          <pixiSprite
-            key={i}
-            texture={tex}
-            width={w}
-            height={h}
-            x={stripX + xOffset}
-            y={cardY}
-          />
-        )
-      })}
+      {cards.map(({ tex, w, h }, i) => (
+        <pixiSprite
+          key={i}
+          texture={tex}
+          width={w}
+          height={h}
+          x={stripX + xOffsets[i]}
+          y={cardY}
+        />
+      ))}
     </pixiContainer>
   )
 }
@@ -118,16 +117,13 @@ const CARD_WF_M = 0.88
 
 function Frame3Mobile({ timeline }: { timeline: GSAPTimeline }) {
   const { app } = useApplication()
+  const [, forceRender] = useReducer(x => x + 1, 0)
 
   const proxy = useRef({
     sliderProg:    0,
     bgBlur3Alpha:  0,
     bgBlur32Alpha: 0,
   })
-
-  const [sliderProg,    setSliderProg]    = useState(0)
-  const [bgBlur3Alpha,  setBgBlur3Alpha]  = useState(0)
-  const [bgBlur32Alpha, setBgBlur32Alpha] = useState(0)
 
   useEffect(() => {
     if (!timeline || !app.renderer) return
@@ -137,21 +133,21 @@ function Frame3Mobile({ timeline }: { timeline: GSAPTimeline }) {
       sliderProg: 1,
       duration: 3.5,
       ease: "none",
-      onUpdate() { setSliderProg(p.sliderProg) },
+      onUpdate: forceRender,
     }, ">")
 
     timeline.to(p, {
       bgBlur3Alpha: 1,
       duration: 0.7,
       ease: "power1.out",
-      onUpdate() { setBgBlur3Alpha(p.bgBlur3Alpha) },
+      onUpdate: forceRender,
     }, "<1.575")
 
     timeline.to(p, {
       bgBlur32Alpha: 1,
       duration: 0.7,
       ease: "power1.out",
-      onUpdate() { setBgBlur32Alpha(p.bgBlur32Alpha) },
+      onUpdate: forceRender,
     }, "<1.4")
   }, [timeline, app.renderer])
 
@@ -159,6 +155,7 @@ function Frame3Mobile({ timeline }: { timeline: GSAPTimeline }) {
 
   const sw = app.screen.width
   const sh = app.screen.height
+  const p = proxy.current
 
   const bgBlur3Tex  = Assets.get(ASSETS.bgBlurF3)
   const bgBlur32Tex = Assets.get(ASSETS.bgBlurF32)
@@ -179,27 +176,28 @@ function Frame3Mobile({ timeline }: { timeline: GSAPTimeline }) {
   const stripStartY = sh
   const totalStripH = cards.reduce((acc, c) => acc + c.h, 0) + cardGap * (cards.length - 1)
   const stripEndY   = -totalStripH
+  const stripY      = lerp(stripStartY, stripEndY, p.sliderProg)
 
-  const stripY = lerp(stripStartY, stripEndY, sliderProg)
+  // Pre-compute cumulative y-offsets to avoid O(n²) slice+reduce inside map
+  const yOffsets = cards.map((_, i) =>
+    cards.slice(0, i).reduce((acc, c) => acc + c.h + cardGap, 0)
+  )
 
   return (
     <pixiContainer>
-      <pixiSprite texture={bgBlur3Tex}  width={sw} height={sh} alpha={bgBlur3Alpha}  />
-      <pixiSprite texture={bgBlur32Tex} width={sw} height={sh} alpha={bgBlur32Alpha} />
+      <pixiSprite texture={bgBlur3Tex}  width={sw} height={sh} alpha={p.bgBlur3Alpha}  />
+      <pixiSprite texture={bgBlur32Tex} width={sw} height={sh} alpha={p.bgBlur32Alpha} />
 
-      {cards.map(({ tex, w, h }, i) => {
-        const yOffset = cards.slice(0, i).reduce((acc, c) => acc + c.h + cardGap, 0)
-        return (
-          <pixiSprite
-            key={i}
-            texture={tex}
-            width={w}
-            height={h}
-            x={cardX}
-            y={stripY + yOffset}
-          />
-        )
-      })}
+      {cards.map(({ tex, w, h }, i) => (
+        <pixiSprite
+          key={i}
+          texture={tex}
+          width={w}
+          height={h}
+          x={cardX}
+          y={stripY + yOffsets[i]}
+        />
+      ))}
     </pixiContainer>
   )
 }

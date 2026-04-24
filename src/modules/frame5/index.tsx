@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from "react"
+import { useEffect, useRef, useReducer } from "react"
 import { useApplication } from "@pixi/react"
 import { Assets } from "pixi.js"
 import gsap from "gsap"
@@ -22,11 +22,8 @@ export function Frame5({ timeline, ctx }: SceneProps) {
 
 function Frame5Mobile({ timeline }: { timeline: GSAPTimeline }) {
     const { app } = useApplication()
+    const [, forceRender] = useReducer(x => x + 1, 0)
     const proxyRef = useRef({ slide: 0, yShift: 0, fadeOut: 1, fadeIn: 0 })
-    const [slide, setSlide] = useState(0)
-    const [yShift, setYShift] = useState(0)
-    const [fadeOut, setFadeOut] = useState(1)
-    const [fadeIn, setFadeIn] = useState(0)
 
     useEffect(() => {
         if (!timeline || !app.renderer) return
@@ -35,31 +32,25 @@ function Frame5Mobile({ timeline }: { timeline: GSAPTimeline }) {
             fadeIn: 1,
             duration: 1.2,
             ease: "power1.out",
-            onUpdate() { setFadeIn(proxyRef.current.fadeIn) },
+            onUpdate: forceRender,
         }, ">")
 
         timeline.to(proxyRef.current, {
             slide: PLANETS.length,
             ease: "none",
-            onUpdate() {
-                setSlide(proxyRef.current.slide)
-            },
+            onUpdate: forceRender,
         }, ">-0.2")
 
         const target = app.screen.height * 0.54
         timeline.to(proxyRef.current, {
             yShift: -target,
             ease: "power2.inOut",
-            onUpdate() {
-                setYShift(proxyRef.current.yShift)
-            },
+            onUpdate: forceRender,
         })
         timeline.to(proxyRef.current, {
             fadeOut: 0,
             ease: "power1.in",
-            onUpdate() {
-                setFadeOut(proxyRef.current.fadeOut)
-            },
+            onUpdate: forceRender,
         }, ">-0.3")
     }, [timeline, app.renderer])
 
@@ -70,16 +61,17 @@ function Frame5Mobile({ timeline }: { timeline: GSAPTimeline }) {
 
     const sw = app.screen.width
     const sh = app.screen.height
+    const pr = proxyRef.current
     const cx = sw / 2
-    const cy = sh / 2 + yShift
-    const planetCy = sh * 0.4 + yShift
+    const cy = sh / 2 + pr.yShift
+    const planetCy = sh * 0.4 + pr.yShift
     const baseSize = Math.min(sw, sh) * 1.7
     const planetSize = sw * 0.5
     const textWidth = sw * 0.7
     const gap = sh * 0.01
 
     return (
-        <pixiContainer alpha={fadeIn}>
+        <pixiContainer alpha={pr.fadeIn}>
             <pixiSprite
                 texture={bgTexture}
                 width={sw}
@@ -101,12 +93,12 @@ function Frame5Mobile({ timeline }: { timeline: GSAPTimeline }) {
                 )
             })}
             {PLANETS.map(({ planet, text, scale }, i) => {
-                const offset = i - slide
+                const offset = i - pr.slide
                 const x = cx + offset * sw
 
                 const dist = Math.abs(offset)
                 const slideAlpha = Math.max(0, 1 - dist * 1.5)
-                const alpha = slideAlpha * fadeOut
+                const alpha = slideAlpha * pr.fadeOut
 
                 const pTex = Assets.get(planet)
                 const tTex = Assets.get(text)
@@ -140,7 +132,7 @@ function Frame5Mobile({ timeline }: { timeline: GSAPTimeline }) {
             })}
             {(() => {
                 const btTex = Assets.get(ASSETS.circleBottomText)
-                const offset = PLANETS.length - slide
+                const offset = PLANETS.length - pr.slide
                 const x = cx + offset * sw
                 // const dist = Math.abs(offset)
                 // const slideAlpha = Math.max(0, 1 - dist * 1.5)
@@ -166,12 +158,9 @@ function Frame5Mobile({ timeline }: { timeline: GSAPTimeline }) {
 
 function Frame5Desktop({ timeline }: { timeline: GSAPTimeline }) {
     const { app } = useApplication()
+    const [, forceRender] = useReducer(x => x + 1, 0)
     const proxyRef = useRef({ angle: 0, yShift: 0, opacity: 1, fadeIn: 0 })
     const orbitTweenRef = useRef<gsap.core.Tween | null>(null)
-    const [angleOffset, setAngleOffset] = useState(0)
-    const [yShift, setYShift] = useState(0)
-    const [opacity, setOpacity] = useState(1)
-    const [fadeIn, setFadeIn] = useState(0)
 
     useEffect(() => {
         const tween = gsap.to(proxyRef.current, {
@@ -179,9 +168,7 @@ function Frame5Desktop({ timeline }: { timeline: GSAPTimeline }) {
             duration: ORBIT_DURATION,
             repeat: -1,
             ease: "none",
-            onUpdate() {
-                setAngleOffset(proxyRef.current.angle)
-            },
+            onUpdate: forceRender,
         })
         orbitTweenRef.current = tween
         return () => { tween.kill() }
@@ -194,7 +181,7 @@ function Frame5Desktop({ timeline }: { timeline: GSAPTimeline }) {
             fadeIn: 1,
             duration: 1.2,
             ease: "power1.out",
-            onUpdate() { setFadeIn(proxyRef.current.fadeIn) },
+            onUpdate: forceRender,
         }, ">")
 
         const target = app.screen.height * 0.7
@@ -207,9 +194,7 @@ function Frame5Desktop({ timeline }: { timeline: GSAPTimeline }) {
             onReverseComplete() {
                 orbitTweenRef.current?.timeScale(1).resume()
             },
-            onUpdate() {
-                setYShift(proxyRef.current.yShift)
-            },
+            onUpdate: forceRender,
         })
         timeline.to(proxyRef.current, {
             opacity: 0,
@@ -220,9 +205,7 @@ function Frame5Desktop({ timeline }: { timeline: GSAPTimeline }) {
             onReverseComplete() {
                 orbitTweenRef.current?.resume()
             },
-            onUpdate() {
-                setOpacity(proxyRef.current.opacity)
-            },
+            onUpdate: forceRender,
         }, ">-0.3")
     }, [timeline, app.renderer])
 
@@ -231,8 +214,9 @@ function Frame5Desktop({ timeline }: { timeline: GSAPTimeline }) {
     const bgTexture = Assets.get(ASSETS.bg5)
     const circleTexture = Assets.get(ASSETS.circle)
 
+    const pr = proxyRef.current
     const cx = app.screen.width / 2
-    const cy = app.screen.height / 2 + yShift
+    const cy = app.screen.height / 2 + pr.yShift
     const baseSize = Math.min(app.screen.width, app.screen.height) * 0.7
 
     const orbitRadius = baseSize * 0.45
@@ -241,7 +225,7 @@ function Frame5Desktop({ timeline }: { timeline: GSAPTimeline }) {
     const gap = baseSize * 0.01
 
     return (
-        <pixiContainer alpha={fadeIn}>
+        <pixiContainer alpha={pr.fadeIn}>
             <pixiSprite
                 texture={bgTexture}
                 width={app.screen.width}
@@ -264,7 +248,7 @@ function Frame5Desktop({ timeline }: { timeline: GSAPTimeline }) {
             })}
             {PLANETS.map(({ planet, text, scale }, i) => {
                 const baseAngle = -Math.PI / 2 + (i * 2 * Math.PI) / 3
-                const angle = baseAngle + angleOffset
+                const angle = baseAngle + pr.angle
                 const px = cx + orbitRadius * Math.cos(angle)
                 const py = cy + orbitRadius * Math.sin(angle)
 
@@ -291,7 +275,7 @@ function Frame5Desktop({ timeline }: { timeline: GSAPTimeline }) {
                             height={pH}
                             x={planetX}
                             y={planetY}
-                            alpha={opacity}
+                            alpha={pr.opacity}
                         />
                         <pixiSprite
                             texture={tTex}
@@ -299,7 +283,7 @@ function Frame5Desktop({ timeline }: { timeline: GSAPTimeline }) {
                             height={tH}
                             x={textX}
                             y={textY}
-                            alpha={opacity}
+                            alpha={pr.opacity}
                         />
                     </pixiContainer>
                 )

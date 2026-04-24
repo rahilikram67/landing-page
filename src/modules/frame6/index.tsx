@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from "react"
+import { useEffect, useRef, useReducer } from "react"
 import { useApplication } from "@pixi/react"
 import { Assets, BlurFilter, Graphics as PixiGraphics } from "pixi.js"
 import type { SceneProps } from "../../App"
@@ -13,11 +13,12 @@ const REVIEW_CARDS = [ASSETS.reviewGirl, ASSETS.reviewBoy, ASSETS.reviewBoy2] as
 
 function Frame6Mobile({ timeline }: { timeline: GSAPTimeline }) {
     const { app } = useApplication()
+    const [, forceRender] = useReducer(x => x + 1, 0)
     const proxyRef = useRef({ fadeIn: 0, reviewSlide: 0, blurAlpha: 0 })
     const blurFilterRef = useRef<BlurFilter | null>(null)
-    const [fadeIn, setFadeIn] = useState(0)
-    const [reviewSlide, setReviewSlide] = useState(0)
-    const [blurAlpha, setBlurAlpha] = useState(0)
+    // Stable draw function reference — only recreated when screen dimensions change
+    const drawBlurFnRef = useRef<((gfx: PixiGraphics) => void) | null>(null)
+    const prevDimsRef = useRef({ sw: -1, sh: -1 })
 
     useEffect(() => {
         if (!timeline || !app.renderer) return
@@ -25,23 +26,17 @@ function Frame6Mobile({ timeline }: { timeline: GSAPTimeline }) {
         timeline.to(proxyRef.current, {
             fadeIn: 1,
             ease: "power1.out",
-            onUpdate() {
-                setFadeIn(proxyRef.current.fadeIn)
-            },
+            onUpdate: forceRender,
         })
         timeline.to(proxyRef.current, {
             reviewSlide: REVIEW_CARDS.length - 1,
             ease: "none",
-            onUpdate() {
-                setReviewSlide(proxyRef.current.reviewSlide)
-            },
+            onUpdate: forceRender,
         })
         timeline.to(proxyRef.current, {
             blurAlpha: 1,
             ease: "power2.out",
-            onUpdate() {
-                setBlurAlpha(proxyRef.current.blurAlpha)
-            },
+            onUpdate: forceRender,
         }, ">")
     }, [timeline, app.renderer])
 
@@ -49,7 +44,27 @@ function Frame6Mobile({ timeline }: { timeline: GSAPTimeline }) {
 
     const sw = app.screen.width
     const sh = app.screen.height
+    const pr = proxyRef.current
     const cx = sw / 2
+
+    // Rebuild draw function only when screen dimensions change (not every frame)
+    if (prevDimsRef.current.sw !== sw || prevDimsRef.current.sh !== sh) {
+        prevDimsRef.current = { sw, sh }
+        drawBlurFnRef.current = (gfx: PixiGraphics) => {
+            if (!blurFilterRef.current) {
+                blurFilterRef.current = new BlurFilter({ strength: 40, quality: 5 })
+            }
+            gfx.clear()
+            gfx.moveTo(-80, sh + 80)
+            gfx.lineTo(-80, sh - 150)
+            gfx.bezierCurveTo(sw * 0.25, sh + 20, sw * 0.5, sh + 40, sw * 0.5, sh + 40)
+            gfx.bezierCurveTo(sw * 0.5, sh + 40, sw * 0.75, sh + 20, sw + 80, sh - 150)
+            gfx.lineTo(sw + 80, sh + 80)
+            gfx.closePath()
+            gfx.fill(0xA035D0)
+            gfx.filters = [blurFilterRef.current]
+        }
+    }
 
     const dividerTex = Assets.get(ASSETS.divider)
     const voiceExpTex = Assets.get(ASSETS.voiceExp)
@@ -65,31 +80,16 @@ function Frame6Mobile({ timeline }: { timeline: GSAPTimeline }) {
     const cardW = sw * 0.85
     const cardPad = sw * 0.05
 
-    const drawBlur = (gfx: PixiGraphics) => {
-        if (!blurFilterRef.current) {
-            blurFilterRef.current = new BlurFilter({ strength: 40, quality: 5 })
-        }
-        gfx.clear()
-        gfx.moveTo(-80, sh + 80)
-        gfx.lineTo(-80, sh - 150)
-        gfx.bezierCurveTo(sw * 0.25, sh + 20, sw * 0.5, sh + 40, sw * 0.5, sh + 40)
-        gfx.bezierCurveTo(sw * 0.5, sh + 40, sw * 0.75, sh + 20, sw + 80, sh - 150)
-        gfx.lineTo(sw + 80, sh + 80)
-        gfx.closePath()
-        gfx.fill(0xA035D0)
-        gfx.filters = [blurFilterRef.current]
-    }
-
     return (
         <>
-            <pixiGraphics draw={drawBlur} alpha={blurAlpha} />
+            <pixiGraphics draw={drawBlurFnRef.current!} alpha={pr.blurAlpha} />
             <pixiSprite
                 texture={dividerTex}
                 width={divW}
                 height={divH}
                 x={cx - divW / 2}
                 y={divY}
-                alpha={fadeIn}
+                alpha={pr.fadeIn}
             />
             <pixiSprite
                 texture={voiceExpTex}
@@ -97,7 +97,7 @@ function Frame6Mobile({ timeline }: { timeline: GSAPTimeline }) {
                 height={veH}
                 x={cx*0.8 - veW / 2}
                 y={veY}
-                alpha={fadeIn}
+                alpha={pr.fadeIn}
             />
             {REVIEW_CARDS.map((cardAsset, i) => {
                 const cardTex = Assets.get(cardAsset)
@@ -105,10 +105,10 @@ function Frame6Mobile({ timeline }: { timeline: GSAPTimeline }) {
                 const cH = cW * (cardTex.height / cardTex.width)
                 const cY = sh - cH - sh * 0.05
 
-                const offset = i - reviewSlide
+                const offset = i - pr.reviewSlide
                 const x = cx + offset * (cardW + cardPad)
                 const dist = Math.abs(offset)
-                const cardAlpha = Math.max(0, 1 - dist * 1.5) * fadeIn
+                const cardAlpha = Math.max(0, 1 - dist * 1.5) * pr.fadeIn
 
                 return (
                     <pixiSprite
@@ -128,12 +128,12 @@ function Frame6Mobile({ timeline }: { timeline: GSAPTimeline }) {
 
 function Frame6Desktop({ timeline }: { timeline: GSAPTimeline }) {
     const { app } = useApplication()
+    const [, forceRender] = useReducer(x => x + 1, 0)
     const proxyRef = useRef({ textAlpha: 0, dividerAlpha: 0, reviewsAlpha: 0, blurAlpha: 0 })
     const blurFilterRef = useRef<BlurFilter | null>(null)
-    const [textAlpha, setTextAlpha] = useState(0)
-    const [dividerAlpha, setDividerAlpha] = useState(0)
-    const [reviewsAlpha, setReviewsAlpha] = useState(0)
-    const [blurAlpha, setBlurAlpha] = useState(0)
+    // Stable draw function reference — only recreated when screen dimensions change
+    const drawBlurFnRef = useRef<((gfx: PixiGraphics) => void) | null>(null)
+    const prevDimsRef = useRef({ sw: -1, sh: -1 })
 
     useEffect(() => {
         if (!timeline || !app.renderer) return
@@ -141,30 +141,22 @@ function Frame6Desktop({ timeline }: { timeline: GSAPTimeline }) {
         timeline.to(proxyRef.current, {
             textAlpha: 1,
             ease: "power1.out",
-            onUpdate() {
-                setTextAlpha(proxyRef.current.textAlpha)
-            },
+            onUpdate: forceRender,
         }, ">")
         timeline.to(proxyRef.current, {
             dividerAlpha: 1,
             ease: "power1.out",
-            onUpdate() {
-                setDividerAlpha(proxyRef.current.dividerAlpha)
-            },
+            onUpdate: forceRender,
         }, ">-0.5")
         timeline.to(proxyRef.current, {
             reviewsAlpha: 1,
             ease: "power1.out",
-            onUpdate() {
-                setReviewsAlpha(proxyRef.current.reviewsAlpha)
-            },
+            onUpdate: forceRender,
         }, ">-0.3")
         timeline.to(proxyRef.current, {
             blurAlpha: 1,
             ease: "power2.out",
-            onUpdate() {
-                setBlurAlpha(proxyRef.current.blurAlpha)
-            },
+            onUpdate: forceRender,
         }, ">")
     }, [timeline, app.renderer])
 
@@ -172,7 +164,26 @@ function Frame6Desktop({ timeline }: { timeline: GSAPTimeline }) {
 
     const sw = app.screen.width
     const sh = app.screen.height
+    const pr = proxyRef.current
     const cx = sw / 2
+
+    // Rebuild draw function only when screen dimensions change (not every frame)
+    if (prevDimsRef.current.sw !== sw || prevDimsRef.current.sh !== sh) {
+        prevDimsRef.current = { sw, sh }
+        drawBlurFnRef.current = (gfx: PixiGraphics) => {
+            if (!blurFilterRef.current) {
+                blurFilterRef.current = new BlurFilter({ strength: 90, quality: 5 })
+            }
+            gfx.clear()
+            gfx.moveTo(-150, sh + 150)
+            gfx.lineTo(-150, sh * 0.28)
+            gfx.bezierCurveTo(sw * 0.01, sh * 1.4, sw * 1.0, sh * 1, sw * 1.2, sh * 0.5)
+            gfx.lineTo(sw + 150, sh + 150)
+            gfx.closePath()
+            gfx.fill(0xA035D0)
+            gfx.filters = [blurFilterRef.current]
+        }
+    }
 
     const bottomTextTex = Assets.get(ASSETS.circleBottomText)
     const dividerTex = Assets.get(ASSETS.divider)
@@ -215,32 +226,17 @@ function Frame6Desktop({ timeline }: { timeline: GSAPTimeline }) {
     const c3X = revX + revW * 0.59
     const c3Y = revY + revH * 0.88
 
-    // wave shape: peaks high on left+right, dips lower in center, oversize to avoid hard clip edges
-    const drawBlur = (gfx: PixiGraphics) => {
-        if (!blurFilterRef.current) {
-            blurFilterRef.current = new BlurFilter({ strength: 90, quality: 5 })
-        }
-        gfx.clear()
-        gfx.moveTo(-150, sh + 150)
-        gfx.lineTo(-150, sh * 0.28)
-        gfx.bezierCurveTo(sw * 0.01, sh * 1.4, sw * 1.0, sh * 1, sw * 1.2, sh * 0.5)
-        gfx.lineTo(sw + 150, sh + 150)
-        gfx.closePath()
-        gfx.fill(0xA035D0)
-        gfx.filters = [blurFilterRef.current]
-    }
-
     return (
         <>
             {/* wave glow behind all content */}
-            <pixiGraphics draw={drawBlur} alpha={blurAlpha} />
+            <pixiGraphics draw={drawBlurFnRef.current!} alpha={pr.blurAlpha} />
             <pixiSprite
                 texture={bottomTextTex}
                 width={btW}
                 height={btH}
                 x={cx - btW / 2}
                 y={btY}
-                alpha={textAlpha}
+                alpha={pr.textAlpha}
             />
             <pixiSprite
                 texture={dividerTex}
@@ -248,7 +244,7 @@ function Frame6Desktop({ timeline }: { timeline: GSAPTimeline }) {
                 height={divH}
                 x={cx - divW / 2}
                 y={divY}
-                alpha={dividerAlpha}
+                alpha={pr.dividerAlpha}
             />
             <pixiSprite
                 texture={reviewsTex}
@@ -256,7 +252,7 @@ function Frame6Desktop({ timeline }: { timeline: GSAPTimeline }) {
                 height={revH}
                 x={revX}
                 y={revY}
-                alpha={reviewsAlpha}
+                alpha={pr.reviewsAlpha}
             />
             <pixiSprite
                 texture={chip1Tex}
@@ -264,7 +260,7 @@ function Frame6Desktop({ timeline }: { timeline: GSAPTimeline }) {
                 height={c1H}
                 x={c1X}
                 y={c1Y}
-                alpha={blurAlpha}
+                alpha={pr.blurAlpha}
             />
             <pixiSprite
                 texture={chip2Tex}
@@ -272,7 +268,7 @@ function Frame6Desktop({ timeline }: { timeline: GSAPTimeline }) {
                 height={c2H}
                 x={c2X}
                 y={c2Y}
-                alpha={blurAlpha}
+                alpha={pr.blurAlpha}
             />
             <pixiSprite
                 texture={chip3Tex}
@@ -280,7 +276,7 @@ function Frame6Desktop({ timeline }: { timeline: GSAPTimeline }) {
                 height={c3H}
                 x={c3X}
                 y={c3Y}
-                alpha={blurAlpha}
+                alpha={pr.blurAlpha}
             />
         </>
     )
