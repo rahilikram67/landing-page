@@ -166,8 +166,8 @@ function Frame4Desktop({ timeline }: { timeline: GSAPTimeline }) {
           <pixiSprite
             key={key}
             texture={tex}
-            width={iconW}
-            height={iconH}
+            width={iconW*1.5}
+            height={iconH*1.5}
             x={ix}
             y={iy}
             alpha={p.iconsAlpha}
