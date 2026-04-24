@@ -247,6 +247,7 @@ function Frame4Mobile({ timeline }: { timeline: GSAPTimeline }) {
     iconsAlpha: 0,
     text1Alpha: 0,
     text2Alpha: 0,
+    chipsAlpha: 0,
     exitAlpha: 1,
   })
 
@@ -273,6 +274,7 @@ function Frame4Mobile({ timeline }: { timeline: GSAPTimeline }) {
     timeline.to(p, { text1Alpha: 1, duration: 0.6, ease: "power1.out", onUpdate: forceRender }, ">0.2")
     timeline.to(p, { text1Alpha: 0, duration: 0.5, ease: "power1.in", onUpdate: forceRender }, ">1.0")
     timeline.to(p, { text2Alpha: 1, duration: 0.6, ease: "power1.out", onUpdate: forceRender }, "<0.2")
+    timeline.to(p, { chipsAlpha: 1, duration: 0.6, ease: "power1.out", onUpdate: forceRender }, "<")
     timeline.to(p, { exitAlpha: 0, duration: 1.0, ease: "power1.inOut", onUpdate: forceRender }, ">")
   }, [timeline, app.renderer])
 
@@ -287,6 +289,9 @@ function Frame4Mobile({ timeline }: { timeline: GSAPTimeline }) {
   const centerTex = Assets.get(ASSETS.boyQuestions)
   const text1Tex = Assets.get(ASSETS.developersCoder)
   const text2Tex = Assets.get(ASSETS.explorersText)
+  const buildEcomTex = Assets.get(ASSETS.buildEcomChip)
+  const generatedInvTex = Assets.get(ASSETS.generatedInvestorChip)
+  const saved12Tex = Assets.get(ASSETS.saved12Chip)
 
   const centerW = sw * 0.70
   const centerH = (centerTex.height / centerTex.width) * centerW
@@ -303,6 +308,23 @@ function Frame4Mobile({ timeline }: { timeline: GSAPTimeline }) {
   const text2W = sw * 0.66
   const text2H = (text2Tex.height / text2Tex.width) * text2W
   const textY = sh * 0.80
+
+  // Chips — positions derived from Figma mobile frame (375 × 812)
+  // buildEcom: top-left area (Figma: 127/596 container left + 135/596 top, absolute screen x=16.5, y=279)
+  const chip1W = sw * 0.56
+  const chip1H = (buildEcomTex.height / buildEcomTex.width) * chip1W
+  const chip1X = sw * 0.044
+  const chip1Y = sh * 0.344
+  // saved12: right-center area (Figma: 252/596 + 419, absolute screen x=141.5, y=563)
+  const chip2W = sw * 0.581
+  const chip2H = (saved12Tex.height / saved12Tex.width) * chip2W
+  const chip2X = sw * 0.377
+  const chip2Y = sh * 0.693
+  // generatedInvestor: lower-left area (Figma: 127/596 + 461, absolute screen x=16, y=605)
+  const chip3W = sw * 0.685
+  const chip3H = (generatedInvTex.height / generatedInvTex.width) * chip3W
+  const chip3X = sw * 0.043
+  const chip3Y = sh * 0.745
 
   const iconOrder = Array.from({ length: ICON_COUNT }, (_, i) => i)
     .sort((a, b) => {
@@ -362,6 +384,32 @@ function Frame4Mobile({ timeline }: { timeline: GSAPTimeline }) {
         x={(sw - text2W) / 2}
         y={textY}
         alpha={p.text2Alpha}
+      />
+
+      {/* Chips — fade in with text2, positions match Figma mobile (375×812) */}
+      <pixiSprite
+        texture={buildEcomTex}
+        width={chip1W}
+        height={chip1H}
+        x={chip1X}
+        y={chip1Y}
+        alpha={p.chipsAlpha}
+      />
+      <pixiSprite
+        texture={saved12Tex}
+        width={chip2W}
+        height={chip2H}
+        x={chip2X}
+        y={chip2Y}
+        alpha={p.chipsAlpha}
+      />
+      <pixiSprite
+        texture={generatedInvTex}
+        width={chip3W}
+        height={chip3H}
+        x={chip3X}
+        y={chip3Y}
+        alpha={p.chipsAlpha}
       />
     </pixiContainer>
   )

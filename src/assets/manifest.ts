@@ -373,6 +373,9 @@ export function loadAssets() {
       { alias: ASSETS.iconPerplexity, src: iconPerplexity },
       { alias: ASSETS.developersCoder, src: developersCoder },
       { alias: ASSETS.explorersText, src: explorersText },
+      { alias: ASSETS.buildEcomChip, src: buildEcomChip },
+      { alias: ASSETS.generatedInvestorChip, src: generatedInvestorChip },
+      { alias: ASSETS.saved12Chip, src: saved12Chip },
       // frame3 mobile — same SVG assets as desktop
       { alias: ASSETS.bgBlurF3,       src: bgBlurF3 },
       { alias: ASSETS.bgBlurF32,      src: mobileBgBlur3 },
