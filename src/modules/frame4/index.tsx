@@ -59,12 +59,7 @@ function Frame4Desktop({ timeline }: { timeline: GSAPTimeline }) {
     }, ">")
 
     // bg-blur-4-f2 fades in second, over the first
-    timeline.to(p, {
-      bgBlur2Alpha: 1,
-      duration: 0.7,
-      ease: "power1.out",
-      onUpdate: forceRender,
-    }, ">0.3")
+    
 
     // Center image fades in
     timeline.to(p, {
@@ -73,6 +68,9 @@ function Frame4Desktop({ timeline }: { timeline: GSAPTimeline }) {
       ease: "power1.out",
       onUpdate: forceRender,
     }, "<0.2")
+
+
+    
 
     // Icons fade in
     timeline.to(p, {
@@ -97,6 +95,13 @@ function Frame4Desktop({ timeline }: { timeline: GSAPTimeline }) {
       ease: "power1.out",
       onUpdate: forceRender,
     }, ">0.8")
+
+    timeline.to(p, {
+      bgBlur2Alpha: 1,
+      duration: 0.7,
+      ease: "power1.out",
+      onUpdate: forceRender,
+    }, "<")
 
     // Exit: fade out whole scene
     timeline.to(p, {
