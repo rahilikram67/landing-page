@@ -222,7 +222,7 @@ function Frame4Mobile({ timeline }: { timeline: GSAPTimeline }) {
     if (!app.renderer) return
     let rafId = 0
     const step = () => {
-      rotRef.current += 0.003
+      rotRef.current -= 0.003
       forceRender()
       rafId = requestAnimationFrame(step)
     }
