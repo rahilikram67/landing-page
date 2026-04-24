@@ -102,9 +102,9 @@ function Frame4Desktop({ timeline }: { timeline: GSAPTimeline }) {
   const centerY  = centerCy - centerH / 2
 
   // Orbit ellipse
-  const orbitRx  = sw * 0.30
-  const orbitRy  = sh * 0.27
-  const iconBase = Math.min(sw, sh) * 0.085
+  const orbitRx  = sw * 0.26
+  const orbitRy  = sh * 0.25
+  const iconBase = Math.min(sw, sh) * 0.12
 
   // Text images — same position, swap via alpha
   const text1W = sw * 0.42
