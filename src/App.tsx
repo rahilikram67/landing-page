@@ -62,6 +62,13 @@ function App() {
   }, [])
 
   useEffect(() => {
+    const isTouch = window.matchMedia("(pointer: coarse)").matches
+
+    if (isTouch) {
+      ScrollTrigger.normalizeScroll(true)
+      return
+    }
+
     const lenis = new Lenis({ lerp: 0.08 })
 
     lenis.on("scroll", ScrollTrigger.update)
