@@ -16,10 +16,10 @@ import { ScrollTrigger } from "gsap/ScrollTrigger"
 import { loadAssets } from "./assets/manifest"
 import { Container, Sprite, Graphics,Text } from "pixi.js"
 import 'pixi.js/advanced-blend-modes'
+import Lenis from "lenis"
 extend({ Sprite, Container, Graphics,Text })
 
 gsap.registerPlugin(ScrollTrigger)
-ScrollTrigger.normalizeScroll(true)
 ScrollTrigger.config({ ignoreMobileResize: true })
 
 
@@ -59,6 +59,20 @@ function App() {
 
   useEffect(() => {
     loadAssets().then(() => setAssetsReady(true))
+  }, [])
+
+  useEffect(() => {
+    const lenis = new Lenis({ lerp: 0.08 })
+
+    lenis.on("scroll", ScrollTrigger.update)
+
+    gsap.ticker.add((time) => lenis.raf(time * 1000))
+    gsap.ticker.lagSmoothing(0)
+
+    return () => {
+      gsap.ticker.remove((time) => lenis.raf(time * 1000))
+      lenis.destroy()
+    }
   }, [])
 
   useEffect(() => {
