@@ -40,6 +40,7 @@ function Frame4Desktop({ timeline }: { timeline: GSAPTimeline }) {
     text1Alpha:    0,
     text1OffsetY:  0,
     text2Alpha:    0,
+    chipsAlpha:    0,
     exitAlpha:     1,
   })
 
@@ -76,8 +77,9 @@ function Frame4Desktop({ timeline }: { timeline: GSAPTimeline }) {
     timeline.to(p, { text1Alpha: 1,                          duration: 0.6, ease: "power1.out", onUpdate: forceRender }, ">0.2")
     timeline.to(p, { text1Alpha: 0, text1OffsetY: 40,        duration: 0.5, ease: "power1.in",  onUpdate: forceRender }, ">1.0")
 
-    // Text2 fades in as text1 exits
+    // Text2 + chips fade in as text1 exits
     timeline.to(p, { text2Alpha: 1,                          duration: 0.6, ease: "power1.out", onUpdate: forceRender }, "<0.2")
+    timeline.to(p, { chipsAlpha: 1,                          duration: 0.6, ease: "power1.out", onUpdate: forceRender }, "<")
 
     // Exit: fade out whole scene
     timeline.to(p, { exitAlpha: 0,    duration: 1.0, ease: "power1.inOut", onUpdate: forceRender }, ">")
@@ -89,11 +91,14 @@ function Frame4Desktop({ timeline }: { timeline: GSAPTimeline }) {
   const sh = app.screen.height
   const p  = proxy.current
 
-  const bgBlur1Tex = Assets.get(ASSETS.bgBlurF4_1)
-  const bgBlur2Tex = Assets.get(ASSETS.bgBlurF4_2)
-  const centerTex  = Assets.get(ASSETS.boyQuestions)
-  const text1Tex   = Assets.get(ASSETS.developersCoder)
-  const text2Tex   = Assets.get(ASSETS.explorersText)
+  const bgBlur1Tex        = Assets.get(ASSETS.bgBlurF4_1)
+  const bgBlur2Tex        = Assets.get(ASSETS.bgBlurF4_2)
+  const centerTex         = Assets.get(ASSETS.boyQuestions)
+  const text1Tex          = Assets.get(ASSETS.developersCoder)
+  const text2Tex          = Assets.get(ASSETS.explorersText)
+  const buildEcomTex      = Assets.get(ASSETS.buildEcomChip)
+  const generatedInvTex   = Assets.get(ASSETS.generatedInvestorChip)
+  const saved12Tex        = Assets.get(ASSETS.saved12Chip)
 
   // Center image — 58 % of screen height, horizontally centred
   const centerH  = sh * 0.58
@@ -113,6 +118,23 @@ function Frame4Desktop({ timeline }: { timeline: GSAPTimeline }) {
   const text2W = sw * 0.34
   const text2H = (text2Tex.height / text2Tex.width) * text2W
   const textY  = centerY + centerH + sh * 0.02
+
+  // Chips — positions derived from Figma (1440 × 942 canvas)
+  // chip: generated-investor — left side, vertical centre
+  const chip1W = sw * 0.2938
+  const chip1H = (generatedInvTex.height / generatedInvTex.width) * chip1W
+  const chip1X = sw * 0.0743
+  const chip1Y = sh * 0.494
+  // chip: build-ecom — upper right
+  const chip2W = sw * 0.2292
+  const chip2H = (buildEcomTex.height / buildEcomTex.width) * chip2W
+  const chip2X = sw * 0.5924
+  const chip2Y = sh * 0.330
+  // chip: saved-12 — lower right
+  const chip3W = sw * 0.2382
+  const chip3H = (saved12Tex.height / saved12Tex.width) * chip3W
+  const chip3X = sw * 0.6806
+  const chip3Y = sh * 0.615
 
   // Sort icons by depth so back icons render under front icons
   const iconOrder = Array.from({ length: ICON_COUNT }, (_, i) => i)
@@ -177,6 +199,32 @@ function Frame4Desktop({ timeline }: { timeline: GSAPTimeline }) {
         x={(sw - text2W) / 2}
         y={textY}
         alpha={p.text2Alpha}
+      />
+
+      {/* Chips — fade in with text2 */}
+      <pixiSprite
+        texture={generatedInvTex}
+        width={chip1W}
+        height={chip1H}
+        x={chip1X}
+        y={chip1Y}
+        alpha={p.chipsAlpha}
+      />
+      <pixiSprite
+        texture={buildEcomTex}
+        width={chip2W}
+        height={chip2H}
+        x={chip2X}
+        y={chip2Y}
+        alpha={p.chipsAlpha}
+      />
+      <pixiSprite
+        texture={saved12Tex}
+        width={chip3W}
+        height={chip3H}
+        x={chip3X}
+        y={chip3Y}
+        alpha={p.chipsAlpha}
       />
     </pixiContainer>
   )

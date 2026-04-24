@@ -81,6 +81,9 @@ import iconClaude from "./desktop/claude.svg"
 import iconPerplexity from "./desktop/icon-perplexity.svg"
 import developersCoder from "./desktop/developers-coder-text.svg"
 import explorersText from "./desktop/explorers-text.svg"
+import buildEcomChip from "./desktop/build-ecom-chip2.svg"
+import generatedInvestorChip from "./desktop/generated-investor-chip1.svg"
+import saved12Chip from "./desktop/saved-12-chip3.svg"
 
 
 // mobile
@@ -200,6 +203,9 @@ export const ASSETS = {
   iconPerplexity: "iconPerplexity",
   developersCoder: "developersCoder",
   explorersText: "explorersText",
+  buildEcomChip: "buildEcomChip",
+  generatedInvestorChip: "generatedInvestorChip",
+  saved12Chip: "saved12Chip",
 } as const
 
 const MOBILE_BREAKPOINT = 768
@@ -292,6 +298,9 @@ export function loadAssets() {
       { alias: ASSETS.iconPerplexity, src: iconPerplexity },
       { alias: ASSETS.developersCoder, src: developersCoder },
       { alias: ASSETS.explorersText, src: explorersText },
+      { alias: ASSETS.buildEcomChip, src: buildEcomChip },
+      { alias: ASSETS.generatedInvestorChip, src: generatedInvestorChip },
+      { alias: ASSETS.saved12Chip, src: saved12Chip },
     ])
 
     Assets.addBundle("mobile", [
