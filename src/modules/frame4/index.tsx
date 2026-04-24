@@ -16,6 +16,15 @@ const ICON_KEYS = [
 
 const ICON_COUNT = ICON_KEYS.length
 
+// depth scale range: icons at the bottom appear 2.5× larger than at the top
+const DEPTH_MIN = 0.55
+const DEPTH_MAX = 1.45
+
+function depthScale(angle: number) {
+  // sin = +1 at bottom (front) → max scale; sin = -1 at top (back) → min scale
+  return DEPTH_MIN + (DEPTH_MAX - DEPTH_MIN) * (Math.sin(angle) + 1) / 2
+}
+
 // ─── Desktop ──────────────────────────────────────────────────────────────────
 
 function Frame4Desktop({ timeline }: { timeline: GSAPTimeline }) {
@@ -26,11 +35,11 @@ function Frame4Desktop({ timeline }: { timeline: GSAPTimeline }) {
   const proxy = useRef({
     bgBlur1Alpha: 0,
     bgBlur2Alpha: 0,
-    centerAlpha: 0,
-    iconsAlpha:  0,
-    text1Alpha:  0,
-    text2Alpha:  0,
-    exitAlpha:   1,
+    centerAlpha:  0,
+    iconsAlpha:   0,
+    text1Alpha:   0,
+    text2Alpha:   0,
+    exitAlpha:    1,
   })
 
   // Continuous orbit rotation — independent of scroll progress
@@ -50,66 +59,27 @@ function Frame4Desktop({ timeline }: { timeline: GSAPTimeline }) {
     if (!timeline || !app.renderer) return
     const p = proxy.current
 
-    // bg-blur-4-f1 fades in first
-    timeline.to(p, {
-      bgBlur1Alpha: 1,
-      duration: 0.7,
-      ease: "power1.out",
-      onUpdate: forceRender,
-    }, ">")
+    // bg1 fades in
+    timeline.to(p, { bgBlur1Alpha: 1, duration: 0.7, ease: "power1.out", onUpdate: forceRender }, ">")
 
-    // bg-blur-4-f2 fades in second, over the first
-    
+    // bg2 fades in over bg1
+    timeline.to(p, { bgBlur2Alpha: 1, duration: 0.7, ease: "power1.out", onUpdate: forceRender }, ">0.3")
 
     // Center image fades in
-    timeline.to(p, {
-      centerAlpha: 1,
-      duration: 0.8,
-      ease: "power1.out",
-      onUpdate: forceRender,
-    }, "<0.2")
-
-
-    
+    timeline.to(p, { centerAlpha: 1,  duration: 0.8, ease: "power1.out", onUpdate: forceRender }, "<0.2")
 
     // Icons fade in
-    timeline.to(p, {
-      iconsAlpha: 1,
-      duration: 0.8,
-      ease: "power1.out",
-      onUpdate: forceRender,
-    }, "<0.4")
+    timeline.to(p, { iconsAlpha: 1,   duration: 0.8, ease: "power1.out", onUpdate: forceRender }, "<0.4")
 
-    // Text 1 (developers-coder) fades in
-    timeline.to(p, {
-      text1Alpha: 1,
-      duration: 0.7,
-      ease: "power1.out",
-      onUpdate: forceRender,
-    }, ">0.2")
+    // Text1 fades in, holds, then fades out
+    timeline.to(p, { text1Alpha: 1,   duration: 0.6, ease: "power1.out", onUpdate: forceRender }, ">0.2")
+    timeline.to(p, { text1Alpha: 0,   duration: 0.5, ease: "power1.in",  onUpdate: forceRender }, ">1.0")
 
-    // Text 2 (explorers) fades in over text 1
-    timeline.to(p, {
-      text2Alpha: 1,
-      duration: 0.7,
-      ease: "power1.out",
-      onUpdate: forceRender,
-    }, ">0.8")
-
-    timeline.to(p, {
-      bgBlur2Alpha: 1,
-      duration: 0.7,
-      ease: "power1.out",
-      onUpdate: forceRender,
-    }, "<")
+    // Text2 fades in as text1 exits
+    timeline.to(p, { text2Alpha: 1,   duration: 0.6, ease: "power1.out", onUpdate: forceRender }, "<0.2")
 
     // Exit: fade out whole scene
-    timeline.to(p, {
-      exitAlpha: 0,
-      duration: 1.0,
-      ease: "power1.inOut",
-      onUpdate: forceRender,
-    }, ">")
+    timeline.to(p, { exitAlpha: 0,    duration: 1.0, ease: "power1.inOut", onUpdate: forceRender }, ">")
   }, [timeline, app.renderer])
 
   if (!app.renderer) return null
@@ -124,24 +94,32 @@ function Frame4Desktop({ timeline }: { timeline: GSAPTimeline }) {
   const text1Tex   = Assets.get(ASSETS.developersCoder)
   const text2Tex   = Assets.get(ASSETS.explorersText)
 
-  // Center image — 58% of screen height, horizontally centred
+  // Center image — 58 % of screen height, horizontally centred
   const centerH  = sh * 0.58
   const centerW  = (centerTex.width / centerTex.height) * centerH
   const centerX  = (sw - centerW) / 2
-  const centerCy = sh * 0.42           // orbital / visual centre Y
+  const centerCy = sh * 0.42
   const centerY  = centerCy - centerH / 2
 
-  // Orbit ellipse around the centre
+  // Orbit ellipse
   const orbitRx  = sw * 0.30
   const orbitRy  = sh * 0.27
   const iconBase = Math.min(sw, sh) * 0.085
 
-  // Text images — fade in/out over each other, centred below the figure
+  // Text images — same position, swap via alpha
   const text1W = sw * 0.42
   const text1H = (text1Tex.height / text1Tex.width) * text1W
   const text2W = sw * 0.34
   const text2H = (text2Tex.height / text2Tex.width) * text2W
   const textY  = centerY + centerH + sh * 0.02
+
+  // Sort icons by depth so back icons render under front icons
+  const iconOrder = Array.from({ length: ICON_COUNT }, (_, i) => i)
+    .sort((a, b) => {
+      const angleA = rotRef.current + (a / ICON_COUNT) * Math.PI * 2
+      const angleB = rotRef.current + (b / ICON_COUNT) * Math.PI * 2
+      return Math.sin(angleA) - Math.sin(angleB)  // back-to-front
+    })
 
   return (
     <pixiContainer alpha={p.exitAlpha}>
@@ -159,20 +137,22 @@ function Frame4Desktop({ timeline }: { timeline: GSAPTimeline }) {
         alpha={p.centerAlpha}
       />
 
-      {/* Icons infinitely revolving in an elliptical orbit */}
-      {ICON_KEYS.map((key, i) => {
-        const tex    = Assets.get(key)
-        const angle  = rotRef.current + (i / ICON_COUNT) * Math.PI * 2
-        const iconW  = iconBase
-        const iconH  = (tex.height / tex.width) * iconW
-        const ix     = sw / 2 + Math.cos(angle) * orbitRx - iconW / 2
-        const iy     = centerCy + Math.sin(angle) * orbitRy - iconH / 2
+      {/* Icons — back-to-front order, depth-scaled so bottom = bigger */}
+      {iconOrder.map(i => {
+        const key   = ICON_KEYS[i]
+        const tex   = Assets.get(key)
+        const angle = rotRef.current + (i / ICON_COUNT) * Math.PI * 2
+        const ds    = depthScale(angle)
+        const iconW = iconBase * ds
+        const iconH = (tex.height / tex.width) * iconW
+        const ix    = sw / 2 + Math.cos(angle) * orbitRx - iconW / 2
+        const iy    = centerCy + Math.sin(angle) * orbitRy - iconH / 2
         return (
           <pixiSprite
             key={key}
             texture={tex}
-            width={iconW*1.5}
-            height={iconH*1.5}
+            width={iconW}
+            height={iconH}
             x={ix}
             y={iy}
             alpha={p.iconsAlpha}
@@ -180,7 +160,7 @@ function Frame4Desktop({ timeline }: { timeline: GSAPTimeline }) {
         )
       })}
 
-      {/* Text images — crossfade below the figure */}
+      {/* Texts — text1 fades in then out, text2 fades in at the same spot */}
       <pixiSprite
         texture={text1Tex}
         width={text1W}
@@ -211,11 +191,11 @@ function Frame4Mobile({ timeline }: { timeline: GSAPTimeline }) {
   const proxy = useRef({
     bgBlur1Alpha: 0,
     bgBlur2Alpha: 0,
-    centerAlpha: 0,
-    iconsAlpha:  0,
-    text1Alpha:  0,
-    text2Alpha:  0,
-    exitAlpha:   1,
+    centerAlpha:  0,
+    iconsAlpha:   0,
+    text1Alpha:   0,
+    text2Alpha:   0,
+    exitAlpha:    1,
   })
 
   useEffect(() => {
@@ -234,12 +214,13 @@ function Frame4Mobile({ timeline }: { timeline: GSAPTimeline }) {
     if (!timeline || !app.renderer) return
     const p = proxy.current
 
-    timeline.to(p, { bgBlur1Alpha: 1, duration: 0.7, ease: "power1.out", onUpdate: forceRender }, ">")
-    timeline.to(p, { bgBlur2Alpha: 1, duration: 0.7, ease: "power1.out", onUpdate: forceRender }, ">0.3")
-    timeline.to(p, { centerAlpha:  1, duration: 0.8, ease: "power1.out", onUpdate: forceRender }, "<0.2")
-    timeline.to(p, { iconsAlpha:   1, duration: 0.8, ease: "power1.out", onUpdate: forceRender }, "<0.4")
-    timeline.to(p, { text1Alpha:   1, duration: 0.7, ease: "power1.out", onUpdate: forceRender }, ">0.2")
-    timeline.to(p, { text2Alpha:   1, duration: 0.7, ease: "power1.out", onUpdate: forceRender }, ">0.8")
+    timeline.to(p, { bgBlur1Alpha: 1, duration: 0.7, ease: "power1.out",   onUpdate: forceRender }, ">")
+    timeline.to(p, { bgBlur2Alpha: 1, duration: 0.7, ease: "power1.out",   onUpdate: forceRender }, ">0.3")
+    timeline.to(p, { centerAlpha:  1, duration: 0.8, ease: "power1.out",   onUpdate: forceRender }, "<0.2")
+    timeline.to(p, { iconsAlpha:   1, duration: 0.8, ease: "power1.out",   onUpdate: forceRender }, "<0.4")
+    timeline.to(p, { text1Alpha:   1, duration: 0.6, ease: "power1.out",   onUpdate: forceRender }, ">0.2")
+    timeline.to(p, { text1Alpha:   0, duration: 0.5, ease: "power1.in",    onUpdate: forceRender }, ">1.0")
+    timeline.to(p, { text2Alpha:   1, duration: 0.6, ease: "power1.out",   onUpdate: forceRender }, "<0.2")
     timeline.to(p, { exitAlpha:    0, duration: 1.0, ease: "power1.inOut", onUpdate: forceRender }, ">")
   }, [timeline, app.renderer])
 
@@ -255,7 +236,6 @@ function Frame4Mobile({ timeline }: { timeline: GSAPTimeline }) {
   const text1Tex   = Assets.get(ASSETS.developersCoder)
   const text2Tex   = Assets.get(ASSETS.explorersText)
 
-  // Mobile: center image width-based sizing
   const centerW  = sw * 0.70
   const centerH  = (centerTex.height / centerTex.width) * centerW
   const centerX  = (sw - centerW) / 2
@@ -272,6 +252,13 @@ function Frame4Mobile({ timeline }: { timeline: GSAPTimeline }) {
   const text2H = (text2Tex.height / text2Tex.width) * text2W
   const textY  = centerY + centerH + sh * 0.02
 
+  const iconOrder = Array.from({ length: ICON_COUNT }, (_, i) => i)
+    .sort((a, b) => {
+      const angleA = rotRef.current + (a / ICON_COUNT) * Math.PI * 2
+      const angleB = rotRef.current + (b / ICON_COUNT) * Math.PI * 2
+      return Math.sin(angleA) - Math.sin(angleB)
+    })
+
   return (
     <pixiContainer alpha={p.exitAlpha}>
       <pixiSprite texture={bgBlur1Tex} width={sw} height={sh} alpha={p.bgBlur1Alpha} />
@@ -286,10 +273,12 @@ function Frame4Mobile({ timeline }: { timeline: GSAPTimeline }) {
         alpha={p.centerAlpha}
       />
 
-      {ICON_KEYS.map((key, i) => {
+      {iconOrder.map(i => {
+        const key   = ICON_KEYS[i]
         const tex   = Assets.get(key)
         const angle = rotRef.current + (i / ICON_COUNT) * Math.PI * 2
-        const iconW = iconBase
+        const ds    = depthScale(angle)
+        const iconW = iconBase * ds
         const iconH = (tex.height / tex.width) * iconW
         const ix    = sw / 2 + Math.cos(angle) * orbitRx - iconW / 2
         const iy    = centerCy + Math.sin(angle) * orbitRy - iconH / 2
