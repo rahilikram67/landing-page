@@ -33,13 +33,14 @@ function Frame4Desktop({ timeline }: { timeline: GSAPTimeline }) {
   const rotRef = useRef(0)
 
   const proxy = useRef({
-    bgBlur1Alpha: 0,
-    bgBlur2Alpha: 0,
-    centerAlpha:  0,
-    iconsAlpha:   0,
-    text1Alpha:   0,
-    text2Alpha:   0,
-    exitAlpha:    1,
+    bgBlur1Alpha:  0,
+    bgBlur2Alpha:  0,
+    centerAlpha:   0,
+    iconsAlpha:    0,
+    text1Alpha:    0,
+    text1OffsetY:  0,
+    text2Alpha:    0,
+    exitAlpha:     1,
   })
 
   // Continuous orbit rotation — independent of scroll progress
@@ -71,12 +72,12 @@ function Frame4Desktop({ timeline }: { timeline: GSAPTimeline }) {
     // Icons fade in
     timeline.to(p, { iconsAlpha: 1,   duration: 0.8, ease: "power1.out", onUpdate: forceRender }, "<0.4")
 
-    // Text1 fades in, holds, then fades out
-    timeline.to(p, { text1Alpha: 1,   duration: 0.6, ease: "power1.out", onUpdate: forceRender }, ">0.2")
-    timeline.to(p, { text1Alpha: 0,   duration: 0.5, ease: "power1.in",  onUpdate: forceRender }, ">1.0")
+    // Text1 fades in, holds 1 s, then slides down and fades out
+    timeline.to(p, { text1Alpha: 1,                          duration: 0.6, ease: "power1.out", onUpdate: forceRender }, ">0.2")
+    timeline.to(p, { text1Alpha: 0, text1OffsetY: 40,        duration: 0.5, ease: "power1.in",  onUpdate: forceRender }, ">1.0")
 
     // Text2 fades in as text1 exits
-    timeline.to(p, { text2Alpha: 1,   duration: 0.6, ease: "power1.out", onUpdate: forceRender }, "<0.2")
+    timeline.to(p, { text2Alpha: 1,                          duration: 0.6, ease: "power1.out", onUpdate: forceRender }, "<0.2")
 
     // Exit: fade out whole scene
     timeline.to(p, { exitAlpha: 0,    duration: 1.0, ease: "power1.inOut", onUpdate: forceRender }, ">")
@@ -166,7 +167,7 @@ function Frame4Desktop({ timeline }: { timeline: GSAPTimeline }) {
         width={text1W}
         height={text1H}
         x={(sw - text1W) / 2}
-        y={textY}
+        y={textY + p.text1OffsetY}
         alpha={p.text1Alpha}
       />
       <pixiSprite
